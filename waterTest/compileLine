@@ -1,0 +1,2 @@
+gcc waterTest.c -framework OpenGL -framework GLUT -framework CoreFoundation /usr/local/lib/libSOIL.a -o test -w
+./test
