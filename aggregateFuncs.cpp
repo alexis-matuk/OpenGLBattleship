@@ -3,34 +3,29 @@
 GLuint viewMode = 0;
 GLuint texture[1];
 
-/* Función para dibujar un modelo con rotación, traslación y escala */
-void DrawModel(GLMmodel* model, float centerX, float centerY, float centerZ, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ)
-{    
-    viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;		/* reset mode */
-    glPushMatrix(); 
-    glPushAttrib(GL_ALL_ATTRIB_BITS);   
-    glTranslatef(x,y,z);  
-    glRotatef(angle, rotX, rotY, rotZ);  
-    glScalef(scaleX, scaleY, scaleZ);     
-    glTranslatef(centerX, centerY, centerZ);
-    if (model)
-		glmDraw(model, viewMode);
-    glPopAttrib();	
-    glPopMatrix();    
-}
+// /* Función para dibujar un modelo con rotación, traslación y escala */
+// void DrawModel(GLMmodel* model, float centerX, float centerY, float centerZ, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ)
+// {    
+//     viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;		/* reset mode */
+//     glPushMatrix(); 
+//     glPushAttrib(GL_ALL_ATTRIB_BITS);   
+//     glTranslatef(x,y,z);  
+//     glRotatef(angle, rotX, rotY, rotZ);  
+//     glScalef(scaleX, scaleY, scaleZ);     
+//     glTranslatef(centerX, centerY, centerZ);
+//     if (model)
+// 		glmDraw(model, viewMode);
+//     glPopAttrib();	
+//     glPopMatrix();    
+// }
 
-void DrawModel(GLMmodel* model, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ)
+void DrawModel(GLMmodel* model)
 {    
-    viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;       /* reset mode */
-    glPushMatrix(); 
-    glPushAttrib(GL_ALL_ATTRIB_BITS);   
-    glTranslatef(x,y,z);   
-    glRotatef(angle, rotX, rotY, rotZ);  
-    glScalef(scaleX, scaleY, scaleZ);     
-    if (model)
-        glmDraw(model, viewMode);
-    glPopAttrib();  
-    glPopMatrix();    
+    viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;       /* reset mode */    
+    glPushAttrib(GL_ALL_ATTRIB_BITS);     
+        if (model)
+            glmDraw(model, viewMode);
+    glPopAttrib();     
 }
 
 

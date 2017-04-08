@@ -4,7 +4,11 @@ void Object::Draw()
 {
 	glPushMatrix();
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
-			DrawModel(model, centerX, centerY, centerZ, scaleX, scaleY, scaleZ, transX, transY, transZ, angle, rotX, rotY, rotZ);			
+			glTranslatef(transX,transY,transZ);  
+		    glRotatef(angle, rotX, rotY, rotZ);  
+		    glScalef(scaleX, scaleY, scaleZ);     
+		    glTranslatef(centerX, centerY, centerZ);
+			drawModel();		
 		glPopAttrib();
 	glPopMatrix();
 }
@@ -22,6 +26,15 @@ Object::Object(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, 
 Object::Object(float _centerX, float _centerY, float _centerZ, float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _angle, float _rotX, float _rotY, float _rotZ, const char * filename) : scaleX(_scaleX), scaleY(_scaleY), scaleZ(_scaleZ), transX(_x), transY(_y), transZ(_z), angle(_angle), rotX(_rotX), rotY(_rotY), rotZ(_rotZ), centerX(_centerX), centerY(_centerY), centerZ(_centerZ)
 {
 	model = loadModel(filename);
+}
+
+void Object::drawModel()
+{
+	viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;       /* reset mode */    
+    glPushAttrib(GL_ALL_ATTRIB_BITS);     
+        if (model)
+            glmDraw(model, viewMode);
+    glPopAttrib();     	
 }
 
 
@@ -99,7 +112,7 @@ void Object::DrawAxis(float scale)
 {
     glPushMatrix();
     glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);    
     glScalef(scale, scale, scale);
 
     glBegin(GL_LINES);    

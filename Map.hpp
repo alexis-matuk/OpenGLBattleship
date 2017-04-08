@@ -11,30 +11,31 @@
 #include "aggregateFuncs.hpp"
 #include "Ship.hpp"
 #include "Tile.hpp"
+#include "Object.hpp"
 
 class Map{	
-	GLMmodel* A = nullptr;
-	GLMmodel* B = nullptr;
-	GLMmodel* C = nullptr;
-	GLMmodel* D = nullptr;
-	GLMmodel* E = nullptr;
-	GLMmodel* F = nullptr;
-	GLMmodel* G = nullptr;
-	GLMmodel* H = nullptr;
-	GLMmodel* I = nullptr;
-	GLMmodel* J = nullptr;
-	GLMmodel* K = nullptr;
-	GLMmodel* N1 = nullptr;
-	GLMmodel* N2 = nullptr;
-	GLMmodel* N3 = nullptr;
-	GLMmodel* N4 = nullptr;
-	GLMmodel* N5 = nullptr;
-	GLMmodel* N6 = nullptr;
-	GLMmodel* N7 = nullptr;
-	GLMmodel* N8 = nullptr;
-	GLMmodel* N9 = nullptr;
-	GLMmodel* N10 = nullptr;
-	GLMmodel* N11 = nullptr;
+	Object A;
+	Object B;
+	Object C;
+	Object D;
+	Object E;
+	Object F;
+	Object G;
+	Object H;
+	Object I;
+	Object J;
+	Object K;
+	Object N1;
+	Object N2;
+	Object N3;
+	Object N4;
+	Object N5;
+	Object N6;
+	Object N7;
+	Object N8;
+	Object N9;
+	Object N10;
+	Object N11;
 	int X = 11;
 	int Y = 11;
 	std::vector<std::vector<Tile>> grid;
@@ -43,8 +44,7 @@ class Map{
 	Ship ship_3_2;
 	Ship ship_4;
 	Ship ship_5;
-	std::vector<Ship> ships;
-	void loadObjects();	
+	std::vector<Ship> ships;	
 public:
 	Map();
 	~Map();

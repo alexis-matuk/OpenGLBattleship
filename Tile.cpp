@@ -28,11 +28,14 @@ Tile::~Tile()
 
 void Tile::Draw()
 {	
-	glPushMatrix();
-		glPushAttrib(GL_ALL_ATTRIB_BITS);
-			DrawModel(model, centerX, centerY, centerZ, scaleX, scaleY, scaleZ, transX, transY, transZ, angle, rotX, rotY, rotZ);
-			drawWater();
-		glPopAttrib();
+	glPushMatrix();		
+			glTranslatef(transX,transY,transZ);  
+		    glRotatef(angle, rotX, rotY, rotZ);  
+		    glScalef(scaleX, scaleY, scaleZ);     
+		    glTranslatef(centerX, centerY, centerZ);
+			drawModel();			
+			// drawWater();
+		
 	glPopMatrix();
 }
 

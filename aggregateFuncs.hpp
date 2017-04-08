@@ -19,7 +19,7 @@
 
 extern GLuint viewMode;//Modo de visualización
 extern GLuint texture[1];
+void DrawModel(GLMmodel* model);
 void DrawModel(GLMmodel* model, float centerX, float centerY, float centerZ, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ);
-void DrawModel(GLMmodel* model, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ);
 GLMmodel* loadModel(const char* filename);
 void LoadGLTextures();

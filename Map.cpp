@@ -1,10 +1,8 @@
 #include "Map.hpp"
 
-Map::Map() : grid(X, std::vector<Tile>(Y)), ship_2("Objects/Bladesong/Bladesong.obj", 0,0.4,0), ship_5("Objects/Submarino/i400.obj", 0, 0.2, 0), ship_3("Objects/Gunboat/Gunboat.obj", 0,0.25,0), ship_3_2("Objects/Prestes/Prestes.obj", 0,0.08,0), ship_4("Objects/Carrier/carrier.obj", 0,0.1,0)
+Map::Map() : grid(X, std::vector<Tile>(Y)), ship_2("Objects/Bladesong/Bladesong.obj", 0,0.4,0), ship_5("Objects/Submarino/i400.obj", 0, 0.2, 0), ship_3("Objects/Gunboat/Gunboat.obj", 0,0.25,0), ship_3_2("Objects/Prestes/Prestes.obj", 0,0.08,0), ship_4("Objects/Carrier/carrier.obj", 0,0.1,0), A(0.5,0.5,0.5, 0,0,0.05, 0,0,0,0, "Objects/A.obj"), B(0.8,0.8,0.8, 0,0,0.5, 0,0,0,0, "Objects/B.obj"), C(1,1,1, 0,0,0.92, 0,0,0,0, "Objects/C.obj"), D(1.3,1.3,1.3, 0.02,0,1.35, 0,0,0,0, "Objects/D.obj"), E(1.5,1.5,1.5, 0,0,1.78, 0,0,0,0, "Objects/E.obj"), F(1.5,1.5,1.5, 0,0,2.2, 0,0,0,0, "Objects/F.obj"), G(0.25,0.25,0.25, 0,0,2.62, 0,0,0,0, "Objects/G.obj"), H(0.5,0.5,0.5, 0,0,3.05, 0,0,0,0, "Objects/H.obj"), I(0.7,0.7,0.7, 0,0,3.46, 0,0,0,0, "Objects/I.obj"), J(1,1,1, 0,0,3.9, 0,0,0,0, "Objects/J.obj"), K(1.3,1.3,1.3, 0,0,4.3, 0,0,0,0, "Objects/K.obj"), N1 (0.5,0.5,0.5, 0,0,0.1, 0,0,0,0, "Objects/1.obj"), N2 (1.7,1.7,1.7, 0.42,0,0.1, 0,0,0,0, "Objects/2.obj"), N3 (1.1,1.1,1.1, 0.84,0,0.1, 0,0,0,0, "Objects/3.obj"), N4 (1.5,1.5,1.5, 1.26,0,0.1, 0,0,0,0, "Objects/4.obj"), N5 (2.2,2.2,2.2, 1.68,0,0.1, 0,0,0,0, "Objects/5.obj"), N6 (1.1,1.1,1.1, 2.1,0,0.1, 0,0,0,0, "Objects/6.obj"), N7 (1.1,1.1,1.1, 2.52,0,0.1, 0,0,0,0, "Objects/7.obj"), N8 (1.3,1.3,1.3, 2.94,0,0.1, 0,0,0,0, "Objects/8.obj"), N9 (1.7,1.7,1.7, 3.36,0,0.1, 0,0,0,0, "Objects/9.obj"), N10 (1.7,1.7,1.7, 3.78,0,0.1, 0,0,0,0, "Objects/10.obj"), N11 (2.3,2.3,2.3, 4.21,0,0.1, 0,0,0,0, "Objects/11.obj")
 {	
-	initTiles();
-	initShips();
-	loadObjects();		
+		
 }
 
 Map::~Map()
@@ -45,7 +43,7 @@ void Map::initTiles()
 	{
 		for(int j = 0; j < Y; j++)
 		{ 
-			grid[i][j].setParams(0.6,0.6,0.6, -2+(i*.42),0,-1.9+(j*.42), 0,0,0,0);						
+			grid[i][j].setParams(0.6,0.6,0.6, -2+(i*.42),-1.9+(j*.42),0, 0,0,0,0);						
 		}
 	}	
 }
@@ -57,53 +55,26 @@ Tile & Map::getTile(int letter, int number)
 
 void Map::Draw()
 {
-	drawNumbers();
-	drawLetters();
+	// drawNumbers();
+	// drawLetters();
 	drawTiles();
-}
-
-void Map::loadObjects()
-{
-	this->A = loadModel("Objects/A.obj");
-	this->B = loadModel("Objects/B.obj");
-	this->C = loadModel("Objects/C.obj");
-	this->D = loadModel("Objects/D.obj");
-	this->E = loadModel("Objects/E.obj");
-	this->F = loadModel("Objects/F.obj");
-	this->G = loadModel("Objects/G.obj");
-	this->H = loadModel("Objects/H.obj");
-	this->I = loadModel("Objects/I.obj");
-	this->J = loadModel("Objects/J.obj");
-	this->K = loadModel("Objects/K.obj");	
-
-	this->N1 = loadModel("Objects/1.obj");
-	this->N2 = loadModel("Objects/2.obj");
-	this->N3 = loadModel("Objects/3.obj");
-	this->N4 = loadModel("Objects/4.obj");
-	this->N5 = loadModel("Objects/5.obj");
-	this->N6 = loadModel("Objects/6.obj");
-	this->N7 = loadModel("Objects/7.obj");
-	this->N8 = loadModel("Objects/8.obj");
-	this->N9 = loadModel("Objects/9.obj");
-	this->N10 = loadModel("Objects/10.obj");
-	this->N11 = loadModel("Objects/11.obj");
 }
 
 void Map::drawNumbers()
 {
 	glPushMatrix();
 		glTranslatef(-2, 0, -2.5);
-		DrawModel(N1, 0.5,0.5,0.5, 0,0,0.1, 0,0,0,0);
-		DrawModel(N2, 1.7,1.7,1.7, 0.42,0,0.1, 0,0,0,0);
-		DrawModel(N3, 1.1,1.1,1.1, 0.84,0,0.1, 0,0,0,0);
-		DrawModel(N4, 1.5,1.5,1.5, 1.26,0,0.1, 0,0,0,0);
-		DrawModel(N5, 2.2,2.2,2.2, 1.68,0,0.1, 0,0,0,0);
-		DrawModel(N6, 1.1,1.1,1.1, 2.1,0,0.1, 0,0,0,0);
-		DrawModel(N7, 1.1,1.1,1.1, 2.52,0,0.1, 0,0,0,0);
-		DrawModel(N8, 1.3,1.3,1.3, 2.94,0,0.1, 0,0,0,0);
-		DrawModel(N9, 1.7,1.7,1.7, 3.36,0,0.1, 0,0,0,0);
-		DrawModel(N10, 1.7,1.7,1.7, 3.78,0,0.1, 0,0,0,0);
-		DrawModel(N11, 2.3,2.3,2.3, 4.21,0,0.1, 0,0,0,0);
+		N1.drawModel();
+		N2.drawModel();
+		N3.drawModel();
+		N4.drawModel();
+		N5.drawModel();
+		N6.drawModel();
+		N7.drawModel();
+		N8.drawModel();
+		N9.drawModel();
+		N10.drawModel();
+		N11.drawModel();
 	glPopMatrix();
 }
 
@@ -111,17 +82,17 @@ void Map::drawLetters()
 {
 	glPushMatrix();
 		glTranslatef(-2.5, 0, -2.0);
-		DrawModel(A, 0.5,0.5,0.5, 0,0,0.05, 0,0,0,0);
-		DrawModel(B, 0.8,0.8,0.8, 0,0,0.5, 0,0,0,0);
-		DrawModel(C, 1,1,1, 0,0,0.92, 0,0,0,0);		
-		DrawModel(D, 1.3,1.3,1.3, 0.02,0,1.35, 0,0,0,0);
-		DrawModel(E, 1.5,1.5,1.5, 0,0,1.78, 0,0,0,0);
-		DrawModel(F, 1.5,1.5,1.5, 0,0,2.2, 0,0,0,0);
-		DrawModel(G, 0.25,0.25,0.25, 0,0,2.62, 0,0,0,0);
-		DrawModel(H, 0.5,0.5,0.5, 0,0,3.05, 0,0,0,0);
-		DrawModel(I, 0.7,0.7,0.7, 0,0,3.46, 0,0,0,0);
-		DrawModel(J, 1,1,1, 0,0,3.9, 0,0,0,0);
-		DrawModel(K, 1.3,1.3,1.3, 0,0,4.3, 0,0,0,0);	
+		A.drawModel();
+		B.drawModel();
+		C.drawModel();
+		D.drawModel();
+		E.drawModel();
+		F.drawModel();
+		G.drawModel();
+		H.drawModel();
+		I.drawModel();
+		J.drawModel();
+		K.drawModel();
 	glPopMatrix();
 }
 
