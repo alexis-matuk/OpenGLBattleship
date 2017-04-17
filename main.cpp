@@ -14,7 +14,7 @@
 #include "Ship.hpp"
 
 #define START_Z 6.7
-#define SPEED_MULT 2
+#define SPEED_MULT 0.5
 // #define START_Z 1
 
 
@@ -25,7 +25,7 @@ bool rotatingXUp = false;
 bool rotatingXDown = false;
 bool rotatingYLeft = false;
 bool rotatingYRight = false;
-bool rotatingZLeft = false;
+bool rotatingZLeft = false; 
 bool rotatingZRight = false;
 bool zoomingIn = false;
 bool zoomingOut = false;
@@ -57,6 +57,10 @@ int wireframe = 0;
 Map * map = nullptr;
 GLMmodel * test = nullptr;
 Tile * tile = nullptr;
+Tile * tile_2 = nullptr;
+Tile * tile_3 = nullptr;
+Tile * tile_4 = nullptr;
+Ship * ship = nullptr;
 
 GLfloat light_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
 GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -74,6 +78,13 @@ float lastx;
 float lasty;
 std::vector<std::vector<float>> points;
 
+GLint viewport[4];
+GLdouble modelview[16];
+GLdouble projection[16];
+
+float nx,ny,nz,fx,fy,fz;
+bool valid = false;;
+
 /* Funciones de GLUT */
 void Reshape(int w, int h);
 void Keyboard(unsigned char key, int x, int y);
@@ -82,6 +93,16 @@ void Display(void);
 void SpecialInput(int key, int x, int y);
 void SpecialInputUp(int key, int x, int y);
 void LoadGLTextures();
+void mouseHandlerPickingScene(int button, int state, int x, int y);
+void updateMatrices();
+void shipMotion(int x, int y);
+
+void updateMatrices()
+{
+    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+    glGetDoublev( GL_PROJECTION_MATRIX, projection );
+    glGetIntegerv( GL_VIEWPORT, viewport );
+}
 
 void modifyCamera()
 {
@@ -95,11 +116,11 @@ void modifyCamera()
     }
     if(rotatingYLeft)
     {
-        yRot += ySpeed * (currenttime - timebase);
+        yRot -= ySpeed * (currenttime - timebase);
     }
     if(rotatingYRight)
     {
-        yRot -= ySpeed * (currenttime - timebase);            
+        yRot += ySpeed * (currenttime - timebase);            
     }
     if(rotatingZLeft)
     {
@@ -123,11 +144,11 @@ void idle()
 {
    frame++;
    currenttime = glutGet(GLUT_ELAPSED_TIME);
-   if (currenttime - timebase > 2.739726) 
+   if (currenttime - timebase > 0.5) 
    {
         modifyCamera();
         timebase = currenttime;    
-        frame = 0;
+        frame = 0;        
         glutPostRedisplay();
    }  
 }
@@ -136,6 +157,7 @@ void idle()
 /* A general OpenGL initialization function.  Sets all of the initial parameters. */
 void InitGL(int Width, int Height)	        // We call this right after our OpenGL window is created.
 {
+     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     float float_x, float_y;                     // loop counters.
     LoadGLTextures();				// Load The Texture(s) 
     glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
@@ -146,63 +168,8 @@ void InitGL(int Width, int Height)	        // We call this right after our OpenG
     glShadeModel(GL_SMOOTH);			// Enables Smooth Color Shading
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();				// Reset The Projection Matrix
-    gluPerspective(45.0f,(GLfloat)Width/(GLfloat)Height,0.1f,100.0f);	// Calculate The Aspect Ratio Of The Window
-    glMatrixMode(GL_MODELVIEW);    
-}
-
-GLint viewport[4];
-GLdouble mvmatrix[16];
-GLdouble projmatrix[16];
-float realy;
-GLdouble wx1;
-GLdouble wy1;
-GLdouble wz1;
-GLdouble wx2;
-GLdouble wy2;
-GLdouble wz2;
-/* ARGSUSED3 */
-void mouse(int button, int state, int x, int y)
-{
-    if (button == GLUT_LEFT_BUTTON) {
-        if (state == GLUT_DOWN) {
-            lastx = x;
-            lasty = y;
-            std::cout << "=== 2D ===" << std::endl;
-            std::cout << "x: " << x << ", y: " << y << std::endl;
-
-            glGetIntegerv( GL_VIEWPORT, viewport );            
-            glGetDoublev( GL_MODELVIEW_MATRIX, mvmatrix );
-            glGetDoublev( GL_PROJECTION_MATRIX, projmatrix );
-            gluUnProject( (GLdouble) x, (GLdouble) y, 1, mvmatrix, projmatrix, viewport, &wx1, &wy1, &wz1 );
-            gluUnProject( (GLdouble) x, (GLdouble) y, 0, mvmatrix, projmatrix, viewport, &wx2, &wy2, &wz2 );
-            
-            std::cout << "=== 3D ===" << std::endl;
-            std::cout << "x: " << wx1 << ", y: " << wy1 << " z: " << wz1 << std::endl;
-            std::vector<float> temp;
-            temp.push_back(wx1);            
-            temp.push_back(0);
-            temp.push_back(wy1);
-            points.push_back(temp);
-
-            int curr_tile_x = floor((float) wx1 / (0.42f));
-            // int curr_tile_y = floor((float) wz1 / (0.42f*3)) - 4;
-            std::cout << "Tile: " << curr_tile_x << std::endl;
-            down = true;
-        } else {
-            down = false;
-        }
-    }
-}
-
-/* ARGSUSED1 */
-void motion(int x, int y)
-{
-    if (down) {
-        // angulo = lastx - x;
-        // anguloy = lasty - y;
-        // lastx = x;
-        glutPostRedisplay();
-    }
+    gluPerspective(45.0f,(GLfloat)Width/(GLfloat)Height,0.2f,1000.0f);	// Calculate The Aspect Ratio Of The Window
+    glMatrixMode(GL_MODELVIEW);        
 }
 
 /*Función principal*/
@@ -210,22 +177,23 @@ int main(int argc, char **argv)
 {	
     glutInit(&argc, argv);       
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);  
-    glutInitWindowSize(1024, 768);
+    glutInitWindowSize(1100, 768);
     glutInitWindowPosition(0, 0);
     window = glutCreateWindow("Battleship");
     glutDisplayFunc(&Display);
     // glutFullScreen();   
     glutIdleFunc(&Display); 
     glutReshapeFunc(&Reshape);
-    InitGL(1024, 768);
+    InitGL(1100, 768);
     glutKeyboardFunc(&Keyboard);
     glutKeyboardUpFunc(&KeyboardUp);
     glutSpecialFunc(SpecialInput);
     glutSpecialUpFunc(SpecialInputUp);
-    glutMouseFunc(mouse);    
+    glutMouseFunc(mouseHandlerPickingScene); 
+    glutMotionFunc(shipMotion);   
     glutIdleFunc(idle);
     glLoadIdentity();
-    glClearColor(0.0, 0.0, 0.0, 0.0);           
+    glClearColor(0.0, 0.0, 0.0, 1);           
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
@@ -236,14 +204,25 @@ int main(int argc, char **argv)
     glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);  
 	glEnable(GL_LIGHTING);    
 	glEnable(GL_LIGHT0);
-    glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
     map = new Map();  
     tile = new Tile();
-    tile->setParams(0.6,0.6,0.6, 0,0,0, 0,0,0,0);
+    tile->setParams(0.6,0.6,0.6, 0,0,0, 90,0,0);    
+    // tile_2 = new Tile();
+    // tile_2->setParams(0.6,0.6,0.6, 0.42,0,0, 90,0,0);
+    // tile_3 = new Tile();
+    // tile_3->setParams(0.6,0.6,0.6, 0.42,0.42,0, 90,0,0);
+    // tile_4 = new Tile();
+    // tile_4->setParams(0.6,0.6,0.6, 0.42,0.84,0, 90,0,0);
+    // ship = new Ship();
+    // test = loadModel("Objects/tile.obj");
+
+    // std::map<std::string,float> firstShipParams = map->getShip(0).getParams();
+    // for (std::map<std::string,float>::iterator it=firstShipParams.begin(); it!=firstShipParams.end(); ++it)
+    // std::cout << it->first << " => " << it->second << '\n';      
     /*
         Objects/Bladesong/Bladesong.obj - 2
         Objects/Gunboat/Gunboat.obj - 3
@@ -270,14 +249,15 @@ void Reshape(int w, int h)
     _right = -_left;
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();    
-    gluPerspective(fovy, (double) w / (double) h, _zNear, _zFar);
+    // gluPerspective(fovy, (double) w / (double) h, _zNear, _zFar);
+    gluPerspective(45.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
 }
 
 void Keyboard(unsigned char key, int x, int y)
 {
 
-    switch (key) {   
+    switch (key) {
 	case 'w':
 		// xRot-=5;
         rotatingXUp = true;
@@ -312,7 +292,7 @@ void Keyboard(unsigned char key, int x, int y)
     default:{
 	    break;
 	}			/* flush all other input                                 */
-    }
+    }    
     glutPostRedisplay();	/* redisplay afterword */
 }
 
@@ -355,7 +335,7 @@ void SpecialInput(int key, int x, int y)
 		case GLUT_KEY_DOWN:
 			zoomingOut = true;
 		break;
-	}
+	}    
 	glutPostRedisplay();
 }
 
@@ -373,48 +353,135 @@ void SpecialInputUp(int key, int x, int y)
     }
     glutPostRedisplay();
 }
-float point[3] = {-0.21, 0, -0.21};
+
+void shipMotion(int x, int y)
+{
+    Ship * currentShipSelected = map->getCurrentShipSelected();
+    if( currentShipSelected!= nullptr && valid)
+    {        
+        float z = currentShipSelected->getParams()["centerZ"] + currentShipSelected->getParams()["transZ"];
+
+        float winX = (float)x;
+        float winY = viewport[1] + (float)viewport[3] - (float)y;
+
+        GLdouble near[3], far[3];  // already computed as above
+        // 0.1 is for giving a depth offset from the eye position
+        gluUnProject( winX, winY, 0, modelview, projection, viewport, &near[0], &near[1], &near[2]);
+        gluUnProject( winX, winY, 1, modelview, projection, viewport, &far[0], &far[1], &far[2]);   
+
+        if(near[2] == far[2])     // this means we have no solutions
+           return;
+
+        GLfloat t = (near[2] - z) / (near[2] - far[2]);
+
+        // so here are the desired (x, y) coordinates
+        GLfloat world_x = near[0] + (far[0] - near[0]) * t,
+                world_y = near[1] + (far[1] - near[1]) * t;
+        currentShipSelected->setTranslation(world_x, world_y, z);
+    }    
+}
+
+void mouseHandlerPickingScene(int button, int state, int x, int y)
+{
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+    {
+        valid = true;
+        //Code from http://nehe.gamedev.net/article/using_gluunproject/16013/    
+        GLfloat winX, winY, winZ;    
+        GLdouble near[3];
+        GLdouble far[3];
+        std::vector<float> res;    
+        
+        /*Obtenido de http://stackoverflow.com/questions/113352/opengl-projecting-mouse-click-onto-geometry*/
+
+        winX = (float)x;
+        winY = viewport[1] + (float)viewport[3] - (float)y;
+        
+        // 0.1 is for giving a depth offset from the eye position
+        gluUnProject( winX, winY, 0, modelview, projection, viewport, &near[0], &near[1], &near[2]);
+        gluUnProject( winX, winY, 1, modelview, projection, viewport, &far[0], &far[1], &far[2]);    
+
+        glm::vec3 vec_near(near[0], near[1], near[2]);
+        glm::vec3 vec_far(far[0], far[1], far[2]);
+
+        float dist;
+        Ship * hit = map->getShipHit(vec_near, vec_far, dist);
+        if(hit !=  nullptr)
+        {                                  
+            map->setCurrentShipSelected(hit);
+            std::cout << "I clicked: \"" << hit->getName() << "\"" << std::endl;            
+        }
+    }
+    if(button == GLUT_LEFT_BUTTON && state == GLUT_UP)
+    {
+        Ship * current_ship = map->getCurrentShipSelected();
+        if(current_ship != nullptr)
+        {                                
+            Tile * closestTile = map->getClosestTile(map->getCurrentShipSelected()->getTopAnchor());
+            if(closestTile != nullptr)
+            {
+                std::cout << "Closest tile is: " << closestTile->getName() << std::endl;
+                map->clipShipToTile(Map::Direction::TOP_BOTTOM, current_ship, closestTile);
+            }
+        }        
+        valid = false;
+        map->setCurrentShipSelected(nullptr);
+    }
+    glutPostRedisplay();
+}
 /* Función de display */
 void Display(void)
-{								
+{				 				    
 	glLoadIdentity();	
-	gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, -1, 0);	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
-    
+	gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0);	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	      
 	glPushMatrix();
 		if (wireframe)
 		    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//Activar wireframe
 		else
-		    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        // glTranslatef(-1,0,0);
+		    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);        
 		glRotatef(xRot,1,0,0);	
 		glRotatef(yRot,0,1,0);	
 		glRotatef(zRot,0,0,1);
-		// map->Draw();
-        tile->Draw();    
-       //  glPushAttrib(GL_LIGHTING_BIT);
-       //    glColor3f(1, 1, 0);
-       //    glPointSize(3.0);
-       //    glColor3f(1.0, 1.0, 0.0);
-       //    glBegin(GL_POINTS);
-       //       for (int i = 0; i < 1; i++) 
-       //          glVertex3fv(&point[0]);
-       //    glEnd();
-       // glPopAttrib(); 
+        updateMatrices();        
 
-       //  glPushAttrib(GL_LIGHTING_BIT);
-       //    glColor3f(1, 1, 0);
-       //    glPointSize(3.0);
-       //    glColor3f(1.0, 1.0, 0.0);
-       //    glBegin(GL_POINTS);
-       //       for (int i = 0; i < points.size(); i++) 
-       //          glVertex3fv(&points[i][0]);
-       //    glEnd();
-       // glPopAttrib();   
-          // map->getShip(0).Draw();
-          // map->getShip(0).DrawAxis(1.0f);
+        if(debug)
+        {
+            // glDisable(GL_LIGHTING);    
+            // glDisable(GL_LIGHT0);
+            // glDisable(GL_DEPTH_TEST);
+            // glDisable(GL_NORMALIZE);
+            // glDisable(GL_TEXTURE_2D);
+
+            // glLineWidth(2);
+            // glBegin(GL_LINES);
+            // glColor3f(0.0, 0.0, 1.0);                
+            // glVertex3f(nx,ny,nz);
+            // glVertex3f(fx,fy,fz);
+            // glEnd();     
+             
+            // glPointSize(5);
+            // glBegin(GL_POINTS);             
+            // glColor3f(0.0, 1.0, 0.0);
+            // glVertex3f(nx,ny,nz);
+            // glColor3f(1.0, 0.0, 0.0);
+            // glVertex3f(fx,fy,fz);
+            // glEnd();
+
+            // glLineWidth(1);
+
+            // glEnable(GL_LIGHTING);    
+            // glEnable(GL_LIGHT0);
+            // glEnable(GL_DEPTH_TEST);
+            // glEnable(GL_NORMALIZE);
+            // glEnable(GL_TEXTURE_2D); 
+        }        
+        // tile->Draw();            
+        // tile->DrawBoundingBox();             
+       map->Draw();               
           // ship->Draw();
           // ship->DrawAxis(1.0f);	         
     glPopMatrix(); 
+    glFlush();
     glutSwapBuffers();
 }

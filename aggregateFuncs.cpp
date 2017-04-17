@@ -2,26 +2,11 @@
 
 GLuint viewMode = 0;
 GLuint texture[1];
-
-// /* Función para dibujar un modelo con rotación, traslación y escala */
-// void DrawModel(GLMmodel* model, float centerX, float centerY, float centerZ, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ)
-// {    
-//     viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;		/* reset mode */
-//     glPushMatrix(); 
-//     glPushAttrib(GL_ALL_ATTRIB_BITS);   
-//     glTranslatef(x,y,z);  
-//     glRotatef(angle, rotX, rotY, rotZ);  
-//     glScalef(scaleX, scaleY, scaleZ);     
-//     glTranslatef(centerX, centerY, centerZ);
-//     if (model)
-// 		glmDraw(model, viewMode);
-//     glPopAttrib();	
-//     glPopMatrix();    
-// }
+bool debug = true;
 
 void DrawModel(GLMmodel* model)
 {    
-    viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;       /* reset mode */    
+    viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_TEXTURE | GLM_2_SIDED;       /* reset mode */    
     glPushAttrib(GL_ALL_ATTRIB_BITS);     
         if (model)
             glmDraw(model, viewMode);
@@ -59,3 +44,21 @@ void LoadGLTextures() {
     unsigned char* image =SOIL_load_image("water.jpg", &width, &height, 0, SOIL_LOAD_RGB);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 };
+
+void enableParams()
+{
+    glEnable(GL_LIGHTING);    
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_TEXTURE_2D);
+}
+
+void disableParams()
+{
+    glDisable(GL_LIGHTING);    
+    glDisable(GL_LIGHT0);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_NORMALIZE);
+    glDisable(GL_TEXTURE_2D);
+}

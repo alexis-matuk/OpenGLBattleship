@@ -38,30 +38,48 @@ class Map{
 	Object N11;
 	int X = 11;
 	int Y = 11;
-	std::vector<std::vector<Tile>> grid;
-	Ship ship_2;
-	Ship ship_3;
-	Ship ship_3_2;
-	Ship ship_4;
-	Ship ship_5;
-	std::vector<Ship> ships;	
+	float mapStartX = -3;
+	float mapStartY = 1.8;
+	std::vector<std::vector<Tile*>> grid;
+	Ship * ship_2;
+	Ship * ship_3;
+	Ship * ship_3_2;
+	Ship * ship_4;
+	Ship * ship_5;
+	std::vector<Ship*> ships;	
+	Ship * currentShipSelected = nullptr;	
+	float tileSideLength;
+	std::vector<std::string> letterArray = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
 public:
+	enum class Direction{
+		TOP_BOTTOM,
+		LEFT_RIGHT
+	};
 	Map();
 	~Map();
+	void initLetters();
+	void initNumbers();
+	void initTiles();
+	void initShips();
 	void drawNumbers();
 	void drawLetters();
-	void drawTiles();
-	void initTiles();
+	void drawTiles();	
 	void drawInitialShips();
-	void Draw();
-	void initShips();
+	void Draw();	
 	void drawShips();
-	Tile & getTile(int letter, int number);	
-	Ship & getShip(int pos);
+	void setCurrentShipSelected(Ship * _ship);
+	Tile * getClosestTile(glm::vec3 ship);
+	void clipShipToTile(Direction _dir, Ship * _ship, Tile * _tile);
+	Ship * getCurrentShipSelected();
+	Tile * getTile(int letter, int number);	
+	Ship * getShip(int pos);
+	Tile * getTileHit(glm::vec3 near, glm::vec3 far);	
+	Ship * getShipHit(glm::vec3 near, glm::vec3 far, float & distance);	
 	static void ApplyColor(
    	GLfloat ambr, GLfloat ambg, GLfloat ambb,
    	GLfloat difr, GLfloat difg, GLfloat difb,
    	GLfloat specr, GLfloat specg, GLfloat specb, GLfloat shine);
 };
 
+bool hitSortFunc (std::pair<Object, float> i,std::pair<Object, float> j);
 #endif

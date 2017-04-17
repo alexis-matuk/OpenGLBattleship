@@ -19,6 +19,9 @@ public:
 	Ship();
 	Ship(const char * filename);
 	Ship(const char * filename, float _centerX, float _centerY, float _centerZ);
+	void setTopAnchor(glm::vec3 _topAnchor);
+	void setLeftAnchor(glm::vec3 _leftAnchor);
+	void updateReferencePoints();	
 	~Ship();
 };
 

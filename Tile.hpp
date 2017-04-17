@@ -18,11 +18,10 @@ public:
 		MARKED
 	};
 	Tile();
-	Tile(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _angle, float _rotX, float _rotY, float _rotZ);
+	Tile(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ);
 	~Tile();
 	void Draw();
-	void setCurrentState(State _state);
-	void setLastState(State _state);
+	void updateState(State _newState);
 	void initPoints();
 	void drawWater();
 	void makeRipple();

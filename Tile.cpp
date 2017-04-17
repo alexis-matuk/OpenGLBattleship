@@ -6,19 +6,23 @@ Tile::Tile()
 	scaleX = 0.6;
 	scaleY = 0.6;
 	scaleZ = 0.6;
-	transX = -2;
+	transX = 0;
 	transY = 0;
-	transZ = -1.9;
-	angle = 0;
-	rotX = 0;
+	transZ = 0;	
+	rotX = 90;
 	rotY = 0;
-	rotZ = 0;
+	rotZ = 0;	
+	distance = 0;
+	type = "Tile";
 	initPoints();
+	initBoundingBox();
+	updateBoundingBoxToTransforms();
 }
 
-Tile::Tile(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _angle, float _rotX, float _rotY, float _rotZ):Object(_scaleX, _scaleY, _scaleZ, _x, _y, _z, _angle, _rotX, _rotY, _rotZ, "Objects/tile.obj")
+Tile::Tile(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ):Object(_scaleX, _scaleY, _scaleZ, _x, _y, _z, _rotX, _rotY, _rotZ, "Objects/tile.obj")
 {	
 	initPoints();
+	type = "Tile";
 }
 
 Tile::~Tile()
@@ -26,16 +30,27 @@ Tile::~Tile()
 
 }
 
+void Tile::updateState(State _newState)
+{
+	lastState = currentState;
+	currentState = _newState;
+}
+
 void Tile::Draw()
 {	
 	glPushMatrix();		
-			glTranslatef(transX,transY,transZ);  
-		    glRotatef(angle, rotX, rotY, rotZ);  
-		    glScalef(scaleX, scaleY, scaleZ);     
-		    glTranslatef(centerX, centerY, centerZ);
-			drawModel();			
-			// drawWater();
-		
+		glPushAttrib(GL_ALL_ATTRIB_BITS);  
+			glPushMatrix();		
+				glTranslatef(transX,transY,transZ);  
+			    glRotatef(rotX, 1, 0, 0);
+				glRotatef(rotY, 0, 1, 0);
+				glRotatef(rotZ, 0, 0, 1);
+			    glScalef(scaleX, scaleY, scaleZ);     
+			    glTranslatef(centerX, centerY, centerZ);
+				drawModel();	
+			glPopMatrix();				
+				drawWater();				
+		glPopAttrib();		
 	glPopMatrix();
 }
 
@@ -71,10 +86,9 @@ void Tile::makeRipple()
 
 void Tile::drawWater()
 {
-	glPushMatrix();	
-		glRotatef(270,1,0,0);
-	    glScalef(0.04,0.042,0.08);
-	    glTranslatef(transX*25,-1*transZ*24,1.5);
+	glPushMatrix();							
+	    glScalef(0.042,0.041,0.08);
+	    glTranslatef(transX*24,transY*24.5,1.5);	    
 	    glBindTexture(GL_TEXTURE_2D, texture[0]);   // choose the texture to use.
 	    glPolygonMode(GL_BACK, GL_FILL);
 	    glPolygonMode(GL_FRONT, GL_LINE);
