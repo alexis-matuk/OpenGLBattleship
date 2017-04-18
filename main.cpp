@@ -434,29 +434,7 @@ void mouseHandlerPickingScene(int button, int state, int x, int y)
             map->setCurrentShipSelected(hit);
             std::cout << "I clicked: \"" << hit->getName() << "\"" << std::endl;            
         }
-    }
-    // if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-    // {
-    //     if(hit != nullptr)
-    //     {
-    //         if(hit->isPlaced())
-    //         {
-    //             Map::Direction current_dir = hit->getDirection();
-    //             map->unclipShipFromGrid(hit);                            
-    //             if(current_dir == Map::Direction::TOP_BOTTOM)
-    //             {
-    //                 hit->addRotation(0, 90, 0);
-    //                 hit->setDirection(Map::Direction::LEFT_RIGHT);
-    //             }
-    //             else
-    //             {
-    //                 hit->addRotation(0, -90, 0);
-    //                 hit->setDirection(Map::Direction::TOP_BOTTOM);
-    //             }
-    //             map->clipAndUpdateShip(hit);
-    //         }
-    //     }
-    // }
+    } 
     if(button == GLUT_LEFT_BUTTON && state == GLUT_UP)
     {        
         Ship * current_ship = map->getCurrentShipSelected();
