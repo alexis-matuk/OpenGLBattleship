@@ -27,6 +27,7 @@ protected:
 	float distance;
 	GLMmodel * model;	
 	std::map<std::string, float> parameterMap;
+	std::map<std::string, float> initialParameterMap;
 	float min_x;
 	float max_x;
     float min_y; 
@@ -65,6 +66,8 @@ public:
 	virtual void updateReferencePoints();
 	std::vector<std::vector<float>> getBoundingBox();
 	std::map<std::string, float> getParams();
+	std::map<std::string, float> getInitialParams();
+	void setParamsByMap(std::map<std::string, float> _newParams);
 	void setName(std::string _name);
 	std::string getName();
 	bool TestRayOBBIntersection(
@@ -80,6 +83,7 @@ public:
 	float getDistance();
 	glm::vec3 getCentroid();
 	glm::vec3 getTopAnchor();
+	glm::vec3 getLeftAnchor();
 };
 
 #endif

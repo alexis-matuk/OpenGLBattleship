@@ -36,6 +36,17 @@ void Tile::updateState(State _newState)
 	currentState = _newState;
 }
 
+Tile::State Tile::getCurrentState()
+{
+	return currentState;
+}
+
+Tile::State Tile::getLastState()
+{
+	return lastState;
+}
+
+
 void Tile::Draw()
 {	
 	glPushMatrix();		
@@ -129,4 +140,16 @@ void Tile::drawWater()
 	    }    
 	    wiggle_count++; 	
     glPopMatrix(); 
+}
+
+void Tile::setGridPos(int _gridX, int _gridY)
+{
+	gridX = _gridX;
+	gridY = _gridY;
+}
+
+std::vector<int> Tile::getGridPos()
+{
+	std::vector<int> res = {gridX, gridY};
+	return res;
 }

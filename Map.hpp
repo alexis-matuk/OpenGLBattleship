@@ -8,10 +8,12 @@
 #elif __linux__
     #include <GL/glut.h>
 #endif
+
 #include "aggregateFuncs.hpp"
-#include "Ship.hpp"
 #include "Tile.hpp"
 #include "Object.hpp"
+
+class Ship;
 
 class Map{	
 	Object A;
@@ -68,9 +70,14 @@ public:
 	void Draw();	
 	void drawShips();
 	void setCurrentShipSelected(Ship * _ship);
-	Tile * getClosestTile(glm::vec3 ship);
+	Tile * getClosestTile(Ship * _ship, Direction _dir);
 	void clipShipToTile(Direction _dir, Ship * _ship, Tile * _tile);
+	void updateTileInGrid(Tile * _tile, int ship_life, Direction _dir, Tile::State _state);
+	void updateShipPositions(Tile * _tile, Ship * _ship, Direction _dir);
+	bool tilesUsed(Tile * _tile, Ship * _ship, Direction _dir);
+	void unclipShipFromGrid(Ship * _ship);
 	Ship * getCurrentShipSelected();
+	void clipAndUpdateShip(Ship * current_ship);
 	Tile * getTile(int letter, int number);	
 	Ship * getShip(int pos);
 	Tile * getTileHit(glm::vec3 near, glm::vec3 far);	
@@ -83,3 +90,5 @@ public:
 
 bool hitSortFunc (std::pair<Object, float> i,std::pair<Object, float> j);
 #endif
+
+#include "Ship.hpp"

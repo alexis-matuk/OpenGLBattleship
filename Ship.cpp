@@ -1,6 +1,6 @@
 #include "Ship.hpp"
 
-Ship::Ship():Object(), startPos(2,0), endPos(2,0)
+Ship::Ship():Object(), startPos(2,-1), endPos(2,-1)
 {
 	model = loadModel("Objects/Carrier/carrier.obj");
 	life = 0;
@@ -9,7 +9,7 @@ Ship::Ship():Object(), startPos(2,0), endPos(2,0)
 	updateBoundingBoxToTransforms();
 }
 
-Ship::Ship(const char * filename) : Object(filename), startPos(2,0), endPos(2,0)
+Ship::Ship(const char * filename) : Object(filename), startPos(2,-1), endPos(2,-1)
 {		
 	life = 0;	
 	type = "Ship";
@@ -51,6 +51,61 @@ void Ship::updateReferencePoints()
 	topAnchor.x = vec.x;
 	topAnchor.y = vec.y;
 	topAnchor.z = vec.z;
+}
+
+void Ship::setLife(int _life)
+{
+	life = _life;
+}
+
+int Ship::getLife()
+{
+	return life;
+}
+
+void Ship::hitShip()
+{
+	life--;
+}
+
+void Ship::setStartPos(std::vector<int> _startPos)
+{
+	startPos = _startPos;
+}
+
+void Ship::setEndPos(std::vector<int> _endPos)
+{
+	endPos = _endPos;
+}
+
+std::vector<int> Ship::getStartPos()
+{
+	return startPos;
+}
+
+std::vector<int> Ship::getEndPos()
+{
+	return endPos;
+}
+
+Map::Direction Ship::getDirection()
+{
+	return dir;
+}
+
+void Ship::setDirection(Map::Direction _dir)
+{
+	dir = _dir;
+}
+
+bool Ship::isPlaced()
+{
+	return placed;
+}
+
+void Ship::setPlaced(bool _placed)
+{
+	placed = _placed;
 }
 
 Ship::~Ship()

@@ -440,7 +440,23 @@ void Object::setParams(float _centerX, float _centerY, float _centerZ, float _sc
 }
 
 void Object::setParams(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ)
-{
+{	
+	if(initialParameterMap.size() <= 0)
+	{
+		initialParameterMap["scaleX"] = _scaleX;
+		initialParameterMap["scaleY"] = _scaleY;
+		initialParameterMap["scaleZ"] = _scaleZ;
+		initialParameterMap["transX"] = _x;
+		initialParameterMap["transY"] = _y;
+		initialParameterMap["transZ"] = _z;
+		initialParameterMap["rotX"] = _rotX;
+		initialParameterMap["rotY"] = _rotY;
+		initialParameterMap["rotZ"] = _rotZ;
+		initialParameterMap["centerX"] = centerX;
+		initialParameterMap["centerY"] = centerY;
+		initialParameterMap["centerZ"] = centerZ;
+	}	
+
 	scaleX = _scaleX;
 	scaleY = _scaleY;
 	scaleZ = _scaleZ;
@@ -516,6 +532,28 @@ std::map<std::string, float> Object::getParams()
 	return parameterMap;
 }
 
+std::map<std::string, float> Object::getInitialParams()
+{
+	return initialParameterMap;
+}
+
+void Object::setParamsByMap(std::map<std::string, float> _newParams)
+{
+	scaleX = _newParams["scaleX"];
+	scaleY = _newParams["scaleY"];
+	scaleZ = _newParams["scaleZ"];
+	transX = _newParams["transX"];
+	transY = _newParams["transY"];
+	transZ = _newParams["transZ"];
+	rotX = _newParams["rotX"];
+	rotY = _newParams["rotY"];
+	rotZ = _newParams["rotZ"];
+	centerX = _newParams["centerX"];
+	centerY = _newParams["centerY"];
+	centerZ = _newParams["centerZ"];	
+	updateBoundingBoxToTransforms();
+}
+
 glm::vec3 Object::getCentroid()
 {
 	return centroid;
@@ -524,6 +562,11 @@ glm::vec3 Object::getCentroid()
 glm::vec3 Object::getTopAnchor()
 {
 	return topAnchor;
+}
+
+glm::vec3 Object::getLeftAnchor()
+{
+	return leftAnchor;
 }
 
 void Object::DrawAxis(float scale)

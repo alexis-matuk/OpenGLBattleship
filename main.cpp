@@ -258,6 +258,23 @@ void Keyboard(unsigned char key, int x, int y)
 {
 
     switch (key) {
+    case ' ':{        
+        Ship * hit = map->getCurrentShipSelected();
+        if(hit != nullptr)
+        {
+            Map::Direction current_dir = hit->getDirection();                           
+            if(current_dir == Map::Direction::TOP_BOTTOM)
+            {
+                hit->addRotation(0, 90, 0);
+                hit->setDirection(Map::Direction::LEFT_RIGHT);
+            }
+            else
+            {
+                hit->addRotation(0, -90, 0);
+                hit->setDirection(Map::Direction::TOP_BOTTOM);
+            }                
+        }
+    break;}
 	case 'w':
 		// xRot-=5;
         rotatingXUp = true;
@@ -282,7 +299,7 @@ void Keyboard(unsigned char key, int x, int y)
         rotatingZRight = true;
 		// zRot+=5;
 	break; 
-    case ' ':{
+    case 'p':{
 	    wireframe = !wireframe;
 	    break;
 	}
@@ -383,50 +400,70 @@ void shipMotion(int x, int y)
 
 void mouseHandlerPickingScene(int button, int state, int x, int y)
 {
+    //Code from http://nehe.gamedev.net/article/using_gluunproject/16013/    
+    GLfloat winX, winY, winZ;    
+    GLdouble near[3];
+    GLdouble far[3];
+    std::vector<float> res;    
+    
+    /*Obtenido de http://stackoverflow.com/questions/113352/opengl-projecting-mouse-click-onto-geometry*/
+
+    winX = (float)x;
+    winY = viewport[1] + (float)viewport[3] - (float)y;
+    
+    // 0.1 is for giving a depth offset from the eye position
+    gluUnProject( winX, winY, 0, modelview, projection, viewport, &near[0], &near[1], &near[2]);
+    gluUnProject( winX, winY, 1, modelview, projection, viewport, &far[0], &far[1], &far[2]);    
+
+    glm::vec3 vec_near(near[0], near[1], near[2]);
+    glm::vec3 vec_far(far[0], far[1], far[2]);
+
+    float dist;
+    Ship * hit = map->getShipHit(vec_near, vec_far, dist);
+
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
     {
-        valid = true;
-        //Code from http://nehe.gamedev.net/article/using_gluunproject/16013/    
-        GLfloat winX, winY, winZ;    
-        GLdouble near[3];
-        GLdouble far[3];
-        std::vector<float> res;    
-        
-        /*Obtenido de http://stackoverflow.com/questions/113352/opengl-projecting-mouse-click-onto-geometry*/
-
-        winX = (float)x;
-        winY = viewport[1] + (float)viewport[3] - (float)y;
-        
-        // 0.1 is for giving a depth offset from the eye position
-        gluUnProject( winX, winY, 0, modelview, projection, viewport, &near[0], &near[1], &near[2]);
-        gluUnProject( winX, winY, 1, modelview, projection, viewport, &far[0], &far[1], &far[2]);    
-
-        glm::vec3 vec_near(near[0], near[1], near[2]);
-        glm::vec3 vec_far(far[0], far[1], far[2]);
-
-        float dist;
-        Ship * hit = map->getShipHit(vec_near, vec_far, dist);
+        valid = true;    
         if(hit !=  nullptr)
-        {                                  
+        {                               
+            if(hit->isPlaced())
+            {
+                std::cout << "Unclipping " << hit->getName() << std::endl;
+                map->unclipShipFromGrid(hit);
+            }   
             map->setCurrentShipSelected(hit);
             std::cout << "I clicked: \"" << hit->getName() << "\"" << std::endl;            
         }
     }
+    // if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+    // {
+    //     if(hit != nullptr)
+    //     {
+    //         if(hit->isPlaced())
+    //         {
+    //             Map::Direction current_dir = hit->getDirection();
+    //             map->unclipShipFromGrid(hit);                            
+    //             if(current_dir == Map::Direction::TOP_BOTTOM)
+    //             {
+    //                 hit->addRotation(0, 90, 0);
+    //                 hit->setDirection(Map::Direction::LEFT_RIGHT);
+    //             }
+    //             else
+    //             {
+    //                 hit->addRotation(0, -90, 0);
+    //                 hit->setDirection(Map::Direction::TOP_BOTTOM);
+    //             }
+    //             map->clipAndUpdateShip(hit);
+    //         }
+    //     }
+    // }
     if(button == GLUT_LEFT_BUTTON && state == GLUT_UP)
-    {
+    {        
         Ship * current_ship = map->getCurrentShipSelected();
-        if(current_ship != nullptr)
-        {                                
-            Tile * closestTile = map->getClosestTile(map->getCurrentShipSelected()->getTopAnchor());
-            if(closestTile != nullptr)
-            {
-                std::cout << "Closest tile is: " << closestTile->getName() << std::endl;
-                map->clipShipToTile(Map::Direction::TOP_BOTTOM, current_ship, closestTile);
-            }
-        }        
+        map->clipAndUpdateShip(current_ship);        
         valid = false;
         map->setCurrentShipSelected(nullptr);
-    }
+    }    
     glutPostRedisplay();
 }
 /* Función de display */

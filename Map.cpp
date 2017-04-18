@@ -8,6 +8,12 @@ Map::Map() : A("Objects/A.obj"),  B("Objects/B.obj"),  C("Objects/C.obj"),  D("O
 		ship_3_2 = new Ship("Objects/Prestes/Prestes.obj", 0,0.08,0); 
 		ship_4 = new Ship("Objects/Carrier/carrier.obj", 0,0.1,0);
 
+		ship_2->setLife(2);
+		ship_5->setLife(5);
+		ship_3->setLife(3);
+		ship_3_2->setLife(3);
+		ship_4->setLife(4);
+
 		std::vector<std::vector<float>> ship_2_box = ship_2->getBoundingBox();		
 		ship_2->setTopAnchor(glm::vec3((ship_2_box[2][0]+ship_2_box[3][0])/2, (ship_2_box[2][1]+ship_2_box[3][1])/2, (ship_2_box[2][2]+ship_2_box[3][2])/2));
 		ship_2->setLeftAnchor(glm::vec3((ship_2_box[2][0]+ship_2_box[7][0])/2, (ship_2_box[2][1]+ship_2_box[7][1])/2, (ship_2_box[2][2]+ship_2_box[7][2])/2));
@@ -156,7 +162,8 @@ void Map::initTiles()
 			grid[i][j]->setParams(0.6,0.6,0.6, mapStartX+(i*.42),mapStartY-(j*.42),0, 90,0,0);
 			std::ostringstream os;
 			os << "Tile (" << letterArray[j] << ", " << i+1 << ")"; 
-			grid[i][j]->setName(os.str());						
+			grid[i][j]->setName(os.str());
+			grid[i][j]->setGridPos(i, j);								
 		}
 	}	
 }
@@ -218,19 +225,28 @@ Ship * Map::getShipHit(glm::vec3 near, glm::vec3 far, float & distance)
 		return nullptr;
 }
 
-Tile * Map::getClosestTile(glm::vec3 ship)
+Tile * Map::getClosestTile(Ship * _ship, Direction _dir)
 {
-	Tile * closestTile = nullptr;
-	float closestDist = glm::distance(grid[0][0]->getTopAnchor(), ship);
+	Tile * closestTile = nullptr;	
+	glm::vec3 ship = _ship->getTopAnchor();
+	float closestDist;
+	if(_dir == Direction::TOP_BOTTOM)
+		closestDist = glm::distance(grid[0][0]->getTopAnchor(), ship);
+	else
+		closestDist = glm::distance(grid[0][0]->getLeftAnchor(), ship);	
 	for(int i = 0; i < X; i++)
 	{
 		for(int j = 0; j < Y; j++)
 		{
-			float dist = glm::distance(grid[i][j]->getTopAnchor(), ship);
+			float dist;
+			if(_dir == Direction::TOP_BOTTOM)
+				dist = glm::distance(grid[i][j]->getTopAnchor(), ship);
+			else
+				dist = glm::distance(grid[i][j]->getLeftAnchor(), ship);
 			if(dist <= tileSideLength)
-			{				
+			{								
 				//Tile and ship are within reasonable distance
-				if(dist < closestDist)
+				if(dist <= closestDist && grid[i][j]->getCurrentState() == Tile::State::FREE)
 				{					
 					closestTile = grid[i][j];
 					closestDist = dist;
@@ -241,16 +257,128 @@ Tile * Map::getClosestTile(glm::vec3 ship)
 	return closestTile;
 }
 
-void Map::clipShipToTile(Direction _dir, Ship * _ship, Tile * _tile)
+void Map::clipAndUpdateShip(Ship * current_ship)
 {
-	std::map<std::string, float> ship_params = _ship->getParams();
+	if(current_ship != nullptr)
+    {         
+    	Direction ship_dir = current_ship->getDirection();                       
+        Tile * closestTile = getClosestTile(current_ship, ship_dir);        
+        if(closestTile != nullptr && !tilesUsed(closestTile, current_ship, ship_dir))
+        {
+            std::cout << "Closest tile is: " << closestTile->getName() << std::endl;
+            clipShipToTile(ship_dir, current_ship, closestTile);
+        }
+        else
+        {
+        	std::map<std::string, float> initParams = current_ship->getInitialParams();
+        	current_ship->setParamsByMap(initParams);
+        	current_ship->setDirection(Direction::TOP_BOTTOM);
+        }
+    }        
+}
+
+void Map::updateTileInGrid(Tile * _tile, int ship_life, Direction _dir, Tile::State _state)
+{
+	std::vector<int> start_pos = _tile->getGridPos();
+	if(_dir == Direction::TOP_BOTTOM)
+	{				
+		std::vector<int> end_pos = {start_pos[0], (start_pos[1] + ship_life-1)};	
+		for(int i = 0; i < ship_life; i++)
+		{
+			grid[start_pos[0]][start_pos[1]+i]->updateState(_state);
+		}	
+	}	
+	else if(_dir == Direction::LEFT_RIGHT)
+	{		
+		std::vector<int> end_pos = {(start_pos[0] + ship_life-1), start_pos[1]};	
+		for(int i = 0; i < ship_life; i++)
+		{
+			grid[start_pos[0]+i][start_pos[1]]->updateState(_state);
+		}
+	}
+}
+
+void Map::updateShipPositions(Tile * _tile, Ship * _ship, Direction _dir)
+{
+	int ship_life = _ship->getLife();
 	if(_dir == Direction::TOP_BOTTOM)
 	{
-		glm::vec3 ship_pos = _ship->getTopAnchor();
-		glm::vec3 tile_pos =  _tile->getTopAnchor();
-		glm::vec3 offset (-ship_pos.x+tile_pos.x, -ship_pos.y+tile_pos.y, -ship_pos.z+tile_pos.z);
-		_ship->addTranslation(offset.x, offset.y, 0);
+		std::vector<int> start_pos = _tile->getGridPos();		
+		std::vector<int> end_pos = {start_pos[0], (start_pos[1] + ship_life-1)};		
+		_ship->setStartPos(start_pos);
+		_ship->setEndPos(end_pos);
+	}	
+	else if(_dir == Direction::LEFT_RIGHT)
+	{
+		std::vector<int> start_pos = _tile->getGridPos();		
+		std::vector<int> end_pos = {(start_pos[0] + ship_life-1), start_pos[1]};		
+		_ship->setStartPos(start_pos);
+		_ship->setEndPos(end_pos);
 	}
+	std::cout << _ship->getName() << " start position: (" << _ship->getStartPos()[0] << ", " << _ship->getStartPos()[1] << ")" << std::endl;
+	std::cout << _ship->getName() << " end position: (" << _ship->getEndPos()[0] << ", " << _ship->getEndPos()[1] << ")" << std::endl;
+}
+
+bool Map::tilesUsed(Tile * _tile, Ship * _ship, Direction _dir)
+{
+	int ship_life = _ship->getLife();
+	std::vector<int> start_pos = _tile->getGridPos();
+	if(_dir == Direction::TOP_BOTTOM)
+	{					
+		if(start_pos[1]+ship_life > Y)
+			return true;	
+		for(int i = 0; i < ship_life; i++)
+		{
+			if(grid[start_pos[0]][start_pos[1]+i]->getCurrentState() == Tile::State::USED)
+				return true;			
+		}	
+	}	
+	else if(_dir == Direction::LEFT_RIGHT)
+	{		
+		if(start_pos[0]+ship_life > X)
+			return true;			
+		for(int i = 0; i < ship_life; i++)
+		{
+			if(grid[start_pos[0]+i][start_pos[1]]->getCurrentState() == Tile::State::USED)
+				return true;
+		}
+	}
+	return false;
+}
+
+void Map::clipShipToTile(Direction _dir, Ship * _ship, Tile * _tile)
+{	
+	glm::vec3 ship_pos = _ship->getTopAnchor();
+	int life = _ship->getLife();
+	if(_dir == Direction::TOP_BOTTOM)
+	{		
+		glm::vec3 tile_pos =  _tile->getTopAnchor();
+		glm::vec3 offset (tile_pos.x-ship_pos.x, tile_pos.y-ship_pos.y, tile_pos.z-ship_pos.z);
+		_ship->addTranslation(offset.x, offset.y, 0);		
+		updateShipPositions(_tile, _ship, _dir);
+		updateTileInGrid(_tile, life, _dir, Tile::State::USED);
+	}
+	else if(_dir == Direction::LEFT_RIGHT)
+	{		
+		glm::vec3 tile_pos =  _tile->getLeftAnchor();
+		glm::vec3 offset (tile_pos.x-ship_pos.x, tile_pos.y-ship_pos.y, tile_pos.z-ship_pos.z);
+		_ship->addTranslation(offset.x, offset.y, 0);		
+		updateShipPositions(_tile, _ship, _dir);
+		updateTileInGrid(_tile, life, _dir, Tile::State::USED);
+	}
+	_ship->setPlaced(true);
+}
+
+void Map::unclipShipFromGrid(Ship * _ship)
+{	
+	std::vector<int> start_pos = _ship->getStartPos();	
+	Tile * start_tile = grid[start_pos[0]][start_pos[1]];	
+	int life = _ship->getLife();
+	updateTileInGrid(start_tile, life, _ship->getDirection(), Tile::State::FREE);	
+	std::vector<int> def = {-1, -1};		
+	_ship->setStartPos(def);
+	_ship->setEndPos(def);  
+	_ship->setPlaced(false);
 }
 
 
@@ -263,7 +391,6 @@ Ship * Map::getCurrentShipSelected()
 {
 	return currentShipSelected;
 }
-
 
 Tile * Map::getTile(int letter, int number)
 {

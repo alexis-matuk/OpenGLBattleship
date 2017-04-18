@@ -22,12 +22,18 @@ public:
 	~Tile();
 	void Draw();
 	void updateState(State _newState);
+	State getCurrentState();
+	State getLastState();
 	void initPoints();
 	void drawWater();
 	void makeRipple();
+	void setGridPos(int _gridX, int _gridY);
+	std::vector<int> getGridPos();
 private:
 	State currentState = State::FREE;
 	State lastState = State::FREE;	
+	int gridX;
+	int gridY;
 	int x;
 	int y;
     float float_x;
