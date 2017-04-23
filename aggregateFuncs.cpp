@@ -4,6 +4,65 @@ GLuint viewMode = 0;
 GLuint texture[1];
 bool debug = true;
 
+int frame = 0;
+int currenttime = 0;
+int timebase = 0;
+bool rotatingXUp = false;
+bool rotatingXDown = false;
+bool rotatingYLeft = false;
+bool rotatingYRight = false;
+bool rotatingZLeft = false; 
+bool rotatingZRight = false;
+bool zoomingIn = false;
+bool zoomingOut = false;
+float xSpeed = 0.1f * SPEED_MULT;
+float ySpeed = 0.05f * SPEED_MULT;
+float zSpeed = 0.1f * SPEED_MULT;
+float camSpeed = 0.005f * SPEED_MULT;
+double _left = 0.0;
+double _right = 0.0;
+double _bottom = 0.0;
+double _top = 0.0;
+double _zNear = 0.1;
+double _zFar = 20.0;
+double fovy = 45.0;
+double prev_z = 0;
+float xRot = 0;
+float yRot = 0;
+float zRot = 0;
+float camZ = 0;
+int wireframe = 0;
+Map * map = nullptr;
+GLfloat light_ambient[4] = { 0.0, 0.0, 0.0, 1.0 };
+GLfloat light_diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat light_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat light_position[4] = { 1.0, 1.0, 1.0, 0.0 };
+GLfloat mat_ambient[4] = { 1, 1, 1, 1.0 };
+GLfloat mat_diffuse[4] = { 1, 1, 1, 1.0 };
+GLfloat mat_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat high_shininess[1] = { 100.0 };
+bool down = false;
+int ww, wh;
+int window; 
+float lastx;
+float lasty;
+std::vector<std::vector<float>> points;
+GLint viewport[4];
+GLdouble modelview[16];
+GLdouble projection[16];
+float nx;
+float ny;
+float nz;
+float fx;
+float fy;
+float fz;
+bool valid = false;
+
+UIHandler* UI = nullptr;
+SceneManager * Scene = nullptr;
+
+char const* fontFile = FONT_FILE; // Just a string with the path to the font file    
+
 void DrawModel(GLMmodel* model)
 {    
     viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_TEXTURE | GLM_2_SIDED;       /* reset mode */    
@@ -61,4 +120,79 @@ void disableParams()
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_NORMALIZE);
     glDisable(GL_TEXTURE_2D);
+}
+
+void drawRaycast()
+{
+    glDisable(GL_LIGHTING);    
+    glDisable(GL_LIGHT0);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_NORMALIZE);
+    glDisable(GL_TEXTURE_2D);
+
+    glLineWidth(1);
+    glBegin(GL_LINES);
+    glColor3f(1.0, 0.5, 0.0);                
+    glVertex3f(nx,ny,nz);
+    glVertex3f(fx,fy,fz);
+    glEnd();     
+     
+    glPointSize(5);
+    glBegin(GL_POINTS);             
+    glColor3f(0.0, 1.0, 0.0);
+    glVertex3f(nx,ny,nz);
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex3f(fx,fy,fz);
+    glEnd();
+    glPointSize(1);
+    glLineWidth(1);
+
+    glEnable(GL_LIGHTING);    
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_TEXTURE_2D);
+}
+
+void enableUIParams()
+{    
+    glEnable(GL_TEXTURE_2D);   
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+}
+
+void disableUIParams()
+{
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
+}
+
+
+void setPanelViewPort()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, ww, 0, wh);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();    
+}
+
+void setButtonViewPort()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0,ww,wh,0,-1,1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+void setWorldViewPort()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();               // Reset The Projection Matrix
+    gluPerspective(45.0f,(GLfloat)ww/(GLfloat)wh,0.2f,1000.0f);  // Calculate The Aspect Ratio Of The Window
+    glMatrixMode(GL_MODELVIEW); 
 }

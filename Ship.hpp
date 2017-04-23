@@ -1,13 +1,7 @@
 #ifndef Ship_H
 #define Ship_H
 
-#ifdef __APPLE__
-    #include <GLUT/glut.h>
-#elif _WIN32
-    #include <GL\glut.h>
-#elif __linux__
-    #include <GL/glut.h>
-#endif
+#include "HeaderInclude.hpp"
 
 #include "Object.hpp"
 #include "Map.hpp"

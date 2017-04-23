@@ -1,15 +1,6 @@
 #ifndef Object_H
 #define Object_H
-
-#ifdef __APPLE__
-    #include <GLUT/glut.h>
-#elif _WIN32
-    #include <GL\glut.h>
-#elif __linux__
-    #include <GL/glut.h>
-#endif
-#include "aggregateFuncs.hpp"
-
+#include "HeaderInclude.hpp"
 class Object{	
 protected:
 	float scaleX;
@@ -87,3 +78,5 @@ public:
 };
 
 #endif
+
+#include "aggregateFuncs.hpp"

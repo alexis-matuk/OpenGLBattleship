@@ -1,13 +1,7 @@
 #ifndef Tile_H
 #define Tile_H
 
-#ifdef __APPLE__
-    #include <GLUT/glut.h>
-#elif _WIN32
-    #include <GL\glut.h>
-#elif __linux__
-    #include <GL/glut.h>
-#endif
+#include "HeaderInclude.hpp"
 #include "Object.hpp"
 class Tile : public Object{		
 public:	
@@ -43,5 +37,6 @@ private:
 	float points[45][45][3];   // the array for the points on the grid of our "wave"
 	int wiggle_count = 0;
 };
-#include "aggregateFuncs.hpp"
 #endif
+
+#include "aggregateFuncs.hpp"

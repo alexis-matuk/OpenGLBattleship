@@ -1,15 +1,8 @@
 #ifndef Map_H
 #define Map_H
 
-#ifdef __APPLE__
-    #include <GLUT/glut.h>
-#elif _WIN32
-    #include <GL\glut.h>
-#elif __linux__
-    #include <GL/glut.h>
-#endif
+#include "HeaderInclude.hpp"
 
-#include "aggregateFuncs.hpp"
 #include "Tile.hpp"
 #include "Object.hpp"
 
@@ -82,13 +75,15 @@ public:
 	Ship * getShip(int pos);
 	Tile * getTileHit(glm::vec3 near, glm::vec3 far);	
 	Ship * getShipHit(glm::vec3 near, glm::vec3 far, float & distance);	
+	bool everyShipPlaced();
 	static void ApplyColor(
    	GLfloat ambr, GLfloat ambg, GLfloat ambb,
    	GLfloat difr, GLfloat difg, GLfloat difb,
-   	GLfloat specr, GLfloat specg, GLfloat specb, GLfloat shine);
+   	GLfloat specr, GLfloat specg, GLfloat specb, GLfloat shine);   	
 };
 
 bool hitSortFunc (std::pair<Object, float> i,std::pair<Object, float> j);
 #endif
 
 #include "Ship.hpp"
+#include "aggregateFuncs.hpp"

@@ -456,6 +456,16 @@ void Map::drawTiles()
 	glPopMatrix();
 }
 
+bool Map::everyShipPlaced()
+{
+	for(int i = 0; i < ships.size(); i++)
+	{
+		if(!ships[i]->isPlaced())
+			return false;
+	}
+	return true;
+}
+
 //Función para aplicar un color en específico a las figuras rendereadas 
 void Map::ApplyColor(
    GLfloat ambr, GLfloat ambg, GLfloat ambb,
