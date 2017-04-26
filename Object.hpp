@@ -33,7 +33,7 @@ protected:
    	std::string name = "";
    	std::string type = "Object";
 public:	
-	virtual void Draw();
+	virtual void Draw(GLuint _mode);	
 	Object();
 	~Object();
 	Object(const char * filename);
@@ -49,11 +49,11 @@ public:
 	void addRotation(float x, float y, float z);
 	void addScale(float x, float y, float z);
 	GLMmodel * getModel();
-	void drawModel();
+	void drawModel(GLuint _mode);	
 	void initBoundingBox();	
 	void DrawBoundingBox();
 	void updateBoundingBoxToTransforms();
-	void updateVertexArray();	
+	virtual void updateVertexArray();	
 	virtual void updateReferencePoints();
 	std::vector<std::vector<float>> getBoundingBox();
 	std::map<std::string, float> getParams();

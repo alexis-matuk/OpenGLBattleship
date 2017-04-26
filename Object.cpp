@@ -1,6 +1,6 @@
 #include "Object.hpp"
 
-void Object::Draw()
+void Object::Draw(GLuint _mode)
 {
 	glPushMatrix();
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -10,7 +10,7 @@ void Object::Draw()
 			glRotatef(rotZ, 0, 0, 1);		    
 		    glScalef(scaleX, scaleY, scaleZ);     
 		    glTranslatef(centerX, centerY, centerZ);
-			drawModel();		
+			drawModel(_mode);		
 		glPopAttrib();
 	glPopMatrix();
 }
@@ -376,7 +376,7 @@ Object::Object()
 
 Object::~Object()
 {
-
+	
 }
 
 Object::Object(const char * filename):Object()
@@ -402,12 +402,11 @@ Object::Object(float _centerX, float _centerY, float _centerZ, float _scaleX, fl
 	updateBoundingBoxToTransforms();
 }
 
-void Object::drawModel()
-{	
-	viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_TEXTURE | GLM_2_SIDED;
+void Object::drawModel(GLuint _mode)
+{		
     glPushAttrib(GL_ALL_ATTRIB_BITS);     
         if (model)
-            glmDraw(model, viewMode);
+            glmDraw(model, _mode);
     glPopAttrib();     	
 }
 
@@ -567,6 +566,11 @@ glm::vec3 Object::getTopAnchor()
 glm::vec3 Object::getLeftAnchor()
 {
 	return leftAnchor;
+}
+
+GLMmodel * Object::getModel()
+{
+	return model;
 }
 
 void Object::DrawAxis(float scale)

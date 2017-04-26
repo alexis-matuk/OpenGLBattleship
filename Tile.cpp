@@ -2,7 +2,7 @@
 
 Tile::Tile()
 {	
-	model = loadModel("Objects/tile.obj");
+	model = shipModel;
 	scaleX = 0.6;
 	scaleY = 0.6;
 	scaleZ = 0.6;
@@ -14,9 +14,19 @@ Tile::Tile()
 	rotZ = 0;	
 	distance = 0;
 	type = "Tile";
+	white_pin = whitePinModel;	
+	red_pin = redPinModel;
 	initPoints();
 	initBoundingBox();
 	updateBoundingBoxToTransforms();
+	glm::vec3 v0(vertexArray[0][0], vertexArray[0][1], vertexArray[0][2]);
+	glm::vec3 v1(vertexArray[1][0], vertexArray[1][1], vertexArray[1][2]);
+	tileSideLength = glm::distance(v1,v0);	
+}
+
+float Tile::getTileSideLength()
+{
+	return tileSideLength;	
 }
 
 Tile::Tile(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ):Object(_scaleX, _scaleY, _scaleZ, _x, _y, _z, _rotX, _rotY, _rotZ, "Objects/tile.obj")
@@ -46,8 +56,40 @@ Tile::State Tile::getLastState()
 	return lastState;
 }
 
+bool Tile::getValidTile()
+{
+	if(currentState == State::FREE || currentState == State::USED)
+		return true;
+	return false;
+}
 
-void Tile::Draw()
+bool Tile::hit()
+{
+	switch(currentState)
+	{
+		case State::FREE:{			
+			updateState(State::MARKED);
+			makeRipple();
+			return true;
+		break;}
+		case State::USED:{			
+			updateState(State::HIT);
+			return true;
+		break;}
+		case State::HIT:{
+			return false;
+		break;}
+		case State::MARKED:{
+			return false;
+		break;}
+		default:
+			return false;
+		break;
+	}
+	return false;
+}
+
+void Tile::Draw(GLuint _mode)
 {	
 	glPushMatrix();		
 		glPushAttrib(GL_ALL_ATTRIB_BITS);  
@@ -58,7 +100,13 @@ void Tile::Draw()
 				glRotatef(rotZ, 0, 0, 1);
 			    glScalef(scaleX, scaleY, scaleZ);     
 			    glTranslatef(centerX, centerY, centerZ);
-				drawModel();	
+				drawModel(_mode);					
+					glScalef(0.7, 0.6, 0.7);	
+					glTranslatef(0,0.5,0);
+				if(currentState == State::MARKED)
+					DrawModel(white_pin, noTextureMode);
+				if(currentState == State::HIT)
+					DrawModel(red_pin, noTextureMode);				
 			glPopMatrix();				
 				drawWater();				
 		glPopAttrib();		

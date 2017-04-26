@@ -57,6 +57,49 @@ void Keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();	/* redisplay afterword */
 }
 
+void inGameKeyboard(unsigned char key, int x, int y)
+{
+
+    switch (key) {   
+    case 'w':
+        // xRot-=5;
+        rotatingXUp = true;
+    break;
+    case 's':
+        // xRot+=5;
+        rotatingXDown = true;
+    break; 
+    case 'a':
+        rotatingYLeft = true;
+        // yRot+=5;
+    break;
+    case 'd':
+        rotatingYRight = true;
+        // yRot-=5;
+    break; 
+    case 'e':
+        rotatingZLeft = true;
+        // zRot-=5;
+    break; 
+    case 'q':
+        rotatingZRight = true;
+        // zRot+=5;
+    break; 
+    case 'p':{
+        wireframe = !wireframe;
+        break;
+    }
+    case 27:
+    exit(0);
+    break;
+    default:{
+        break;
+    }           /* flush all other input                                 */
+    }    
+    glutPostRedisplay();    /* redisplay afterword */
+}
+
+
 void KeyboardUp(unsigned char key, int x, int y)
 {
     switch (key) {   

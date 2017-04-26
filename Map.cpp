@@ -1,6 +1,6 @@
 #include "Map.hpp"
 
-Map::Map() : A("Objects/A.obj"),  B("Objects/B.obj"),  C("Objects/C.obj"),  D("Objects/D.obj"),  E("Objects/E.obj"),  F("Objects/F.obj"),  G("Objects/G.obj"),  H("Objects/H.obj"),  I("Objects/I.obj"),  J("Objects/J.obj"),  K("Objects/K.obj"),  N1("Objects/1.obj"),  N2("Objects/2.obj"),  N3("Objects/3.obj"),  N4("Objects/4.obj"),  N5("Objects/5.obj"),  N6("Objects/6.obj"),  N7("Objects/7.obj"),  N8("Objects/8.obj"),  N9("Objects/9.obj"),  N10("Objects/10.obj"),  N11("Objects/11.obj")
+Map::Map(bool _empty) : A("Objects/A.obj"),  B("Objects/B.obj"),  C("Objects/C.obj"),  D("Objects/D.obj"),  E("Objects/E.obj"),  F("Objects/F.obj"),  G("Objects/G.obj"),  H("Objects/H.obj"),  I("Objects/I.obj"),  J("Objects/J.obj"),  K("Objects/K.obj"),  N1("Objects/1.obj"),  N2("Objects/2.obj"),  N3("Objects/3.obj"),  N4("Objects/4.obj"),  N5("Objects/5.obj"),  N6("Objects/6.obj"),  N7("Objects/7.obj"),  N8("Objects/8.obj"),  N9("Objects/9.obj"),  N10("Objects/10.obj"),  N11("Objects/11.obj")
 {	
 		ship_2 = new Ship("Objects/Bladesong/Bladesong.obj", 0,0.4,0); 
 		ship_5 = new Ship("Objects/Submarino/i400.obj", 0, 0.2, 0); 
@@ -43,17 +43,31 @@ Map::Map() : A("Objects/A.obj"),  B("Objects/B.obj"),  C("Objects/C.obj"),  D("O
 			}
 			grid.push_back(row);
 		}
+		
+		if(!_empty)
+			initShips();
+		else
+		{
+			mapStartX = -2;
+			ship_2->setParams(0.37,0.37,0.37, 0,0,0.24, 90,0,0);
+			ship_3->setParams(0.57,0.57,0.57, 0,0,0.3, 90,0,0);
+			ship_3_2->setParams(0.57,0.57,0.57, 0,0,0.23, 90,90,0);	
+			ship_4->setParams(0.65,0.8,0.8, 0,0,0.2, 90,180,0);
+			ship_5->setParams(1,0.57,1.2, 0,0,0.15 ,90,90,0);	
+
+			ship_2->setName("2 - Bladesong");
+			ship_3->setName("3 - Gunboat");
+			ship_3_2->setName("3 - Prestes");
+			ship_4->setName("4 - Carrier");
+			ship_5->setName("5 - Submarine");
+		}
 
 		initTiles();
 		initLetters();
 		initNumbers();
-		initShips();
 
-		std::vector<std::vector<float>> tile_box = grid[0][0]->getBoundingBox();
-		glm::vec3 v0(tile_box[0][0], tile_box[0][1], tile_box[0][2]);
-		glm::vec3 v1(tile_box[1][0], tile_box[1][1], tile_box[1][2]);
-		tileSideLength = glm::distance(v1,v0);
-		std::cout << "tileSideLength: " << tileSideLength << std::endl;				
+		tileSideLength = grid[0][0]->getTileSideLength();	
+		std::cout << "tileSideLength: " << tileSideLength << std::endl;			
 }
 
 Map::~Map()
@@ -145,7 +159,7 @@ void Map::drawShips()
 {	
 	for(int i = 0;i < ships.size(); i++)
 	{
-		ships[i]->Draw();
+		ships[i]->Draw(textureMode);
 		if(debug)
 		{
 			ships[i]->DrawBoundingBox();
@@ -199,10 +213,9 @@ Tile * Map::getTileHit(glm::vec3 near, glm::vec3 far)
 		return hitObjects[0].first;
 	else
 		return nullptr;
-	return nullptr;
 }
 
-Ship * Map::getShipHit(glm::vec3 near, glm::vec3 far, float & distance)
+Ship * Map::getShipHit(glm::vec3 near, glm::vec3 far)
 {
 	std::vector<std::pair<Ship*, float>> hitObjects;
 	for(int i = 0; i < ships.size(); i++)
@@ -216,9 +229,7 @@ Ship * Map::getShipHit(glm::vec3 near, glm::vec3 far, float & distance)
 	}
 	std::sort(hitObjects.begin(), hitObjects.end(), shipSort);
 	if(hitObjects.size() > 0)
-	{
-		std::cout <<  "Distance: " << hitObjects[0].second << std::endl;
-		distance = hitObjects[0].second;
+	{		
 		return hitObjects[0].first;
 	}
 	else
@@ -409,17 +420,17 @@ void Map::drawNumbers()
 {
 	glPushMatrix();
 		glTranslatef(mapStartX, mapStartY+0.45, 0);
-		N1.Draw();
-		N2.Draw();
-		N3.Draw();
-		N4.Draw();
-		N5.Draw();
-		N6.Draw();
-		N7.Draw();
-		N8.Draw();
-		N9.Draw();
-		N10.Draw();
-		N11.Draw();
+		N1.Draw(textureMode);
+		N2.Draw(textureMode);
+		N3.Draw(textureMode);
+		N4.Draw(textureMode);
+		N5.Draw(textureMode);
+		N6.Draw(textureMode);
+		N7.Draw(textureMode);
+		N8.Draw(textureMode);
+		N9.Draw(textureMode);
+		N10.Draw(textureMode);
+		N11.Draw(textureMode);
 	glPopMatrix();
 }
 
@@ -427,17 +438,17 @@ void Map::drawLetters()
 {
 	glPushMatrix();
 		glTranslatef(mapStartX-0.5, -mapStartY-0.63, 0);
-		A.Draw();
-		B.Draw();
-		C.Draw();
-		D.Draw();
-		E.Draw();
-		F.Draw();
-		G.Draw();
-		H.Draw();
-		I.Draw();
-		J.Draw();
-		K.Draw();
+		A.Draw(textureMode);
+		B.Draw(textureMode);
+		C.Draw(textureMode);
+		D.Draw(textureMode);
+		E.Draw(textureMode);
+		F.Draw(textureMode);
+		G.Draw(textureMode);
+		H.Draw(textureMode);
+		I.Draw(textureMode);
+		J.Draw(textureMode);
+		K.Draw(textureMode);
 	glPopMatrix();
 }
 
@@ -448,7 +459,7 @@ void Map::drawTiles()
 		{
 			for(int j = 0; j < Y; j++)
 			{ 
-				grid[i][j]->Draw();	
+				grid[i][j]->Draw(textureMode);	
 				if(debug)							
 					grid[i][j]->DrawBoundingBox();					
 			}

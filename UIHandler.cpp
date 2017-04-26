@@ -45,7 +45,7 @@ void UIHandler::drawButtonByName(std::string _name)
 {
 	Button * b = findButtonByName(_name);
 	if(b != nullptr)
-	{		
+	{				
 		b->Draw();
 	}
 	else
@@ -190,6 +190,14 @@ void UIHandler::activatePopup(std::string _name)
 	if(p != nullptr)
 	{
 		p->setShowing(true);
+	}
+}
+
+void UIHandler::deactivateButtons()
+{
+	for(int i = 0; i < buttons.size(); i++)
+	{
+		buttons[i]->setActive(false);
 	}
 }
 

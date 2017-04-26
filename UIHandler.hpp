@@ -32,6 +32,7 @@ public:
 	void createPopup(int _xTopLeft, int _yTopLeft, int _width, std::string _name, std::string _content, int _fontSize, int _r, int _g, int _b, const FTGL::TextAlignment _alginment);
 	void drawActivePopups();
 	void activatePopup(std::string _name);
+	void deactivateButtons();
 };
 
 #endif

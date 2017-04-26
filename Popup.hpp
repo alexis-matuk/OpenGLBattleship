@@ -20,6 +20,7 @@ public:
 	void activateButton();
 	bool getShowing();
 	void setShowing(bool _showing);
+	void center(int _ww, int _wh, int _posRelativeToWh);
 	~Popup();
 	void accept();
 };

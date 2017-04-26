@@ -45,12 +45,13 @@ class Map{
 	Ship * currentShipSelected = nullptr;	
 	float tileSideLength;
 	std::vector<std::string> letterArray = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
+	int aliveShips = 5;
 public:
 	enum class Direction{
 		TOP_BOTTOM,
 		LEFT_RIGHT
 	};
-	Map();
+	Map(bool _empty);
 	~Map();
 	void initLetters();
 	void initNumbers();
@@ -74,7 +75,7 @@ public:
 	Tile * getTile(int letter, int number);	
 	Ship * getShip(int pos);
 	Tile * getTileHit(glm::vec3 near, glm::vec3 far);	
-	Ship * getShipHit(glm::vec3 near, glm::vec3 far, float & distance);	
+	Ship * getShipHit(glm::vec3 near, glm::vec3 far);	
 	bool everyShipPlaced();
 	static void ApplyColor(
    	GLfloat ambr, GLfloat ambg, GLfloat ambb,

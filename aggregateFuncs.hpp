@@ -5,6 +5,7 @@ class Object;
 class Tile;
 class UIHandler;
 class SceneManager;
+class Missile;
 
 extern int frame;
 extern int currenttime;
@@ -34,8 +35,15 @@ extern float xRot;
 extern float yRot;
 extern float zRot;
 extern float camZ;
+
+extern float xRot_opponent;
+extern float yRot_opponent;
+extern float zRot_opponent;
+extern float camZ_opponent;
+
 extern int wireframe;
 extern Map * map;
+extern Map * opponentMap;
 extern GLfloat light_ambient[4];
 extern GLfloat light_diffuse[4];
 extern GLfloat light_specular[4];
@@ -67,9 +75,30 @@ extern GLuint viewMode;//Modo de visualización
 extern GLuint texture[1];
 extern bool debug;
 
-extern char const* fontFile; // Just a string with the path to the font file    
+extern char const* fontFile; // Just a string with the path to the font file 
+extern Ship * menuShip;   
 
-void DrawModel(GLMmodel* model);
+extern float menuShipRot;
+
+extern int animationCounter;
+extern int sceneStartTime;
+
+extern Object * object;
+
+extern GLuint textureMode;
+extern GLuint noTextureMode;
+
+extern GLMmodel * shipModel;
+
+extern GLMmodel * whitePinModel;
+extern GLMmodel * redPinModel;
+
+extern GLMmodel * missileModel;
+extern Missile * missile;
+
+extern bool shooting;
+
+void DrawModel(GLMmodel* model, GLuint _mode);
 void DrawModel(GLMmodel* model, float centerX, float centerY, float centerZ, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ);
 GLMmodel* loadModel(const char* filename);
 void LoadGLTextures();
@@ -81,3 +110,41 @@ void enableUIParams();
 void setPanelViewPort();
 void setButtonViewPort();
 void setWorldViewPort();
+
+/*
+========= FUNCTION DECLARATION FOR THE PROGRAM =========
+*/
+void Reshape(int w, int h);
+void Keyboard(unsigned char key, int x, int y);
+void KeyboardUp(unsigned char key, int x, int y);
+void Display();
+void SpecialInput(int key, int x, int y);
+void SpecialInputUp(int key, int x, int y);
+void LoadGLTextures();
+void mouseHandlerPickingScene(int button, int state, int x, int y);
+void updateMatrices();
+void shipMotion(int x, int y);
+void MousePassiveMotion(int x, int y);
+void MouseMotion(int x, int y);
+void MouseButton(int button,int state,int x, int y);
+void Resize(int w, int h);
+void Draw();
+void MenuDisplay();
+void menuScene();
+void inGameScene();
+void toIngameFunc();
+void toGameFunc();
+void toCreditsFunc();
+void toFindGameFunc();
+void toMenuFunc();
+void pikcingScene();
+void creditsScene();
+void findingGameScene();
+void mouseMotionMenu(int x, int y);
+void mouseButtonMenu(int button, int state, int x, int y);
+void KeyboardMenu(unsigned char key, int x, int y);
+void modifyCameraInGame();
+void modifyCamera();
+void idle();
+void menuIdle();
+void inGameIdle();

@@ -18,8 +18,7 @@ void mouseHandlerPickingScene(int button, int state, int x, int y)
     glm::vec3 vec_near(near[0], near[1], near[2]);
     glm::vec3 vec_far(far[0], far[1], far[2]);
 
-    float dist;
-    Ship * hit = map->getShipHit(vec_near, vec_far, dist);
+    Ship * hit = map->getShipHit(vec_near, vec_far);
 
     if(debug)
     {
@@ -105,4 +104,63 @@ void mouseButtonMenu(int button, int state, int x, int y)
     {        
         UI->buttonRelease(x, y);
     } 
+}
+
+void mouseInGame(int button, int state, int x, int y)
+{
+    //Code from http://nehe.gamedev.net/article/using_gluunproject/16013/    
+    GLfloat winX, winY, winZ;    
+    GLdouble near[3];
+    GLdouble far[3];
+    std::vector<float> res;    
+    
+    /*Obtenido de http://stackoverflow.com/questions/113352/opengl-projecting-mouse-click-onto-geometry*/
+
+    winX = (float)x;
+    winY = viewport[1] + (float)viewport[3] - (float)y;
+    
+    // 0.1 is for giving a depth offset from the eye position
+    gluUnProject( winX, winY, 0, modelview, projection, viewport, &near[0], &near[1], &near[2]);
+    gluUnProject( winX, winY, 1, modelview, projection, viewport, &far[0], &far[1], &far[2]);    
+
+    glm::vec3 vec_near(near[0], near[1], near[2]);
+    glm::vec3 vec_far(far[0], far[1], far[2]);
+
+    // Tile * clickedTile = opponentMap->getTileHit(vec_near, vec_far);
+    Tile * clickedTile = map->getTileHit(vec_near, vec_far);
+
+
+    if(debug)
+    {
+        nx = near[0];
+        ny = near[1];
+        nz = near[2];
+        fx = far[0];
+        fy = far[1];
+        fz = far[2];
+    }   
+
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && !shooting)
+    {        
+        valid = true;    
+        if(clickedTile !=  nullptr)
+        {      
+            std::cout << "I clicked on tile: " << clickedTile->getName() << std::endl;
+            if(clickedTile->getValidTile())
+            {
+                if(missile == nullptr)
+                {
+                    missile = new Missile(clickedTile);
+                    shooting = true;
+                } 
+            }                               
+        }
+        UI->buttonPress(x, y);
+    } 
+    if(button == GLUT_LEFT_BUTTON && state == GLUT_UP && !shooting)
+    {              
+        valid = false;        
+        UI->buttonRelease(x, y);
+    }    
+    glutPostRedisplay();
 }

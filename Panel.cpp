@@ -44,7 +44,7 @@ void Panel::setAlignment(const FTGL::TextAlignment _alignment)
 	layout->SetAlignment(_alignment);
 }
 
-void Panel::addPositionFromCenter(int x, int y)
+void Panel::setPosition(int x, int y)
 {
 	xTopLeft = x;
 	yTopLeft = y;
@@ -125,6 +125,20 @@ void Panel::Draw(bool withBackground)
 			layout->Render((const char*)content.c_str(), -1, FTPoint(), FTGL::RENDER_FRONT | FTGL::RENDER_BACK);
 		glPopMatrix();
 	glPopAttrib();
+}
+
+void Panel::center(int _ww, int _wh, int _posRelativeToWh)
+{
+	setww(_ww);
+    setwh(_wh);
+    FTBBox bbox = layout->BBox(content.c_str());    
+    float off = (bbox.Upper().X() - bbox.Lower().X())/2;   
+    setPosition((float)ww/2 - off, _posRelativeToWh);
+}
+
+void Panel::setWidth(int _width)
+{
+	width = _width;
 }
 
 Panel::~Panel()

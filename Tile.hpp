@@ -14,16 +14,22 @@ public:
 	Tile();
 	Tile(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ);
 	~Tile();
-	void Draw();
+	void Draw(GLuint _mode);
 	void updateState(State _newState);
 	State getCurrentState();
 	State getLastState();
+	bool hit();
 	void initPoints();
 	void drawWater();
-	void makeRipple();
+	void makeRipple();	
 	void setGridPos(int _gridX, int _gridY);
-	std::vector<int> getGridPos();
+	std::vector<int> getGridPos();		
+	float getTileSideLength();
+	bool getValidTile();
 private:
+	GLMmodel * white_pin = nullptr;
+	GLMmodel * red_pin = nullptr;	
+	float tileSideLength;
 	State currentState = State::FREE;
 	State lastState = State::FREE;	
 	int gridX;

@@ -31,6 +31,8 @@ protected:
 	int extraTop = 0;
 	int extraLeft = 0;
 	int extraRight = 0;
+
+	float min_x, min_y, min_z, max_x, max_y, max_z;
 public:	
 	Panel(int _xTopLeft, int _yTopLeft, int _width, std::string _name, std::string _content, int _fontSize, int r, int g, int b, const FTGL::TextAlignment _alignment);
 	void setColor(int _r, int _g, int _b);
@@ -38,7 +40,7 @@ public:
 	void setFontSize(int _size);
 	void Draw(bool withBackground);
 	void setAlignment(const FTGL::TextAlignment _alignment);
-	void addPositionFromCenter(int x, int y);
+	void setPosition(int x, int y);
 	std::string getName();
 	std::string getContent();
 	FTSimpleLayout * getLayout();
@@ -47,6 +49,8 @@ public:
 	void setwh(int _wh);
 	void setPanelColor(int _r, int _g, int _b, float _a);
 	void setExtras(int _extraTop, int _extraBottom, int _extraLeft, int _extraRight);
+	virtual void center(int _ww, int _wh, int _posRelativeToWh);
+	void setWidth(int _width);
 	~Panel();
 };
 #endif

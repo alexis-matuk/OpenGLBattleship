@@ -1,8 +1,7 @@
 #include "Popup.hpp"
 
 void Popup::accept()
-{ 
-	std::cout << "I am being called and i am popup" << std::endl;
+{ 	
 	showing = false;
 	button->setActive(false);
 }
@@ -25,8 +24,7 @@ void Popup::Draw(bool background)
 	if(showing)
 	{
 		Panel::Draw(background);
-		setButtonViewPort();	
-		button->setPosition(xTopLeft + (min_x+max_x)/2 - buttonWidth/2, - yTopLeft + (int)(wh) + max_y + (extraBottom*4)/5);
+		setButtonViewPort();			
 		button->Draw();
 	}	
 }
@@ -49,6 +47,16 @@ bool Popup::getShowing()
 void Popup::setShowing(bool _showing)
 {
 	showing = _showing;
+}
+
+void Popup::center(int _ww, int _wh, int _posRelativeToWh)
+{
+	setww(_ww);
+    setwh(_wh);
+    FTBBox bbox = layout->BBox(content.c_str());    
+    float off = (bbox.Upper().X() - bbox.Lower().X())/2;   
+    setPosition((float)ww/2 - off, _posRelativeToWh);
+    button->setPosition(xTopLeft + (min_x+max_x)/2 - buttonWidth/2,(int)_wh - _posRelativeToWh + (max_y-min_y) );
 }
 
 Popup::~Popup()

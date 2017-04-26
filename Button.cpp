@@ -1,3 +1,4 @@
+
 #include "Button.hpp"
 
 Button::Button()
@@ -40,8 +41,6 @@ bool Button::ButtonClickTest(int x,int y)
     	{    		
 			return true;
     	}
-		else
-			std::cout << "Button not active" << std::endl;
 	}	
 	return false;
 }
@@ -58,8 +57,7 @@ void Button::ButtonRelease(int x,int y)
 {
 		if( ButtonClickTest(x,y))
 		{
-			if (callbackFunction) {
-				std::cout << "Calling callback function" << std::endl;
+			if (callbackFunction) {				
 				callbackFunction();
 			}
 		}

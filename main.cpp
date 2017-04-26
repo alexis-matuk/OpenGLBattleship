@@ -4,89 +4,13 @@
 #include "KeyboardHandler.hpp"
 #include "UIHandler.hpp"
 #include "SceneManager.hpp"
-
-/* Funciones de GLUT */
-void Reshape(int w, int h);
-void Keyboard(unsigned char key, int x, int y);
-void KeyboardUp(unsigned char key, int x, int y);
-void Display();
-void SpecialInput(int key, int x, int y);
-void SpecialInputUp(int key, int x, int y);
-void LoadGLTextures();
-void mouseHandlerPickingScene(int button, int state, int x, int y);
-void updateMatrices();
-void shipMotion(int x, int y);
-void MousePassiveMotion(int x, int y);
-void MouseMotion(int x, int y);
-void MouseButton(int button,int state,int x, int y);
-void Resize(int w, int h);
-void Draw();
-void MenuDisplay();
-void menuScene();
-void toMenuFunc();
-void toGameFunc();
-void pikcingScene();
-
-void mouseMotionMenu(int x, int y);
-void mouseButtonMenu(int button, int state, int x, int y);
-void KeyboardMenu(unsigned char key, int x, int y);
+#include "Missile.hpp"
 
 void updateMatrices()
 {
     glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
     glGetDoublev( GL_PROJECTION_MATRIX, projection );
     glGetIntegerv( GL_VIEWPORT, viewport );
-}
-
-void modifyCamera()
-{
-    if(rotatingXUp)
-    {
-        xRot -= xSpeed * (currenttime - timebase);
-    }
-    if(rotatingXDown)
-    {
-        xRot += xSpeed * (currenttime - timebase);            
-    }
-    if(rotatingYLeft)
-    {
-        yRot -= ySpeed * (currenttime - timebase);
-    }
-    if(rotatingYRight)
-    {
-        yRot += ySpeed * (currenttime - timebase);            
-    }
-    if(rotatingZLeft)
-    {
-        zRot -= zSpeed * (currenttime - timebase);
-    }
-    if(rotatingZRight)
-    {
-        zRot += zSpeed * (currenttime - timebase);            
-    }
-    if(zoomingIn)
-    {
-        if(camZ >= MIN_CAM_Z)
-            camZ -= camSpeed * (currenttime - timebase);            
-    }
-    if(zoomingOut)
-    {
-        if(camZ <= MAX_CAM_Z)
-            camZ += camSpeed * (currenttime - timebase);            
-    }    
-}
-
-void idle()
-{
-   frame++;
-   currenttime = glutGet(GLUT_ELAPSED_TIME);
-   if (currenttime - timebase > 0.5) 
-   {
-        modifyCamera();
-        timebase = currenttime;    
-        frame = 0;        
-        glutPostRedisplay();        
-   }  
 }
 
 
@@ -117,15 +41,8 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);  
     glutInitWindowSize(1100, 768);
     glutInitWindowPosition(0, 0);
-    window = glutCreateWindow("Battleship");
-    glutDisplayFunc(MenuDisplay);
-
-    glutKeyboardFunc(KeyboardMenu);
-    glutMouseFunc(mouseButtonMenu);
-    glutMotionFunc(mouseMotionMenu); 
-    glutPassiveMotionFunc(MousePassiveMotion);
-
-    glutFullScreen();       
+    window = glutCreateWindow("Battleship");    
+    // glutFullScreen();       
     glutReshapeFunc(&Reshape);
     InitGL(1100, 768);    
     glLoadIdentity();
@@ -144,15 +61,38 @@ int main(int argc, char **argv)
     glEnable(GL_NORMALIZE);
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
+    shipModel = loadModel("Objects/tile.obj");
+    whitePinModel = loadModel("Objects/pin_white.obj");
+    redPinModel = loadModel("Objects/pin_red.obj");
+    missileModel = loadModel("Objects/missile.obj");
+
     Scene = new SceneManager();
     Scene->addCallback("Menu", menuScene);
     Scene->addCallback("PickShips", pikcingScene);
+    Scene->addCallback("InGame", inGameScene);
+    Scene->addCallback("Credits", creditsScene);
+    Scene->addCallback("FindGame", findingGameScene);
+
     UI = new UIHandler();
-    UI->createButton(900, 720, 200, 50, "Accept", toMenuFunc, "start", GLUT_BITMAP_HELVETICA_18);
-    UI->createButton(350, 334, 200, 50, "Start", toGameFunc, "toGame", GLUT_BITMAP_HELVETICA_18);
-    UI->createPanel(20, 20, 600, "Title", "BATTLESHIP", 60, 255, 255, 255, FTGL::ALIGN_LEFT);     
-    UI->createPopup(20, 20, 400, "warning", "Place every ship before continuing", 30, 255, 255, 255, FTGL::ALIGN_CENTER);     
-    map = new Map();    
+    UI->createButton(900, 720, 200, 50, "Accept", toIngameFunc, "acceptShips", GLUT_BITMAP_HELVETICA_18);
+    UI->createButton(350, 334, 200, 50, "Start", toFindGameFunc, "start", GLUT_BITMAP_HELVETICA_18);
+    UI->createButton(350, 334, 200, 50, "Credits", toCreditsFunc, "credits", GLUT_BITMAP_HELVETICA_18);
+    UI->createButton(350, 334, 200, 50, "Main Menu", toMenuFunc, "menu", GLUT_BITMAP_HELVETICA_18);
+
+    UI->createPanel(0, 0, 600, "Title", "BATTLESHIP", 60, 255, 255, 255, FTGL::ALIGN_LEFT);     
+    UI->createPanel(0, 0, 600, "credits", "Alexis Matuk - A01021143\nDiego Vázquez - A01168095\nGerardo Teruel - A01018057", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
+    UI->createPanel(0, 0, 600, "findingGame", "Finding Game...", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
+
+    UI->createPopup(0, 0, 400, "warning", "Place every ship before continuing", 30, 255, 255, 255, FTGL::ALIGN_CENTER);
+
+    menuShip = new Ship("Objects/Gunboat/Gunboat.obj", 0,0.25,0);
+    menuShip->setParams(1,1,1, -0.1,0.9,0.24, 0,90,0);
+    map = new Map(false);  
+    opponentMap = new Map(true);        
+
+    menuScene();
+    
     glutMainLoop();    
     return 0;        
 }
@@ -173,20 +113,22 @@ void Reshape(int w, int h)
     // gluPerspective(fovy, (double) w / (double) h, _zNear, _zFar);
     gluPerspective(45.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
-    UI->setButtonPositionByName("start", ww-200, wh-50); 
-    UI->setButtonPositionByName("toGame", (int) (ww/2)-100, (int)(wh/2)-25);   
 
-    Panel * p = UI->findPanelByName("Title"); 
-    p->setww(ww);
-    p->setwh(wh);
-    FTBBox bbox = p->getLayout()->BBox(p->getContent().c_str());       
-    p->addPositionFromCenter((float)ww/2-bbox.Upper().Xf()/2, 4*(float)wh/5);
+    UI->setButtonPositionByName("acceptShips", ww-200, wh-50); 
+    UI->setButtonPositionByName("start", (int) (ww/2) - 100, (int)(wh/2));   
+    UI->setButtonPositionByName("credits", (int) (ww/2) - 100, (int)3*wh/4);
+    UI->setButtonPositionByName("menu", (int) (ww/2) - 100, (int)(wh/2));   
 
-    Popup * pop = UI->findPopupByName("warning"); 
-    pop->setww(ww);
-    pop->setwh(wh);
-    FTBBox bbox1 = pop->getLayout()->BBox(pop->getContent().c_str());       
-    pop->addPositionFromCenter((float)ww/2-bbox1.Upper().X()/2, 4*(float)wh/5);
+    
+    UI->findPanelByName("Title")->center(ww, wh, 6.2*(float)wh/7);
+
+    UI->findPopupByName("warning")->center(ww, wh, 4*(float)wh/5);
+
+    UI->findPanelByName("credits")->setWidth(ww);
+    UI->findPanelByName("credits")->center(ww, wh, 3*(float)wh/4);  
+
+    UI->findPanelByName("findingGame")->setWidth(ww);
+    UI->findPanelByName("findingGame")->center(ww, wh, (float)wh/2);    
 
 }
 
