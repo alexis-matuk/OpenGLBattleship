@@ -87,15 +87,15 @@ void inGameDisplay()
         glRotatef(yRot_opponent,0,1,0);  
         glRotatef(zRot_opponent,0,0,1);
         updateMatrices();                                  
-        // opponentMap->Draw(); 
-        map->Draw();   
+        opponentMap->Draw(); 
+        // map->Draw();   
         if(missile != nullptr)
         {            
             if(!missile->DrawMissile(textureMode))
             {                
                 delete missile;
                 missile = nullptr;     
-                shooting = false;
+            shooting = false;
             }
         }
         if(debug)        
@@ -297,6 +297,15 @@ void toIngameFunc()
     	UI->activatePopup("warning");
     else
     {    
+        char ** test = map->exportMapToServer();
+        for(int i = 0; i < 11; i++)
+        {
+            for(int j = 0; j < 11; j++)
+            {
+                std::cout << test[i][j] << ", ";
+            }
+            std::cout << std::endl;
+        }
         Scene->changeScene("InGame");
     }
 

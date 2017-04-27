@@ -108,6 +108,16 @@ void Ship::setPlaced(bool _placed)
 	placed = _placed;
 }
 
+char Ship::getShipId()
+{
+	return shipId;
+}
+
+void Ship::setShipId(char _id)
+{
+	shipId = _id;
+}
+
 Ship::~Ship()
 {
 

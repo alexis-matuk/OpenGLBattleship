@@ -66,7 +66,7 @@ public:
 	void setCurrentShipSelected(Ship * _ship);
 	Tile * getClosestTile(Ship * _ship, Direction _dir);
 	void clipShipToTile(Direction _dir, Ship * _ship, Tile * _tile);
-	void updateTileInGrid(Tile * _tile, int ship_life, Direction _dir, Tile::State _state);
+	void updateTileInGrid(Tile * _tile, int ship_life, Direction _dir, Tile::State _state, char _shipId);
 	void updateShipPositions(Tile * _tile, Ship * _ship, Direction _dir);
 	bool tilesUsed(Tile * _tile, Ship * _ship, Direction _dir);
 	void unclipShipFromGrid(Ship * _ship);
@@ -77,6 +77,7 @@ public:
 	Tile * getTileHit(glm::vec3 near, glm::vec3 far);	
 	Ship * getShipHit(glm::vec3 near, glm::vec3 far);	
 	bool everyShipPlaced();
+	char ** exportMapToServer();
 	static void ApplyColor(
    	GLfloat ambr, GLfloat ambg, GLfloat ambb,
    	GLfloat difr, GLfloat difg, GLfloat difb,

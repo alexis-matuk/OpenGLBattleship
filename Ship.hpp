@@ -7,6 +7,7 @@
 #include "Map.hpp"
 
 class Ship : public Object{	
+	char shipId;
 	int life;
 	std::vector<int> startPos;
 	std::vector<int> endPos;
@@ -30,6 +31,8 @@ public:
 	void setDirection(Map::Direction _dir);
 	bool isPlaced();
 	void setPlaced(bool _placed);
+	char getShipId();
+	void setShipId(char _id);
 	~Ship();
 };
 

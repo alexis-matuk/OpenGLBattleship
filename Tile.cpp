@@ -2,6 +2,7 @@
 
 Tile::Tile()
 {	
+	shipId = '0';
 	model = shipModel;
 	scaleX = 0.6;
 	scaleY = 0.6;
@@ -32,6 +33,7 @@ float Tile::getTileSideLength()
 Tile::Tile(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ):Object(_scaleX, _scaleY, _scaleZ, _x, _y, _z, _rotX, _rotY, _rotZ, "Objects/tile.obj")
 {	
 	initPoints();
+	shipId = '0';
 	type = "Tile";
 }
 
@@ -200,4 +202,14 @@ std::vector<int> Tile::getGridPos()
 {
 	std::vector<int> res = {gridX, gridY};
 	return res;
+}
+
+void Tile::setShipId(char _id)
+{
+	shipId = _id;
+}
+
+char Tile::getShipId()
+{
+	return shipId;
 }

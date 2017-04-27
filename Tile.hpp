@@ -26,6 +26,8 @@ public:
 	std::vector<int> getGridPos();		
 	float getTileSideLength();
 	bool getValidTile();
+	void setShipId(char _id);
+	char getShipId();
 private:
 	GLMmodel * white_pin = nullptr;
 	GLMmodel * red_pin = nullptr;	
@@ -42,6 +44,7 @@ private:
     float float_yb;
 	float points[45][45][3];   // the array for the points on the grid of our "wave"
 	int wiggle_count = 0;
+	char shipId;
 };
 #endif
 

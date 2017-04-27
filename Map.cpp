@@ -56,10 +56,20 @@ Map::Map(bool _empty) : A("Objects/A.obj"),  B("Objects/B.obj"),  C("Objects/C.o
 			ship_5->setParams(1,0.57,1.2, 0,0,0.15 ,90,90,0);	
 
 			ship_2->setName("2 - Bladesong");
+			ship_2->setShipId('A');
+
 			ship_3->setName("3 - Gunboat");
+			ship_3->setShipId('B');			
+
 			ship_3_2->setName("3 - Prestes");
+			ship_3_2->setShipId('C');
+
 			ship_4->setName("4 - Carrier");
+			ship_4->setShipId('D');
+
 			ship_5->setName("5 - Submarine");
+			ship_5->setShipId('E');
+
 		}
 
 		initTiles();
@@ -143,10 +153,19 @@ void Map::initShips()
 	ship_5->setParams(1,0.57,1.2, 3.3 + 0.1,0.25,0.15 ,90,90,0);	
 
 	ship_2->setName("2 - Bladesong");
+	ship_2->setShipId('A');
+
 	ship_3->setName("3 - Gunboat");
+	ship_3->setShipId('B');			
+
 	ship_3_2->setName("3 - Prestes");
+	ship_3_2->setShipId('C');
+
 	ship_4->setName("4 - Carrier");
+	ship_4->setShipId('D');
+
 	ship_5->setName("5 - Submarine");
+	ship_5->setShipId('E');
 
 	ships.push_back(ship_2);
 	ships.push_back(ship_3);
@@ -288,7 +307,7 @@ void Map::clipAndUpdateShip(Ship * current_ship)
     }        
 }
 
-void Map::updateTileInGrid(Tile * _tile, int ship_life, Direction _dir, Tile::State _state)
+void Map::updateTileInGrid(Tile * _tile, int ship_life, Direction _dir, Tile::State _state, char _shipId)
 {
 	std::vector<int> start_pos = _tile->getGridPos();
 	if(_dir == Direction::TOP_BOTTOM)
@@ -297,6 +316,7 @@ void Map::updateTileInGrid(Tile * _tile, int ship_life, Direction _dir, Tile::St
 		for(int i = 0; i < ship_life; i++)
 		{
 			grid[start_pos[0]][start_pos[1]+i]->updateState(_state);
+			grid[start_pos[0]][start_pos[1]+i]->setShipId(_shipId);
 		}	
 	}	
 	else if(_dir == Direction::LEFT_RIGHT)
@@ -305,6 +325,7 @@ void Map::updateTileInGrid(Tile * _tile, int ship_life, Direction _dir, Tile::St
 		for(int i = 0; i < ship_life; i++)
 		{
 			grid[start_pos[0]+i][start_pos[1]]->updateState(_state);
+			grid[start_pos[0]+i][start_pos[1]]->setShipId(_shipId);
 		}
 	}
 }
@@ -367,7 +388,7 @@ void Map::clipShipToTile(Direction _dir, Ship * _ship, Tile * _tile)
 		glm::vec3 offset (tile_pos.x-ship_pos.x, tile_pos.y-ship_pos.y, tile_pos.z-ship_pos.z);
 		_ship->addTranslation(offset.x, offset.y, 0);		
 		updateShipPositions(_tile, _ship, _dir);
-		updateTileInGrid(_tile, life, _dir, Tile::State::USED);
+		updateTileInGrid(_tile, life, _dir, Tile::State::USED, _ship->getShipId());
 	}
 	else if(_dir == Direction::LEFT_RIGHT)
 	{		
@@ -375,7 +396,7 @@ void Map::clipShipToTile(Direction _dir, Ship * _ship, Tile * _tile)
 		glm::vec3 offset (tile_pos.x-ship_pos.x, tile_pos.y-ship_pos.y, tile_pos.z-ship_pos.z);
 		_ship->addTranslation(offset.x, offset.y, 0);		
 		updateShipPositions(_tile, _ship, _dir);
-		updateTileInGrid(_tile, life, _dir, Tile::State::USED);
+		updateTileInGrid(_tile, life, _dir, Tile::State::USED, _ship->getShipId());
 	}
 	_ship->setPlaced(true);
 }
@@ -385,7 +406,7 @@ void Map::unclipShipFromGrid(Ship * _ship)
 	std::vector<int> start_pos = _ship->getStartPos();	
 	Tile * start_tile = grid[start_pos[0]][start_pos[1]];	
 	int life = _ship->getLife();
-	updateTileInGrid(start_tile, life, _ship->getDirection(), Tile::State::FREE);	
+	updateTileInGrid(start_tile, life, _ship->getDirection(), Tile::State::FREE, '0');	
 	std::vector<int> def = {-1, -1};		
 	_ship->setStartPos(def);
 	_ship->setEndPos(def);  
@@ -475,6 +496,25 @@ bool Map::everyShipPlaced()
 			return false;
 	}
 	return true;
+}
+
+char ** Map::exportMapToServer()
+{
+	char** exportMap = new char*[11];
+	for(int i = 0; i < 11; i++)
+	{
+		exportMap[i] = new char[11];
+	}
+
+	for(int i = 0; i < 11; i++)
+	{
+		for(int j = 0; j < 11; j++)
+		{
+			exportMap[i][j] = grid[j][i]->getShipId();
+		}
+	}
+		
+	return exportMap;
 }
 
 //Función para aplicar un color en específico a las figuras rendereadas 
