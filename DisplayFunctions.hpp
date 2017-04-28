@@ -95,7 +95,7 @@ void inGameDisplay()
             {                
                 delete missile;
                 missile = nullptr;     
-            shooting = false;
+                shooting = false;
             }
         }
         if(debug)        
@@ -238,7 +238,7 @@ void menuScene()
     glutDisplayFunc(MenuDisplay);
 }
 
-void pikcingScene()
+void pickingScene()
 {	
     UI->deactivateButtons();
     UI->findButtonByName("acceptShips")->setActive(true);    

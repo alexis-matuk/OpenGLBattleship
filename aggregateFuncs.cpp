@@ -91,6 +91,8 @@ Missile * missile = nullptr;
 
 bool shooting = false;
 
+UIClient * client = nullptr;
+
 void DrawModel(GLMmodel* model, GLuint _mode)
 {            
     glPushAttrib(GL_ALL_ATTRIB_BITS);     

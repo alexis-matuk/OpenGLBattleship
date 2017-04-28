@@ -150,7 +150,8 @@ void mouseInGame(int button, int state, int x, int y)
                 {
                     if(missile == nullptr)
                     {
-                        missile = new Missile(clickedTile);
+                        std::vector<int> pos = clickedTile->getGridPos();
+                        client->getEventListener().setPosition(pos[1], pos[0]);
                         shooting = true;
                     } 
                 }                               

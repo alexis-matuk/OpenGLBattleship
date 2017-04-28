@@ -22,8 +22,7 @@ Ship::Ship(const char * filename, float _centerX, float _centerY, float _centerZ
 	centerY = _centerY;
 	centerZ = _centerZ;
 	life = 0;
-	type = "Ship";
-	std::cout << "center: " << centerX << ", " << centerY << ", " << centerZ << std::endl;	
+	type = "Ship";	
 }
 
 void Ship::setTopAnchor(glm::vec3 _topAnchor)

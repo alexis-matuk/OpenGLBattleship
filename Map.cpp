@@ -76,8 +76,7 @@ Map::Map(bool _empty) : A("Objects/A.obj"),  B("Objects/B.obj"),  C("Objects/C.o
 		initLetters();
 		initNumbers();
 
-		tileSideLength = grid[0][0]->getTileSideLength();	
-		std::cout << "tileSideLength: " << tileSideLength << std::endl;			
+		tileSideLength = grid[0][0]->getTileSideLength();			
 }
 
 Map::~Map()
@@ -515,6 +514,11 @@ char ** Map::exportMapToServer()
 	}
 		
 	return exportMap;
+}
+
+std::vector<std::vector<Tile*>> Map::getGrid()
+{
+	return grid;
 }
 
 //Función para aplicar un color en específico a las figuras rendereadas 

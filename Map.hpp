@@ -77,7 +77,8 @@ public:
 	Tile * getTileHit(glm::vec3 near, glm::vec3 far);	
 	Ship * getShipHit(glm::vec3 near, glm::vec3 far);	
 	bool everyShipPlaced();
-	char ** exportMapToServer();
+	char ** exportMapToServer();	
+	std::vector<std::vector<Tile*>> getGrid();
 	static void ApplyColor(
    	GLfloat ambr, GLfloat ambg, GLfloat ambb,
    	GLfloat difr, GLfloat difg, GLfloat difb,

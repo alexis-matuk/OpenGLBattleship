@@ -6,6 +6,7 @@ class Tile;
 class UIHandler;
 class SceneManager;
 class Missile;
+class UIClient;
 
 extern int frame;
 extern int currenttime;
@@ -98,6 +99,8 @@ extern Missile * missile;
 
 extern bool shooting;
 
+extern UIClient * client;
+
 void DrawModel(GLMmodel* model, GLuint _mode);
 void DrawModel(GLMmodel* model, float centerX, float centerY, float centerZ, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ);
 GLMmodel* loadModel(const char* filename);
@@ -137,7 +140,7 @@ void toGameFunc();
 void toCreditsFunc();
 void toFindGameFunc();
 void toMenuFunc();
-void pikcingScene();
+void pickingScene();
 void creditsScene();
 void findingGameScene();
 void mouseMotionMenu(int x, int y);

@@ -5,6 +5,12 @@
 #include "UIHandler.hpp"
 #include "SceneManager.hpp"
 #include "Missile.hpp"
+#include "UIClient.hpp"
+
+void * clientThread(void* params)
+{
+    client->mainLoop();
+}
 
 void updateMatrices()
 {
@@ -69,7 +75,7 @@ int main(int argc, char **argv)
 
     Scene = new SceneManager();
     Scene->addCallback("Menu", menuScene);
-    Scene->addCallback("PickShips", pikcingScene);
+    Scene->addCallback("PickShips", pickingScene);
     Scene->addCallback("InGame", inGameScene);
     Scene->addCallback("Credits", creditsScene);
     Scene->addCallback("FindGame", findingGameScene);
@@ -89,7 +95,26 @@ int main(int argc, char **argv)
     menuShip = new Ship("Objects/Gunboat/Gunboat.obj", 0,0.25,0);
     menuShip->setParams(1,1,1, -0.1,0.9,0.24, 0,90,0);
     map = new Map(false);  
-    opponentMap = new Map(true);        
+    opponentMap = new Map(true);   
+
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    client = new UIClient(PORT, "localhost", &hints, map, opponentMap);  
+    if(!client->isValid())
+    {
+        std::cerr << "Couldn't create client" << std::endl;
+        exit(-1);
+    }
+    
+    pthread_t thread;
+    int r = pthread_create(&thread, NULL, &clientThread, NULL);
+    if(r != 0)
+    {
+        std::cerr << "Couldn't create client" << std::endl;
+        exit(-1);
+    }
 
     menuScene();
     
