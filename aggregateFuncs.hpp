@@ -151,3 +151,4 @@ void modifyCamera();
 void idle();
 void menuIdle();
 void inGameIdle();
+void myMapBeingHitScene();

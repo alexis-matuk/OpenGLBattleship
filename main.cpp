@@ -91,30 +91,12 @@ int main(int argc, char **argv)
     UI->createPanel(0, 0, 600, "findingGame", "Finding Game...", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
 
     UI->createPopup(0, 0, 400, "warning", "Place every ship before continuing", 30, 255, 255, 255, FTGL::ALIGN_CENTER);
+    UI->createPopup(0, 0, 400, "serverWarning", "Server not found", 30, 255, 255, 255, FTGL::ALIGN_CENTER);
 
     menuShip = new Ship("Objects/Gunboat/Gunboat.obj", 0,0.25,0);
     menuShip->setParams(1,1,1, -0.1,0.9,0.24, 0,90,0);
     map = new Map(false);  
-    opponentMap = new Map(true);   
-
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    client = new UIClient(PORT, "localhost", &hints, map, opponentMap);  
-    if(!client->isValid())
-    {
-        std::cerr << "Couldn't create client" << std::endl;
-        exit(-1);
-    }
-    
-    pthread_t thread;
-    int r = pthread_create(&thread, NULL, &clientThread, NULL);
-    if(r != 0)
-    {
-        std::cerr << "Couldn't create client" << std::endl;
-        exit(-1);
-    }
+    opponentMap = new Map(true);           
 
     menuScene();
     
@@ -148,6 +130,7 @@ void Reshape(int w, int h)
     UI->findPanelByName("Title")->center(ww, wh, 6.2*(float)wh/7);
 
     UI->findPopupByName("warning")->center(ww, wh, 4*(float)wh/5);
+    UI->findPopupByName("serverWarning")->center(ww, wh, 4*(float)wh/5);
 
     UI->findPanelByName("credits")->setWidth(ww);
     UI->findPanelByName("credits")->center(ww, wh, 3*(float)wh/4);  

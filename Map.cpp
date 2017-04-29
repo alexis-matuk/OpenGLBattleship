@@ -521,6 +521,32 @@ std::vector<std::vector<Tile*>> Map::getGrid()
 	return grid;
 }
 
+void Map::setReadyToSend(bool _readyToSend)
+{
+	readyToSend = _readyToSend;
+}
+
+bool Map::getReadyToSend()
+{
+	return readyToSend;
+}
+
+void Map::centerMap()
+{
+	mapStartX = -2;
+	for(int i = 0; i < X; i++)
+	{
+		for(int j = 0; j < Y; j++)
+		{
+			grid[i][j]->addTranslation(1, 0, 0);
+		}
+	}
+	for(int i = 0; i < ships.size(); i++)
+	{
+		ships[i]->addTranslation(1, 0, 0);
+	}
+}
+
 //Función para aplicar un color en específico a las figuras rendereadas 
 void Map::ApplyColor(
    GLfloat ambr, GLfloat ambg, GLfloat ambb,

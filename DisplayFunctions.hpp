@@ -36,23 +36,23 @@ void MenuDisplay()
 {
     glLoadIdentity();   
     gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
     glPushMatrix();
         glRotatef(menuShipRot, 0, 1, 0);
         updateMatrices();                                         
         menuShip->Draw(textureMode);               
     glPopMatrix();
 
-    disableUIParams();         
-        setButtonViewPort();                            
-            UI->drawButtonByName("start"); 
-            UI->drawButtonByName("credits"); 
-        setPanelViewPort();   
+    disableUIParams();
+        setPanelViewPort();
             UI->drawPanelByName("Title", false);                    
-            UI->drawActivePopups(); 
-        setWorldViewPort();        
-    enableUIParams(); 
+            UI->drawActivePopups();   
+        setButtonViewPort();                          
+            UI->drawButtonByName("start"); 
+            UI->drawButtonByName("credits");            
+        setWorldViewPort();
+    enableUIParams();
+
     glFlush();
     glutSwapBuffers();
 }
@@ -115,6 +115,37 @@ void findingGameDisplay()
         setPanelViewPort();   
             UI->drawPanelByName("findingGame", false);
     enableUIParams(); 
+    glFlush();
+    glutSwapBuffers();
+}
+
+void myMapBeingHitDisplay()
+{                                   
+    glLoadIdentity();   
+    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
+    glPushMatrix();
+        if (wireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//Activar wireframe
+        else
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);        
+        glRotatef(xRot,1,0,0);  
+        glRotatef(yRot,0,1,0);  
+        glRotatef(zRot,0,0,1);
+        updateMatrices();                                  
+        map->Draw(); 
+        if(missile != nullptr)
+        {            
+            if(!missile->DrawMissile(textureMode))
+            {                
+                delete missile;
+                missile = nullptr;     
+                shooting = false;
+            }
+        }                
+        if(debug)        
+            drawRaycast();              
+    glPopMatrix();
     glFlush();
     glutSwapBuffers();
 }
@@ -228,6 +259,7 @@ void menuScene()
     UI->deactivateButtons();
     UI->findButtonByName("credits")->setActive(true);
     UI->findButtonByName("start")->setActive(true);    
+    UI->findButtonByName("acceptShips")->setActive(true);    
 	glutKeyboardFunc(KeyboardMenu);
 
     glutMouseFunc(mouseButtonMenu);
@@ -281,6 +313,22 @@ void findingGameScene()
     glutDisplayFunc(findingGameDisplay);
 }
 
+void myMapBeingHitScene()
+{       
+    UI->deactivateButtons();    
+    glutKeyboardFunc(&Keyboard);
+    glutKeyboardUpFunc(&KeyboardUp);
+    glutSpecialFunc(SpecialInput);
+    glutSpecialUpFunc(SpecialInputUp);
+
+    glutMouseFunc(NULL);
+    glutMotionFunc(NULL); 
+    glutPassiveMotionFunc(NULL);
+
+    glutIdleFunc(idle);
+    glutDisplayFunc(myMapBeingHitDisplay);
+}
+
 /*
 	====== END OF CALLBACK FUNCTIONS FOR SCENE MANAGEMENT ======
 */
@@ -297,15 +345,8 @@ void toIngameFunc()
     	UI->activatePopup("warning");
     else
     {    
-        char ** test = map->exportMapToServer();
-        for(int i = 0; i < 11; i++)
-        {
-            for(int j = 0; j < 11; j++)
-            {
-                std::cout << test[i][j] << ", ";
-            }
-            std::cout << std::endl;
-        }
+        map->setReadyToSend(true);
+        map->centerMap();
         Scene->changeScene("InGame");
     }
 
@@ -313,7 +354,7 @@ void toIngameFunc()
 
 void toGameFunc()
 {  
-	Scene->changeScene("PickShips");
+    Scene->changeScene("PickShips");
 }
 
 void toCreditsFunc()
@@ -328,7 +369,30 @@ void toMenuFunc()
 
 void toFindGameFunc()
 {
-    Scene->changeScene("FindGame");      
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    client = new UIClient(PORT, "localhost", &hints, map, opponentMap);  
+    if(!client->isValid())
+    {
+        UI->activatePopup("serverWarning");
+        delete client;
+        client = nullptr;
+        std::cerr << "Couldn't create client" << std::endl;
+    }
+    else
+    {
+        pthread_t thread;
+        int r = pthread_create(&thread, NULL, &clientThread, NULL);
+        if(r != 0)
+        {
+            std::cerr << "Couldn't create client" << std::endl;
+            exit(-1);
+        }
+
+        Scene->changeScene("FindGame");
+    }        
 }
 /*
 	====== END OF CALLBACK FUNCTIONS FOR UI ======

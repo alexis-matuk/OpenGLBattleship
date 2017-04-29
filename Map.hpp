@@ -46,6 +46,7 @@ class Map{
 	float tileSideLength;
 	std::vector<std::string> letterArray = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"};
 	int aliveShips = 5;
+	bool readyToSend = false;
 public:
 	enum class Direction{
 		TOP_BOTTOM,
@@ -79,6 +80,9 @@ public:
 	bool everyShipPlaced();
 	char ** exportMapToServer();	
 	std::vector<std::vector<Tile*>> getGrid();
+	void setReadyToSend(bool _readyToSend);
+	bool getReadyToSend();
+	void centerMap();
 	static void ApplyColor(
    	GLfloat ambr, GLfloat ambg, GLfloat ambb,
    	GLfloat difr, GLfloat difg, GLfloat difb,

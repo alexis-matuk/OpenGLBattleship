@@ -55,7 +55,7 @@ void Popup::center(int _ww, int _wh, int _posRelativeToWh)
     setwh(_wh);
     FTBBox bbox = layout->BBox(content.c_str());    
     float off = (bbox.Upper().X() - bbox.Lower().X())/2;   
-    setPosition((float)ww/2 - off, _posRelativeToWh);
+    setPosition((float)ww/2 - (min_x+max_x)/2, _posRelativeToWh);
     button->setPosition(xTopLeft + (min_x+max_x)/2 - buttonWidth/2,(int)_wh - _posRelativeToWh + (max_y-min_y) );
 }
 
