@@ -77,7 +77,7 @@ private:
     {
     	;
     }   
-    shoot = true; 
+    shooting = true; 
     sleep(3);    	    
     sceneTransitioner->toTransition();
     shooting = false;
