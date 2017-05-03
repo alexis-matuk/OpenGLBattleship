@@ -23,7 +23,7 @@ void updateMatrices()
 /* A general OpenGL initialization function.  Sets all of the initial parameters. */
 void InitGL(int Width, int Height)	        // We call this right after our OpenGL window is created.
 {
-     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     float float_x, float_y;                     // loop counters.
     LoadGLTextures();				// Load The Texture(s) 
     glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
@@ -79,16 +79,24 @@ int main(int argc, char **argv)
     Scene->addCallback("InGame", inGameScene);
     Scene->addCallback("Credits", creditsScene);
     Scene->addCallback("FindGame", findingGameScene);
+    Scene->addCallback("Ending", endingScene);
 
     UI = new UIHandler();
     UI->createButton(900, 720, 200, 50, "Accept", toIngameFunc, "acceptShips", GLUT_BITMAP_HELVETICA_18);
     UI->createButton(350, 334, 200, 50, "Start", toFindGameFunc, "start", GLUT_BITMAP_HELVETICA_18);
     UI->createButton(350, 334, 200, 50, "Credits", toCreditsFunc, "credits", GLUT_BITMAP_HELVETICA_18);
     UI->createButton(350, 334, 200, 50, "Main Menu", toMenuFunc, "menu", GLUT_BITMAP_HELVETICA_18);
+    UI->createButton(350, 334, 200, 50, "Main Menu", toMenuFromEndingFunc, "ending", GLUT_BITMAP_HELVETICA_18);
 
     UI->createPanel(0, 0, 600, "Title", "BATTLESHIP", 60, 255, 255, 255, FTGL::ALIGN_LEFT);     
-    UI->createPanel(0, 0, 600, "credits", "Alexis Matuk - A01021143\nDiego Vázquez - A01168095\nGerardo Teruel - A01018057", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
-    UI->createPanel(0, 0, 600, "findingGame", "Finding Game...", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
+    UI->createPanel(0, 0, 600, "credits", "Alexis Matuk - A01021143\nDiego Vázquez - A01168095\nGerardo Teruel - A01018057", 40, 255, 255, 255, FTGL::ALIGN_LEFT);
+
+    UI->createPanel(0, 0, 600, "findingGame", "Finding Game...", 40, 255, 255, 255, FTGL::ALIGN_LEFT);
+
+    UI->createPanel(0, 0, 600, "enemyShips", "Enemy Ships Destroyed", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
+    UI->findPanelByName("enemyShips")->setExtras(0,0,50,50);
+    UI->createPanel(0, 0, 600, "friendlyShips", "Friendly Ships Destroyed", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
+    UI->findPanelByName("friendlyShips")->setExtras(0,0,50,50);
 
     UI->createPopup(0, 0, 400, "warning", "Place every ship before continuing", 30, 255, 255, 255, FTGL::ALIGN_CENTER);
     UI->createPopup(0, 0, 400, "serverWarning", "Server not found", 30, 255, 255, 255, FTGL::ALIGN_CENTER);
@@ -125,6 +133,7 @@ void Reshape(int w, int h)
     UI->setButtonPositionByName("start", (int) (ww/2) - 100, (int)(wh/2));   
     UI->setButtonPositionByName("credits", (int) (ww/2) - 100, (int)3*wh/4);
     UI->setButtonPositionByName("menu", (int) (ww/2) - 100, (int)(wh/2));   
+    UI->setButtonPositionByName("ending", (int) (ww/2) - 100, (int)(5*wh/6));   
 
     
     UI->findPanelByName("Title")->center(ww, wh, 6.2*(float)wh/7);
@@ -135,9 +144,15 @@ void Reshape(int w, int h)
     UI->findPanelByName("credits")->setWidth(ww);
     UI->findPanelByName("credits")->center(ww, wh, 3*(float)wh/4);  
 
-    UI->findPanelByName("findingGame")->setWidth(ww);
-    UI->findPanelByName("findingGame")->center(ww, wh, (float)wh/2);    
 
+    UI->findPanelByName("findingGame")->setWidth(ww);
+    UI->findPanelByName("findingGame")->center(ww, wh, (float)wh/2);
+
+    UI->findPanelByName("enemyShips")->setWidth(ww/2);
+    UI->findPanelByName("enemyShips")->left(ww, wh, 3*(float)wh/4);
+
+    UI->findPanelByName("friendlyShips")->setWidth(ww/2);
+    UI->findPanelByName("friendlyShips")->right(ww, wh, 3*(float)wh/4);
 }
 
 

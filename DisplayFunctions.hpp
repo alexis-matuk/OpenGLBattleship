@@ -73,6 +73,23 @@ void creditsDisplay()
     glutSwapBuffers();
 }
 
+void endingDisplay()
+{
+    glLoadIdentity();   
+    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    disableUIParams();         
+        setPanelViewPort();   
+            UI->drawPanelByName("enemyShips", false);
+            UI->drawPanelByName("friendlyShips", false);
+        setButtonViewPort();
+            UI->drawButtonByName("ending");
+    enableUIParams(); 
+    glFlush();
+    glutSwapBuffers();
+}
+
 void inGameDisplay()
 {
     glLoadIdentity();   
@@ -300,6 +317,19 @@ void creditsScene()
     glutDisplayFunc(creditsDisplay);
 }
 
+void endingScene()
+{
+    UI->deactivateButtons();
+    UI->findButtonByName("ending")->setActive(true);
+    glutKeyboardFunc(KeyboardMenu);
+
+    glutMouseFunc(mouseButtonMenu);
+    glutMotionFunc(mouseMotionMenu); 
+    glutPassiveMotionFunc(MousePassiveMotion);
+
+    glutDisplayFunc(endingDisplay);
+}
+
 void findingGameScene()
 {
     UI->deactivateButtons();
@@ -362,9 +392,21 @@ void toCreditsFunc()
     Scene->changeScene("Credits");    
 }
 
+void toEndingFunc()
+{
+    Scene->changeScene("Ending");
+}
+
 void toMenuFunc()
 {
     Scene->changeScene("Menu");  
+}
+
+void toMenuFromEndingFunc()
+{
+    map->reset();
+    opponentMap->reset();
+    Scene->changeScene("Menu");
 }
 
 void toFindGameFunc()

@@ -547,6 +547,33 @@ void Map::centerMap()
 	}
 }
 
+void Map::reset()
+{
+	for(int i = 0; i < ships.size(); i++)
+	{
+		unclipShipFromGrid(ships[i]);
+		ships[i]->setParamsByMap(ships[i]->getInitialParams());
+	}
+	char ** _m = exportMapToServer();
+	for(int i = 0; i < 11; i++)
+	{
+		for(int j = 0; j < 11; j++)
+		{
+			std::cout << _m[i][j] << ", ";
+		}
+		std::cout << std::endl;
+	}
+	aliveShips = 5;
+	float xRot = 0;
+	float yRot = 0;
+	float zRot = 0;
+	float camZ = 0;
+	float xRot_opponent = 0;
+	float yRot_opponent = 0;
+	float zRot_opponent = 0;
+	float camZ_opponent = 0;
+}
+
 //Función para aplicar un color en específico a las figuras rendereadas 
 void Map::ApplyColor(
    GLfloat ambr, GLfloat ambg, GLfloat ambb,

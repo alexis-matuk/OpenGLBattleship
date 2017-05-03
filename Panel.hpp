@@ -50,6 +50,8 @@ public:
 	void setPanelColor(int _r, int _g, int _b, float _a);
 	void setExtras(int _extraTop, int _extraBottom, int _extraLeft, int _extraRight);
 	virtual void center(int _ww, int _wh, int _posRelativeToWh);
+	virtual void left(int _ww, int _wh, int _posRelativeToWh);
+	virtual void right(int _ww, int _wh, int _posRelativeToWh);
 	void setWidth(int _width);
 	~Panel();
 };

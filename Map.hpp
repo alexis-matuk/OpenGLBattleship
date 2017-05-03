@@ -83,6 +83,7 @@ public:
 	void setReadyToSend(bool _readyToSend);
 	bool getReadyToSend();
 	void centerMap();
+	void reset();
 	static void ApplyColor(
    	GLfloat ambr, GLfloat ambg, GLfloat ambb,
    	GLfloat difr, GLfloat difg, GLfloat difb,

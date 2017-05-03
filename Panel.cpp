@@ -136,6 +136,24 @@ void Panel::center(int _ww, int _wh, int _posRelativeToWh)
     setPosition((float)ww/2 - off, _posRelativeToWh);
 }
 
+void Panel::left(int _ww, int _wh, int _posRelativeToWh)
+{
+	setww(_ww);
+    setwh(_wh);
+    FTBBox bbox = layout->BBox(content.c_str());    
+    float off = (bbox.Upper().X() - bbox.Lower().X());   
+    setPosition(0 + extraLeft + borderX, _posRelativeToWh);
+}
+
+void Panel::right(int _ww, int _wh, int _posRelativeToWh)
+{
+	setww(_ww);
+    setwh(_wh);
+    FTBBox bbox = layout->BBox(content.c_str());    
+    float off = (bbox.Upper().X() - bbox.Lower().X());   
+    setPosition(ww - (off + borderX + extraRight), _posRelativeToWh);
+}
+
 void Panel::setWidth(int _width)
 {
 	width = _width;
