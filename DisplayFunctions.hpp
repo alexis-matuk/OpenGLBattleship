@@ -87,7 +87,7 @@ void endingDisplay()
 
     disableUIParams();            
         setPanelViewPort();   
-            UI->drawDebugLines();      
+            // UI->drawDebugLines();      
             UI->drawPanelByName("enemyShips", false);
             UI->drawPanelByName("friendlyShips", false);
             UI->drawPanelByName("result", false);

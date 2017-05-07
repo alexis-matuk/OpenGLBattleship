@@ -17,9 +17,11 @@ class OpponentMapSceneTransitioner : public SceneTransitioner {
 public:
   virtual void toTransition()
   {
+    std::cout << "Going to my map being hit" << std::endl;
     myMapBeingHitScene();
   }
 	virtual void fromTransition() {
+    std::cout << "Going to hitting their map" << std::endl;
 		inGameScene();
 	}
 };
@@ -28,6 +30,7 @@ class MyMapSceneTransitioner : public SceneTransitioner {
 public:
 	virtual void toTransition()
   {
+    std::cout << "Going to hitting their map" << std::endl;    
     inGameScene();
   }
   virtual void fromTransition() {
@@ -73,18 +76,19 @@ protected:
     return shipsDestroyed;
   }
 
-  virtual void onDestroy(char shipId, int row1, int col1, int row2, int col2) {      
-      shooting = true;
-      Ship * hitShip = otherMap->getShipFromId(shipId);
-      hitShip->setDrawing(true);
-      shipsDestroyed.push_back(hitShip);
-      std::cout << "Adding destroyed ship: " << hitShip->getName() << std::endl;
-      sleep(1);
-      sceneTransitioner->toTransition();
-      shooting = false;
+  virtual void onDestroy(char shipId, int row1, int col1, int row2, int col2) {                
+    std::cout << "==== I destroyed their ship ===" << std::endl; 
+    shooting = true;
+    Ship * hitShip = otherMap->getShipFromId(shipId);
+    hitShip->setDrawing(true);
+    shipsDestroyed.push_back(hitShip);
+    sleep(1);
+    sceneTransitioner->toTransition();
+    shooting = false;
   }
 
   virtual void onMiss(int row, int col) const {
+    std::cout << "=== I missed their ship === " << std::endl;
     sceneTransitioner->fromTransition();
     Tile * _hitTile = map->getGrid()[col][row];
     _hitTile->updateState(Tile::State::FREE);
@@ -99,7 +103,8 @@ protected:
     shooting = false;
   }
   virtual void onHit(int row, int col, bool destroyed) const {
-    std::cout << "New hit at row, col, destroyed: " << row << " " << col << " " << destroyed << " " << std::endl;
+    std::cout << "=== I hit their ship ===" << std::endl;
+    // std::cout << "New hit at row, col, destroyed: " << row << " " << col << " " << destroyed << " " << std::endl;
     sceneTransitioner->fromTransition(); 
     Tile * _hitTile = map->getGrid()[col][row];
     _hitTile->updateState(Tile::State::USED);
@@ -122,14 +127,52 @@ class OtherDestroyListener : public MyDestroyListener {
 private:
   //VAMOS A NECESITAR DOS TRANSITIONERS
   //TRANSICIÓN -> MISIL -> TRANSICIÓN  
- public:  
+ public: 
+ virtual void onMiss(int row, int col) const
+ {
+  std::cout << "=== They missed my ship === " << std::endl;
+    sceneTransitioner->fromTransition();
+    Tile * _hitTile = map->getGrid()[col][row];
+    _hitTile->updateState(Tile::State::FREE);
+    missile = new Missile(_hitTile);
+    while(shooting)
+    {
+      ;
+    }    
+    shooting = true;
+    sleep(1);
+    sceneTransitioner->toTransition();
+    shooting = false;  
+ }
+
+virtual void onHit(int row, int col, bool destroyed) const 
+{
+  std::cout << "=== They hit my ship ===" << std::endl;
+    // std::cout << "New hit at row, col, destroyed: " << row << " " << col << " " << destroyed << " " << std::endl;
+    sceneTransitioner->fromTransition(); 
+    Tile * _hitTile = map->getGrid()[col][row];
+    _hitTile->updateState(Tile::State::USED);
+    missile = new Missile(_hitTile);
+    while(shooting)
+    {
+      ;
+    }
+    if(!destroyed)
+    { 
+      shooting = true; 
+      sleep(1);         
+      sceneTransitioner->toTransition();
+      shooting = false;
+    }  
+}
+
   virtual void onDestroy(char shipId, int row1, int col1, int row2, int col2) {
+    std::cout << "==== They destroyed my ship ===" << std::endl;  
     shooting = true;
     Tile * tileToClip = otherMap->getGrid()[col1][row1];
     Ship * shipToClip = otherMap->getShipFromId(shipId);    
     shipToClip->setDrawing(true);
     shipsDestroyed.push_back(shipToClip);
-    std::cout << "Adding destroyed ship: " << shipToClip->getName() << std::endl;
     Map::Direction shipDir;
     if(row1 == row2)
       shipDir = Map::Direction::LEFT_RIGHT;
@@ -139,7 +182,7 @@ private:
     otherMap->UIClipShip(shipDir, shipToClip, tileToClip);
     sleep(1);     
     sceneTransitioner->toTransition();
-    shooting = false;
+    shooting = false;    
   }
 };
 
@@ -371,7 +414,7 @@ public:
       }
       setFriendly = true;
    }
-   
+
    void drawEnemyShips()
    {      
       std::vector<Ship*> ships = oDestroyListener.getShipsDestroyed();
