@@ -201,6 +201,32 @@ void UIHandler::deactivateButtons()
 	}
 }
 
+void UIHandler::drawDebugLines()
+{
+	glBegin(GL_LINES);
+		glColor3f(1,0,0);
+		glVertex3f(ww/2, -wh, 0);
+		glVertex3f(ww/2, wh, 0);
+
+		glVertex3f(ww/4, -wh, 0);
+		glVertex3f(ww/4, wh, 0);
+
+		glVertex3f(3*ww/4, -wh, 0);
+		glVertex3f(3*ww/4, wh, 0);
+	glEnd();
+}
+
+void UIHandler::setww(int _ww)
+{
+	ww = _ww;
+}
+
+void UIHandler::setwh(int _wh)
+{
+	wh = _wh;
+}
+
+
 UIHandler::~UIHandler()
 {
 

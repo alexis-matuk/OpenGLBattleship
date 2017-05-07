@@ -117,6 +117,16 @@ void Ship::setShipId(char _id)
 	shipId = _id;
 }
 
+void Ship::setDrawing(bool _isDrawing)
+{
+	isDrawing = _isDrawing;
+}
+
+bool Ship::getDrawing()
+{
+	return isDrawing;
+}
+
 Ship::~Ship()
 {
 

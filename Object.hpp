@@ -75,6 +75,7 @@ public:
 	glm::vec3 getCentroid();
 	glm::vec3 getTopAnchor();
 	glm::vec3 getLeftAnchor();
+	void resetParams();	
 };
 
 #endif

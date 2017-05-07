@@ -13,6 +13,8 @@ private:
 	std::vector<Panel*> panels;
 	std::vector<Popup*> popups;	
 	std::vector<PopupButton*> buttons_p;
+	int ww;
+	int wh;
 public:	
 	UIHandler();
 	~UIHandler();
@@ -33,6 +35,9 @@ public:
 	void drawActivePopups();
 	void activatePopup(std::string _name);
 	void deactivateButtons();
+	void drawDebugLines();
+	void setww(int _ww);
+	void setwh(int _wh);
 };
 
 #endif

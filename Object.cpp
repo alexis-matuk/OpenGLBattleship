@@ -573,6 +573,11 @@ GLMmodel * Object::getModel()
 	return model;
 }
 
+void Object::resetParams()
+{
+	setParamsByMap(initialParameterMap);
+}
+
 void Object::DrawAxis(float scale)
 {
 	glPushAttrib(GL_ALL_ATTRIB_BITS);

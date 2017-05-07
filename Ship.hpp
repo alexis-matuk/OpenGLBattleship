@@ -13,7 +13,8 @@ class Ship : public Object{
 	std::vector<int> endPos;
 	Map::Direction dir = Map::Direction::TOP_BOTTOM;	
 	bool placed = false;
-public:	
+	bool isDrawing = true;
+public:		
 	Ship();
 	Ship(const char * filename);
 	Ship(const char * filename, float _centerX, float _centerY, float _centerZ);
@@ -33,6 +34,8 @@ public:
 	void setPlaced(bool _placed);
 	char getShipId();
 	void setShipId(char _id);
+	void setDrawing(bool _isDrawing);
+	bool getDrawing();
 	~Ship();
 };
 

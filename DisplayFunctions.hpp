@@ -63,12 +63,12 @@ void creditsDisplay()
     gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    disableUIParams();         
+    disableUIParams();               
         setPanelViewPort();   
             UI->drawPanelByName("credits", true);
         setButtonViewPort();
             UI->drawButtonByName("menu");
-    enableUIParams(); 
+    enableUIParams();     
     glFlush();
     glutSwapBuffers();
 }
@@ -78,13 +78,22 @@ void endingDisplay()
     glLoadIdentity();   
     gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glPushMatrix();        
+        updateMatrices();                                         
+        client->drawEnemyShips();           
+        client->drawFriendlyShips();           
+    glPopMatrix();
 
-    disableUIParams();         
+    disableUIParams();            
         setPanelViewPort();   
+            UI->drawDebugLines();      
             UI->drawPanelByName("enemyShips", false);
             UI->drawPanelByName("friendlyShips", false);
+            UI->drawPanelByName("result", false);
         setButtonViewPort();
             UI->drawButtonByName("ending");
+        setWorldViewPort();
     enableUIParams(); 
     glFlush();
     glutSwapBuffers();
@@ -223,7 +232,7 @@ void findingGameIdle()
         sceneStartTime = currenttime;
 
     /*FOUND SERVER*/
-    if((float)(currenttime - sceneStartTime)/1000 >= 5)
+    if(!waitingForServer)
         Scene->changeScene("PickShips");
 
     if (currenttime - timebase > 500) 
@@ -377,7 +386,19 @@ void toIngameFunc()
     {    
         map->setReadyToSend(true);
         map->centerMap();
-        Scene->changeScene("InGame");
+        while(!hasOrder)
+        {
+            ;//BLOCK
+        }
+        if(attacking)
+        {
+            Scene->changeScene("InGame");
+        }
+        else
+        {
+            //TODO
+            Scene->changeScene("BeingHit");
+        }        
     }
 
 }
@@ -405,7 +426,9 @@ void toMenuFunc()
 void toMenuFromEndingFunc()
 {
     map->reset();
+    std::cout << "RESET MY MAP" << std::endl;
     opponentMap->reset();
+    std::cout << "RESET OPPONENT MAP" << std::endl;
     Scene->changeScene("Menu");
 }
 
@@ -425,6 +448,8 @@ void toFindGameFunc()
     }
     else
     {
+        client->setww(ww);
+        client->setwh(wh);
         pthread_t thread;
         int r = pthread_create(&thread, NULL, &clientThread, NULL);
         if(r != 0)

@@ -141,8 +141,9 @@ void Panel::left(int _ww, int _wh, int _posRelativeToWh)
 	setww(_ww);
     setwh(_wh);
     FTBBox bbox = layout->BBox(content.c_str());    
-    float off = (bbox.Upper().X() - bbox.Lower().X());   
-    setPosition(0 + extraLeft + borderX, _posRelativeToWh);
+    float off = (bbox.Upper().X() - bbox.Lower().X())/2;   
+    // setPosition(0 + extraLeft + borderX, _posRelativeToWh);
+    setPosition(ww/4 - off , _posRelativeToWh);
 }
 
 void Panel::right(int _ww, int _wh, int _posRelativeToWh)
@@ -150,8 +151,9 @@ void Panel::right(int _ww, int _wh, int _posRelativeToWh)
 	setww(_ww);
     setwh(_wh);
     FTBBox bbox = layout->BBox(content.c_str());    
-    float off = (bbox.Upper().X() - bbox.Lower().X());   
-    setPosition(ww - (off + borderX + extraRight), _posRelativeToWh);
+    float off = (bbox.Upper().X() - bbox.Lower().X())/2;   
+    // setPosition(ww - (off + borderX + extraRight), _posRelativeToWh);
+    setPosition(3*ww/4 - off , _posRelativeToWh);
 }
 
 void Panel::setWidth(int _width)

@@ -44,9 +44,7 @@ Map::Map(bool _empty) : A("Objects/A.obj"),  B("Objects/B.obj"),  C("Objects/C.o
 			grid.push_back(row);
 		}
 		
-		if(!_empty)
-			initShips();
-		else
+		if(_empty)					
 		{
 			mapStartX = -2;
 			ship_2->setParams(0.37,0.37,0.37, 0,0,0.24, 90,0,0);
@@ -57,20 +55,32 @@ Map::Map(bool _empty) : A("Objects/A.obj"),  B("Objects/B.obj"),  C("Objects/C.o
 
 			ship_2->setName("2 - Bladesong");
 			ship_2->setShipId('A');
+			ship_2->setDrawing(false);
 
 			ship_3->setName("3 - Gunboat");
-			ship_3->setShipId('B');			
+			ship_3->setShipId('B');		
+			ship_3->setDrawing(false);	
 
 			ship_3_2->setName("3 - Prestes");
 			ship_3_2->setShipId('C');
+			ship_3_2->setDrawing(false);
 
 			ship_4->setName("4 - Carrier");
 			ship_4->setShipId('D');
+			ship_4->setDrawing(false);
 
 			ship_5->setName("5 - Submarine");
 			ship_5->setShipId('E');
+			ship_5->setDrawing(false);
 
+			ships.push_back(ship_2);
+			ships.push_back(ship_3);
+			ships.push_back(ship_3_2);
+			ships.push_back(ship_4);	
+			ships.push_back(ship_5);
 		}
+		else
+			initShips();
 
 		initTiles();
 		initLetters();
@@ -177,7 +187,9 @@ void Map::drawShips()
 {	
 	for(int i = 0;i < ships.size(); i++)
 	{
-		ships[i]->Draw(textureMode);
+		Ship * s = ships[i];
+		if(s->getDrawing())
+			s->Draw(textureMode);
 		if(debug)
 		{
 			ships[i]->DrawBoundingBox();
@@ -298,9 +310,8 @@ void Map::clipAndUpdateShip(Ship * current_ship)
             clipShipToTile(ship_dir, current_ship, closestTile);
         }
         else
-        {
-        	std::map<std::string, float> initParams = current_ship->getInitialParams();
-        	current_ship->setParamsByMap(initParams);
+        {        	
+        	current_ship->resetParams();
         	current_ship->setDirection(Direction::TOP_BOTTOM);
         }
     }        
@@ -398,6 +409,26 @@ void Map::clipShipToTile(Direction _dir, Ship * _ship, Tile * _tile)
 		updateTileInGrid(_tile, life, _dir, Tile::State::USED, _ship->getShipId());
 	}
 	_ship->setPlaced(true);
+}
+
+void Map::UIClipShip(Direction _dir, Ship * _ship, Tile * _tile)
+{
+	glm::vec3 ship_pos = _ship->getTopAnchor();
+	int life = _ship->getLife();
+	if(_dir == Direction::TOP_BOTTOM)
+	{		
+		glm::vec3 tile_pos =  _tile->getTopAnchor();
+		glm::vec3 offset (tile_pos.x-ship_pos.x, tile_pos.y-ship_pos.y, tile_pos.z-ship_pos.z);
+		_ship->addTranslation(offset.x, offset.y, 0);			
+	}
+	else if(_dir == Direction::LEFT_RIGHT)
+	{		
+		_ship->addRotation(0, 90, 0);
+		ship_pos = _ship->getTopAnchor();		
+		glm::vec3 tile_pos =  _tile->getLeftAnchor();
+		glm::vec3 offset (tile_pos.x-ship_pos.x, tile_pos.y-ship_pos.y, tile_pos.z-ship_pos.z);
+		_ship->addTranslation(offset.x, offset.y, 0);				
+	}	
 }
 
 void Map::unclipShipFromGrid(Ship * _ship)
@@ -551,13 +582,16 @@ void Map::reset()
 {
 	for(int i = 0; i < ships.size(); i++)
 	{
-		unclipShipFromGrid(ships[i]);
-		ships[i]->setParamsByMap(ships[i]->getInitialParams());
-	}
+		if(ships[i]->isPlaced())
+		{
+			unclipShipFromGrid(ships[i]);
+			ships[i]->setParamsByMap(ships[i]->getInitialParams());
+		}		
+	}	
 	char ** _m = exportMapToServer();
-	for(int i = 0; i < 11; i++)
+	for(int i = 0; i < X; i++)
 	{
-		for(int j = 0; j < 11; j++)
+		for(int j = 0; j < Y; j++)
 		{
 			std::cout << _m[i][j] << ", ";
 		}
@@ -572,6 +606,34 @@ void Map::reset()
 	float yRot_opponent = 0;
 	float zRot_opponent = 0;
 	float camZ_opponent = 0;
+	if(client != nullptr)
+	{
+		delete client;
+		client = nullptr;
+	}
+}
+
+Ship * Map::getShipFromId(char _id)
+{
+	for(int i = 0; i < ships.size(); i++)
+	{
+		if(ships[i]->getShipId() == _id)
+			return ships[i];
+	}
+	return nullptr;
+}
+
+void Map::addShipToList(Ship * _ship)
+{
+	if(_ship)
+	{
+		ships.push_back(_ship);
+	}
+}
+
+std::vector<Ship*> Map::getShips()
+{
+	return ships;
 }
 
 //Función para aplicar un color en específico a las figuras rendereadas 

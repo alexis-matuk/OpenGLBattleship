@@ -75,8 +75,7 @@ bool Tile::hit()
 			return true;
 		break;}
 		case State::USED:{			
-			updateState(State::HIT);
-			makeRipple();
+			updateState(State::HIT);			
 			return true;
 		break;}
 		case State::HIT:{

@@ -80,6 +80,7 @@ int main(int argc, char **argv)
     Scene->addCallback("Credits", creditsScene);
     Scene->addCallback("FindGame", findingGameScene);
     Scene->addCallback("Ending", endingScene);
+    Scene->addCallback("BeingHit", myMapBeingHitScene);
 
     UI = new UIHandler();
     UI->createButton(900, 720, 200, 50, "Accept", toIngameFunc, "acceptShips", GLUT_BITMAP_HELVETICA_18);
@@ -97,6 +98,7 @@ int main(int argc, char **argv)
     UI->findPanelByName("enemyShips")->setExtras(0,0,50,50);
     UI->createPanel(0, 0, 600, "friendlyShips", "Friendly Ships Destroyed", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
     UI->findPanelByName("friendlyShips")->setExtras(0,0,50,50);
+    UI->createPanel(0, 0, 600, "result", "YOU WON!", 60, 255, 255, 0, FTGL::ALIGN_LEFT);           
 
     UI->createPopup(0, 0, 400, "warning", "Place every ship before continuing", 30, 255, 255, 255, FTGL::ALIGN_CENTER);
     UI->createPopup(0, 0, 400, "serverWarning", "Server not found", 30, 255, 255, 255, FTGL::ALIGN_CENTER);
@@ -105,7 +107,7 @@ int main(int argc, char **argv)
     menuShip->setParams(1,1,1, -0.1,0.9,0.24, 0,90,0);
     map = new Map(false);  
     opponentMap = new Map(true);           
-
+    
     menuScene();
     
     glutMainLoop();    
@@ -133,7 +135,7 @@ void Reshape(int w, int h)
     UI->setButtonPositionByName("start", (int) (ww/2) - 100, (int)(wh/2));   
     UI->setButtonPositionByName("credits", (int) (ww/2) - 100, (int)3*wh/4);
     UI->setButtonPositionByName("menu", (int) (ww/2) - 100, (int)(wh/2));   
-    UI->setButtonPositionByName("ending", (int) (ww/2) - 100, (int)(5*wh/6));   
+    UI->setButtonPositionByName("ending", (int) (ww/2) - 100, (int)(9*wh/10));   
 
     
     UI->findPanelByName("Title")->center(ww, wh, 6.2*(float)wh/7);
@@ -142,17 +144,29 @@ void Reshape(int w, int h)
     UI->findPopupByName("serverWarning")->center(ww, wh, 4*(float)wh/5);
 
     UI->findPanelByName("credits")->setWidth(ww);
-    UI->findPanelByName("credits")->center(ww, wh, 3*(float)wh/4);  
+    UI->findPanelByName("credits")->center(ww, wh, 3*(float)wh/4);
 
 
     UI->findPanelByName("findingGame")->setWidth(ww);
     UI->findPanelByName("findingGame")->center(ww, wh, (float)wh/2);
 
     UI->findPanelByName("enemyShips")->setWidth(ww/2);
-    UI->findPanelByName("enemyShips")->left(ww, wh, 3*(float)wh/4);
+    UI->findPanelByName("enemyShips")->left(ww, wh, 6*(float)wh/8);
 
     UI->findPanelByName("friendlyShips")->setWidth(ww/2);
-    UI->findPanelByName("friendlyShips")->right(ww, wh, 3*(float)wh/4);
+    UI->findPanelByName("friendlyShips")->right(ww, wh, 6*(float)wh/8);
+
+    UI->findPanelByName("result")->setWidth(ww);
+    UI->findPanelByName("result")->center(ww, wh, 7*(float)wh/8);
+
+    UI->setww(ww);
+    UI->setwh(wh);
+
+    if(client != nullptr)
+    {        
+        client->setww(ww);
+        client->setwh(wh);        
+    }
 }
 
 

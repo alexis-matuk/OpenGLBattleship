@@ -32,6 +32,7 @@ extern double _zFar;
 extern double fovy;
 extern double prev_z;
 extern int ww, wh;
+
 extern float xRot;
 extern float yRot;
 extern float zRot;
@@ -101,6 +102,11 @@ extern bool shooting;
 
 extern UIClient * client;
 
+extern bool waitingForServer;
+extern bool attacking;
+extern bool defending;
+extern bool hasOrder;
+
 void DrawModel(GLMmodel* model, GLuint _mode);
 void DrawModel(GLMmodel* model, float centerX, float centerY, float centerZ, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ);
 GLMmodel* loadModel(const char* filename);
@@ -156,3 +162,4 @@ void idle();
 void menuIdle();
 void inGameIdle();
 void myMapBeingHitScene();
+glm::vec3 screenToWorldPoint(float winX, float winY);

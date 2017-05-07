@@ -4,7 +4,7 @@ GLuint viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_TEXTURE | GLM_2_SIDED;
 GLuint textureMode = GLM_SMOOTH | GLM_MATERIAL | GLM_TEXTURE | GLM_2_SIDED;
 GLuint noTextureMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;
 GLuint texture[1];
-bool debug = false;
+bool debug = true;
 
 int frame = 0;
 int currenttime = 0;
@@ -92,6 +92,12 @@ Missile * missile = nullptr;
 bool shooting = false;
 
 UIClient * client = nullptr;
+
+bool waitingForServer = true;
+
+bool attacking = false;
+bool defending = false;
+bool hasOrder = false;
 
 void DrawModel(GLMmodel* model, GLuint _mode)
 {            
@@ -300,4 +306,19 @@ void modifyCameraInGame()
         if(camZ_opponent <= MAX_CAM_Z)
             camZ_opponent += camSpeed * (currenttime - timebase);            
     }    
+}
+
+glm::vec3 screenToWorldPoint(float winX, float winY)
+{    
+    GLdouble near[3];
+    GLdouble far[3];                    
+    winY = viewport[1] + (float)viewport[3] - (float)winY;            
+    gluUnProject( winX, winY, 0, modelview, projection, viewport, &near[0], &near[1], &near[2]);
+    gluUnProject( winX, winY, 1, modelview, projection, viewport, &far[0], &far[1], &far[2]);
+    if(near[2] == far[2])     // this means we have no solutions
+     return glm::vec3(0,0,0);
+    GLfloat t = (near[2] - 0) / (near[2] - far[2]);      
+    GLfloat x = near[0] + (far[0] - near[0]) * t;
+    GLfloat y = near[1] + (far[1] - near[1]) * t;
+    return glm::vec3(x, y, 0);
 }
