@@ -1,3 +1,6 @@
 [submodule "ClientServerBattleship"]
 	path = ClientServerBattleship
 	url = https://github.com/gerardogtn/ClientServerBattleship.git
+[submodule "glm"]
+	path = glm
+	url = https://github.com/devernay/glm.git

@@ -52,6 +52,8 @@ public:
 		TOP_BOTTOM,
 		LEFT_RIGHT
 	};
+	void setBoundingBoxes();
+	void setOpponentMap();
 	Map(bool _empty);
 	~Map();
 	void initLetters();
@@ -83,11 +85,13 @@ public:
 	void setReadyToSend(bool _readyToSend);
 	bool getReadyToSend();
 	void centerMap();
+	void unCenterMap();
 	void reset();
 	void UIClipShip(Direction _dir, Ship * _ship, Tile * _tile);
 	Ship * getShipFromId(char _id);
 	void addShipToList(Ship * _ship);
 	std::vector<Ship*> getShips();	
+	void setDrawShips(bool _draw);
 	static void ApplyColor(
    	GLfloat ambr, GLfloat ambg, GLfloat ambb,
    	GLfloat difr, GLfloat difg, GLfloat difb,

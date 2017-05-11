@@ -234,30 +234,18 @@ void setWorldViewPort()
 
 void modifyCamera()
 {
-    if(rotatingXUp)
-    {
-        xRot -= xSpeed * (currenttime - timebase);
-    }
+    if(rotatingXUp)    
+        xRot -= xSpeed * (currenttime - timebase);    
     if(rotatingXDown)
-    {
         xRot += xSpeed * (currenttime - timebase);            
-    }
     if(rotatingYLeft)
-    {
         yRot -= ySpeed * (currenttime - timebase);
-    }
     if(rotatingYRight)
-    {
         yRot += ySpeed * (currenttime - timebase);            
-    }
     if(rotatingZLeft)
-    {
         zRot -= zSpeed * (currenttime - timebase);
-    }
     if(rotatingZRight)
-    {
         zRot += zSpeed * (currenttime - timebase);            
-    }
     if(zoomingIn)
     {
         if(camZ >= MIN_CAM_Z)
@@ -273,29 +261,17 @@ void modifyCamera()
 void modifyCameraInGame()
 {
     if(rotatingXUp)
-    {
         xRot_opponent -= xSpeed * (currenttime - timebase);
-    }
     if(rotatingXDown)
-    {
         xRot_opponent += xSpeed * (currenttime - timebase);            
-    }
     if(rotatingYLeft)
-    {
         yRot_opponent -= ySpeed * (currenttime - timebase);
-    }
     if(rotatingYRight)
-    {
         yRot_opponent += ySpeed * (currenttime - timebase);            
-    }
     if(rotatingZLeft)
-    {
         zRot_opponent -= zSpeed * (currenttime - timebase);
-    }
     if(rotatingZRight)
-    {
         zRot_opponent += zSpeed * (currenttime - timebase);            
-    }
     if(zoomingIn)
     {
         if(camZ_opponent >= MIN_CAM_Z)
@@ -310,6 +286,7 @@ void modifyCameraInGame()
 
 glm::vec3 screenToWorldPoint(float winX, float winY)
 {    
+    /*Obtenido de http://stackoverflow.com/questions/113352/opengl-projecting-mouse-click-onto-geometry*/
     GLdouble near[3];
     GLdouble far[3];                    
     winY = viewport[1] + (float)viewport[3] - (float)winY;            

@@ -40,8 +40,7 @@ public:
 	Object(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ, const char * filename);	
 	Object(float _centerX, float _centerY, float _centerZ, float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ, const char * filename);	
 	void setParams(float _centerX, float _centerY, float _centerZ, float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ);
-	void setParams(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ);
-	void DrawAxis(float scale);
+	void setParams(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ);	
 	void setTranslation(float x, float y, float z);
 	void setScale(float x, float y, float z);
 	void setRotation(float x, float y, float z);
@@ -61,14 +60,10 @@ public:
 	void setParamsByMap(std::map<std::string, float> _newParams);
 	void setName(std::string _name);
 	std::string getName();
-	bool TestRayOBBIntersection(
-	glm::vec3 ray_origin,        // Ray origin, in world space
-	glm::vec3 ray_direction,     // Ray direction (NOT target position!), in world space. Must be normalize()'d.
-	glm::vec3 aabb_min,          // Minimum X,Y,Z coords of the mesh when not transformed at all.
-	glm::vec3 aabb_max,          // Maximum X,Y,Z coords. Often aabb_min*-1 if your mesh is centered, but it's not always the case.
-	glm::mat4 ModelMatrix,       // Transformation applied to the mesh (which will thus be also applied to its bounding box)
-	float& intersection_distance // Output : distance between ray_origin and the intersection with the OBB
-	);
+	bool testX(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, float & tMin, float & tMax);
+	bool testY(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, float & tMin, float & tMax);
+	bool testZ(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, float & tMin, float & tMax);
+	bool TestRayOBBIntersection(glm::vec3 ray_origin, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, glm::mat4 ModelMatrix, float& intersection_distance);
 	bool checkIntersection(glm::vec3 near, glm::vec3 far, float & distance);
 	void setDistance(float _distance);
 	float getDistance();
@@ -76,6 +71,12 @@ public:
 	glm::vec3 getTopAnchor();
 	glm::vec3 getLeftAnchor();
 	void resetParams();	
+	void front(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7);
+	void back(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7);
+	void left(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7);
+	void right(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7);
+	void top(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7);
+	void bottom(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7);
 };
 
 #endif

@@ -19,7 +19,6 @@ void Display()
         if(debug)        
             drawRaycast();              
     glPopMatrix();
-
     disableUIParams();
     	setPanelViewPort();
     		UI->drawActivePopups();  
@@ -27,7 +26,6 @@ void Display()
             UI->drawButtonByName("acceptShips");            
         setWorldViewPort();
     enableUIParams();
-
     glFlush();
     glutSwapBuffers();
 }
@@ -42,7 +40,6 @@ void MenuDisplay()
         updateMatrices();                                         
         menuShip->Draw(textureMode);               
     glPopMatrix();
-
     disableUIParams();
         setPanelViewPort();
             UI->drawPanelByName("Title", false);                    
@@ -52,7 +49,6 @@ void MenuDisplay()
             UI->drawButtonByName("credits");            
         setWorldViewPort();
     enableUIParams();
-
     glFlush();
     glutSwapBuffers();
 }
@@ -62,7 +58,6 @@ void creditsDisplay()
     glLoadIdentity();   
     gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     disableUIParams();               
         setPanelViewPort();   
             UI->drawPanelByName("credits", true);
@@ -78,7 +73,6 @@ void endingDisplay()
     glLoadIdentity();   
     gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
     glPushMatrix();        
         updateMatrices();                                         
         client->drawEnemyShips();           
@@ -87,7 +81,8 @@ void endingDisplay()
 
     disableUIParams();            
         setPanelViewPort();   
-            // UI->drawDebugLines();      
+            if(debug)
+                UI->drawDebugLines();      
             UI->drawPanelByName("enemyShips", false);
             UI->drawPanelByName("friendlyShips", false);
             UI->drawPanelByName("result", false);
@@ -113,8 +108,7 @@ void inGameDisplay()
         glRotatef(yRot_opponent,0,1,0);  
         glRotatef(zRot_opponent,0,0,1);
         updateMatrices();                                  
-        opponentMap->Draw(); 
-        // map->Draw();   
+        opponentMap->Draw();         
         if(missile != nullptr)
         {            
             if(!missile->DrawMissile(textureMode))
@@ -136,7 +130,6 @@ void findingGameDisplay()
     glLoadIdentity();   
     gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     disableUIParams();         
         setPanelViewPort();   
             UI->drawPanelByName("findingGame", false);
@@ -188,14 +181,14 @@ void myMapBeingHitDisplay()
 void inGameIdle()
 {
     frame++;
-   currenttime = glutGet(GLUT_ELAPSED_TIME);
-   if (currenttime - timebase > 0.5) 
-   {
+    currenttime = glutGet(GLUT_ELAPSED_TIME);
+    if (currenttime - timebase > 0.5) 
+    {
         modifyCameraInGame();
         timebase = currenttime;    
         frame = 0;        
         glutPostRedisplay();        
-   }  
+    }  
 }
 
 void idle()
@@ -229,12 +222,9 @@ void findingGameIdle()
     frame++;
     currenttime = glutGet(GLUT_ELAPSED_TIME);
     if(sceneStartTime == -1)
-        sceneStartTime = currenttime;
-
-    /*FOUND SERVER*/
+        sceneStartTime = currenttime;    
     if(!waitingForServer)
         Scene->changeScene("PickShips");
-
     if (currenttime - timebase > 500) 
     {        
         if(animationCounter == 0)
@@ -248,7 +238,6 @@ void findingGameIdle()
             UI->findPanelByName("findingGame")->setContent("Finding Game...");
             animationCounter = -1;
         }               
-        
         animationCounter++;
         timebase = currenttime;    
         frame = 0;        
@@ -391,14 +380,9 @@ void toIngameFunc()
             ;//BLOCK
         }
         if(attacking)
-        {
             Scene->changeScene("InGame");
-        }
-        else
-        {
-            //TODO
+        else            
             Scene->changeScene("BeingHit");
-        }        
     }
 
 }
@@ -426,9 +410,17 @@ void toMenuFunc()
 void toMenuFromEndingFunc()
 {
     map->reset();
+    map->unCenterMap();
     std::cout << "RESET MY MAP" << std::endl;
     opponentMap->reset();
+    opponentMap->setDrawShips(false);   
     std::cout << "RESET OPPONENT MAP" << std::endl;
+    if(client)
+    {
+        delete client;
+        client = nullptr;
+    }
+    waitingForServer = true;
     Scene->changeScene("Menu");
 }
 

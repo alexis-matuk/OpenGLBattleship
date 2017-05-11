@@ -107,7 +107,6 @@ void Panel::Draw(bool withBackground)
 		{			
 			glPushMatrix();	
 				glTranslatef(xTopLeft, yTopLeft, 0);
-				// glTranslatef(ww/2, wh/2, 0);								    
 			    glBegin(GL_QUADS);
 			    	glColor4f((float) panel_r/255.05, (float) panel_g/255.0f, (float) panel_b/255.0f, panel_a);
 			        glVertex3f(min_x - borderX - extraLeft, min_y - borderY - extraBottom, 0);
@@ -119,7 +118,6 @@ void Panel::Draw(bool withBackground)
 		}
 		glPushMatrix();
 			glTranslatef(xTopLeft, yTopLeft, 0);
-			// glTranslatef(ww/2, wh/2, 0);	
 			glColor3f((float)r/255.0f, (float)g/255.0f, (float)b/255.0f);
 			glRasterPos2i(0,0);
 			layout->Render((const char*)content.c_str(), -1, FTPoint(), FTGL::RENDER_FRONT | FTGL::RENDER_BACK);

@@ -28,9 +28,7 @@ std::string Object::getName()
 void Object::initBoundingBox()
 {
 	if (model->numvertices == 0)
-	return;  
-
-    /* get the max/mins */
+		return;  
     max_x = min_x = model->vertices[3 + 0];
     max_y = min_y = model->vertices[3 + 1];
     max_z = min_z = model->vertices[3 + 2];
@@ -38,19 +36,16 @@ void Object::initBoundingBox()
         if (max_x < model->vertices[3 * i + 0])
             max_x = model->vertices[3 * i + 0];
         if (min_x > model->vertices[3 * i + 0])
-            min_x = model->vertices[3 * i + 0];
-        
+            min_x = model->vertices[3 * i + 0];       
         if (max_y < model->vertices[3 * i + 1])
             max_y = model->vertices[3 * i + 1];
         if (min_y > model->vertices[3 * i + 1])
-            min_y = model->vertices[3 * i + 1];
-        
+            min_y = model->vertices[3 * i + 1];        
         if (max_z < model->vertices[3 * i + 2])
             max_z = model->vertices[3 * i + 2];
         if (min_z > model->vertices[3 * i + 2])
             min_z = model->vertices[3 * i + 2];
     }
-
 	vertexArray.push_back({max_x, max_y, min_z});
 	vertexArray.push_back({min_x, max_y, min_z});
 	vertexArray.push_back({min_x, min_y, min_z});
@@ -59,7 +54,7 @@ void Object::initBoundingBox()
 	vertexArray.push_back({max_x, max_y, max_z});
 	vertexArray.push_back({min_x, max_y, max_z});
 	vertexArray.push_back({min_x, min_y, max_z});
-
+}
 /*
 	   6--------5
 	  /|	   /|
@@ -71,8 +66,6 @@ void Object::initBoundingBox()
 	|/		 |/
 	2--------3
 */
-
-}
 
 void Object::updateReferencePoints()
 {
@@ -119,142 +112,102 @@ bool Object::checkIntersection(glm::vec3 near, glm::vec3 far, float & distance)
     sc = glm::rotate(sc, glm::radians(rotZ), glm::vec3(0.0, 0.0, 1.0));	        
     sc = glm::scale(sc, glm::vec3(scaleX, scaleY, scaleZ));  
     sc = glm::translate(sc, glm::vec3(centerX, centerY, centerZ));
-
 	glm::vec3 origin = near;
 	glm::vec3 direction(far.x-near.x, far.y-near.y, far.z-near.z);
 	direction = glm::normalize(direction);
-
 	glm::vec4 vec_min(min_x, min_y, min_z, 1.0f);
 	glm::vec4 vec_max(max_x, max_y, max_z, 1.0f);
-
 	vec_min = sc * vec_min;
 	vec_max = sc * vec_max;
-
 	glm::vec3 min(vec_min.x, vec_min.y, vec_min.z);
 	glm::vec3 max(vec_max.x, vec_max.y, vec_max.z);
 	
 	return TestRayOBBIntersection(origin, direction, min, max, glm::mat4(), distance);
-	/*
-	Para saber cual objeto tocó primero en cada click checo todos los objetos y guardo los que regresaron true
-	También guardo la intersection distance 
-	El que tenga menor es el primer objeto
-	No importa la orientación
-	*/
 }
 
-bool Object::TestRayOBBIntersection(
-	glm::vec3 ray_origin,        // Ray origin, in world space
-	glm::vec3 ray_direction,     // Ray direction (NOT target position!), in world space. Must be normalize()'d.
-	glm::vec3 aabb_min,          // Minimum X,Y,Z coords of the mesh when not transformed at all.
-	glm::vec3 aabb_max,          // Maximum X,Y,Z coords. Often aabb_min*-1 if your mesh is centered, but it's not always the case.
-	glm::mat4 ModelMatrix,       // Transformation applied to the mesh (which will thus be also applied to its bounding box)
-	float& intersection_distance // Output : distance between ray_origin and the intersection with the OBB
-)
+bool Object::testX(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, float & tMin, float & tMax)
+{
+	glm::vec3 xaxis(ModelMatrix[0].x, ModelMatrix[0].y, ModelMatrix[0].z);
+	float e = glm::dot(xaxis, delta);
+	float f = glm::dot(ray_direction, xaxis);
+
+	if ( fabs(f) > 0.001f ){
+
+		float t1 = (e+aabb_min.x)/f;
+		float t2 = (e+aabb_max.x)/f; // Intersection with the "right" plane
+		if (t1>t2){
+			float w=t1;t1=t2;t2=w; // swap t1 and t2
+		}
+		if ( t2 < tMax )
+			tMax = t2;
+		if ( t1 > tMin )
+			tMin = t1;
+		if (tMax < tMin )
+			return false;
+	}else{
+		if(-e+aabb_min.x > 0.0f || -e+aabb_max.x < 0.0f)
+			return false;
+	}
+	return true;
+}
+
+bool Object::testY(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, float & tMin, float & tMax)
+{
+	glm::vec3 yaxis(ModelMatrix[1].x, ModelMatrix[1].y, ModelMatrix[1].z);
+	float e = glm::dot(yaxis, delta);
+	float f = glm::dot(ray_direction, yaxis);
+	if ( fabs(f) > 0.001f ){
+		float t1 = (e+aabb_min.y)/f;
+		float t2 = (e+aabb_max.y)/f;
+		if (t1>t2){float w=t1;t1=t2;t2=w;}
+		if ( t2 < tMax )
+			tMax = t2;
+		if ( t1 > tMin )
+			tMin = t1;
+		if (tMin > tMax)
+			return false;
+	}else{
+		if(-e+aabb_min.y > 0.0f || -e+aabb_max.y < 0.0f)
+			return false;
+	}
+	return true;
+}
+
+bool Object::testZ(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, float & tMin, float & tMax)
+{
+	glm::vec3 zaxis(ModelMatrix[2].x, ModelMatrix[2].y, ModelMatrix[2].z);
+	float e = glm::dot(zaxis, delta);
+	float f = glm::dot(ray_direction, zaxis);
+	if ( fabs(f) > 0.001f ){
+		float t1 = (e+aabb_min.z)/f;
+		float t2 = (e+aabb_max.z)/f;
+		if (t1>t2){float w=t1;t1=t2;t2=w;}
+		if ( t2 < tMax )
+			tMax = t2;
+		if ( t1 > tMin )
+			tMin = t1;
+		if (tMin > tMax)
+			return false;
+	}else{
+		if(-e+aabb_min.z > 0.0f || -e+aabb_max.z < 0.0f)
+			return false;
+	}
+	return true;
+}
+
+
+bool Object::TestRayOBBIntersection(glm::vec3 ray_origin, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, glm::mat4 ModelMatrix, float& intersection_distance)
 {
 	// Intersection method from Real-Time Rendering and Essential Mathematics for Games
-	
 	float tMin = 0.0f;
 	float tMax = 100000.0f;
-
 	glm::vec3 OBBposition_worldspace(ModelMatrix[3].x, ModelMatrix[3].y, ModelMatrix[3].z);
+	glm::vec3 delta = OBBposition_worldspace - ray_origin;	
 
-	glm::vec3 delta = OBBposition_worldspace - ray_origin;
-
-	// Test intersection with the 2 planes perpendicular to the OBB's X axis
-	{
-		glm::vec3 xaxis(ModelMatrix[0].x, ModelMatrix[0].y, ModelMatrix[0].z);
-		float e = glm::dot(xaxis, delta);
-		float f = glm::dot(ray_direction, xaxis);
-
-		if ( fabs(f) > 0.001f ){ // Standard case
-
-			float t1 = (e+aabb_min.x)/f; // Intersection with the "left" plane
-			float t2 = (e+aabb_max.x)/f; // Intersection with the "right" plane
-			// t1 and t2 now contain distances betwen ray origin and ray-plane intersections
-
-			// We want t1 to represent the nearest intersection, 
-			// so if it's not the case, invert t1 and t2
-			if (t1>t2){
-				float w=t1;t1=t2;t2=w; // swap t1 and t2
-			}
-
-			// tMax is the nearest "far" intersection (amongst the X,Y and Z planes pairs)
-			if ( t2 < tMax )
-				tMax = t2;
-			// tMin is the farthest "near" intersection (amongst the X,Y and Z planes pairs)
-			if ( t1 > tMin )
-				tMin = t1;
-
-			// And here's the trick :
-			// If "far" is closer than "near", then there is NO intersection.
-			// See the images in the tutorials for the visual explanation.
-			if (tMax < tMin )
-				return false;
-
-		}else{ // Rare case : the ray is almost parallel to the planes, so they don't have any "intersection"
-			if(-e+aabb_min.x > 0.0f || -e+aabb_max.x < 0.0f)
-				return false;
-		}
-	}
-
-
-	// Test intersection with the 2 planes perpendicular to the OBB's Y axis
-	// Exactly the same thing than above.
-	{
-		glm::vec3 yaxis(ModelMatrix[1].x, ModelMatrix[1].y, ModelMatrix[1].z);
-		float e = glm::dot(yaxis, delta);
-		float f = glm::dot(ray_direction, yaxis);
-
-		if ( fabs(f) > 0.001f ){
-
-			float t1 = (e+aabb_min.y)/f;
-			float t2 = (e+aabb_max.y)/f;
-
-			if (t1>t2){float w=t1;t1=t2;t2=w;}
-
-			if ( t2 < tMax )
-				tMax = t2;
-			if ( t1 > tMin )
-				tMin = t1;
-			if (tMin > tMax)
-				return false;
-
-		}else{
-			if(-e+aabb_min.y > 0.0f || -e+aabb_max.y < 0.0f)
-				return false;
-		}
-	}
-
-
-	// Test intersection with the 2 planes perpendicular to the OBB's Z axis
-	// Exactly the same thing than above.
-	{
-		glm::vec3 zaxis(ModelMatrix[2].x, ModelMatrix[2].y, ModelMatrix[2].z);
-		float e = glm::dot(zaxis, delta);
-		float f = glm::dot(ray_direction, zaxis);
-
-		if ( fabs(f) > 0.001f ){
-
-			float t1 = (e+aabb_min.z)/f;
-			float t2 = (e+aabb_max.z)/f;
-
-			if (t1>t2){float w=t1;t1=t2;t2=w;}
-
-			if ( t2 < tMax )
-				tMax = t2;
-			if ( t1 > tMin )
-				tMin = t1;
-			if (tMin > tMax)
-				return false;
-
-		}else{
-			if(-e+aabb_min.z > 0.0f || -e+aabb_max.z < 0.0f)
-				return false;
-		}
-	}
-
+	if(testX(ModelMatrix, delta, ray_direction, aabb_min, aabb_max, tMin, tMax) && testY(ModelMatrix, delta, ray_direction, aabb_min, aabb_max, tMin, tMax) && testZ(ModelMatrix, delta, ray_direction, aabb_min, aabb_max, tMin, tMax))
+		return true;	
 	intersection_distance = tMin;
-	return true;
+	return false;
 }
 
 std::vector<std::vector<float>> Object::getBoundingBox()
@@ -262,15 +215,75 @@ std::vector<std::vector<float>> Object::getBoundingBox()
 	return vertexArray;
 }
 
+void Object::front(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
+{
+	// front face =================
+    glVertex3fv(v0);    // v0-v1-v2
+    glVertex3fv(v1);
+    glVertex3fv(v2);
+    glVertex3fv(v2);    // v2-v3-v0
+    glVertex3fv(v3);
+    glVertex3fv(v0);
+}
+
+void Object::right(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
+{
+	// right face =================
+    glVertex3fv(v0);    // v0-v3-v4
+    glVertex3fv(v3);
+    glVertex3fv(v4);
+    glVertex3fv(v4);    // v4-v5-v0
+    glVertex3fv(v5);
+    glVertex3fv(v0);
+}
+
+void Object::top(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
+{
+	// top face ===================
+    glVertex3fv(v0);    // v0-v5-v6
+    glVertex3fv(v5);
+    glVertex3fv(v6);
+    glVertex3fv(v6);    // v6-v1-v0
+    glVertex3fv(v1);
+    glVertex3fv(v0);
+}
+
+void Object::left(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
+{
+	// left face ===================
+    glVertex3fv(v6);    // 
+    glVertex3fv(v7);
+    glVertex3fv(v2);
+    glVertex3fv(v2);    // 
+    glVertex3fv(v1);
+    glVertex3fv(v6);
+}
+
+void Object::back(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
+{
+	 // back face ===================
+    glVertex3fv(v5);    // 
+    glVertex3fv(v6);
+    glVertex3fv(v7);
+    glVertex3fv(v7);    // 
+    glVertex3fv(v4);
+    glVertex3fv(v5);
+}
+
+void Object::bottom(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
+{
+	 // bottom face ===================
+    glVertex3fv(v7);    // 
+    glVertex3fv(v2);
+    glVertex3fv(v3);
+    glVertex3fv(v3);    // 
+    glVertex3fv(v4);
+    glVertex3fv(v7);
+}
 void Object::DrawBoundingBox()
-{		
-
-	// disableParams();
-
+{	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//Activar wireframe		
 	glColor3f(1, 1, 0);
-	glBegin(GL_TRIANGLES);  // draw a cube with 12 triangles
-
 	float * v0 = &vertexArray[0][0];
 	float * v1 = &vertexArray[1][0];
 	float * v2 = &vertexArray[2][0];
@@ -279,82 +292,26 @@ void Object::DrawBoundingBox()
 	float * v5 = &vertexArray[5][0];
 	float * v6 = &vertexArray[6][0];
 	float * v7 = &vertexArray[7][0];
-
-    // front face =================
-    glVertex3fv(v0);    // v0-v1-v2
-    glVertex3fv(v1);
-    glVertex3fv(v2);
-
-    glVertex3fv(v2);    // v2-v3-v0
-    glVertex3fv(v3);
-    glVertex3fv(v0);
-
-    // right face =================
-    glVertex3fv(v0);    // v0-v3-v4
-    glVertex3fv(v3);
-    glVertex3fv(v4);
-
-    glVertex3fv(v4);    // v4-v5-v0
-    glVertex3fv(v5);
-    glVertex3fv(v0);
-
-    // top face ===================
-    glVertex3fv(v0);    // v0-v5-v6
-    glVertex3fv(v5);
-    glVertex3fv(v6);
-
-    glVertex3fv(v6);    // v6-v1-v0
-    glVertex3fv(v1);
-    glVertex3fv(v0);
-
-    // left face ===================
-    glVertex3fv(v6);    // 
-    glVertex3fv(v7);
-    glVertex3fv(v2);
-
-    glVertex3fv(v2);    // 
-    glVertex3fv(v1);
-    glVertex3fv(v6);
-
-    // back face ===================
-    glVertex3fv(v5);    // 
-    glVertex3fv(v6);
-    glVertex3fv(v7);
-
-    glVertex3fv(v7);    // 
-    glVertex3fv(v4);
-    glVertex3fv(v5);
-
-    // bottom face ===================
-    glVertex3fv(v7);    // 
-    glVertex3fv(v2);
-    glVertex3fv(v3);
-
-    glVertex3fv(v3);    // 
-    glVertex3fv(v4);
-    glVertex3fv(v7);
-
+	glBegin(GL_TRIANGLES);  // draw a cube with 12 triangles	
+    front(v0,v1,v2,v3,v4,v5,v6,v7);
+    right(v0,v1,v2,v3,v4,v5,v6,v7);
+    top(v0,v1,v2,v3,v4,v5,v6,v7);
+    left(v0,v1,v2,v3,v4,v5,v6,v7);
+    back(v0,v1,v2,v3,v4,v5,v6,v7);
+    bottom(v0,v1,v2,v3,v4,v5,v6,v7);             
 	glEnd();
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  
-
-	enableParams();
-
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  	
 	disableParams();	
 	glPointSize(5);
 	glBegin(GL_POINTS);      
-	//Centroid       
     glColor3f(1.0, 0.0, 0.0);        
-    glVertex3f(centroid.x, centroid.y, centroid.z);
-    //Left anchor
+    glVertex3f(centroid.x, centroid.y, centroid.z); //Centroid
     glColor3f(1.0, 1.0, 0.0);        
-    glVertex3f(leftAnchor.x, leftAnchor.y, leftAnchor.z);
-    //top anchor
+    glVertex3f(leftAnchor.x, leftAnchor.y, leftAnchor.z); //Left anchor
     glColor3f(0.0, 1.0, 0.0);        
-    glVertex3f(topAnchor.x, topAnchor.y, topAnchor.z);
+    glVertex3f(topAnchor.x, topAnchor.y, topAnchor.z); //Right anchor
     glEnd();        
     enableParams();
-  
 }
 
 Object::Object()
@@ -455,7 +412,6 @@ void Object::setParams(float _scaleX, float _scaleY, float _scaleZ, float _x, fl
 		initialParameterMap["centerY"] = centerY;
 		initialParameterMap["centerZ"] = centerZ;
 	}	
-
 	scaleX = _scaleX;
 	scaleY = _scaleY;
 	scaleZ = _scaleZ;
@@ -576,40 +532,4 @@ GLMmodel * Object::getModel()
 void Object::resetParams()
 {
 	setParamsByMap(initialParameterMap);
-}
-
-void Object::DrawAxis(float scale)
-{
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-		glTranslatef(transX,transY,transZ);  
-	    glRotatef(rotX, 1, 0, 0);
-		glRotatef(rotY, 0, 1, 0);
-		glRotatef(rotZ, 0, 0, 1);	     				
-	    glPushMatrix();
-	    glDisable(GL_LIGHTING);
-	    glDisable(GL_TEXTURE_2D);    
-	    glScalef(scale, scale, scale);
-
-	    glBegin(GL_LINES);    
-	    glColor3f(1.0, 0.0, 0.0);
-	    glVertex3f(.8f, 0.05f, 0.0);
-	    glVertex3f(1.0, 0.25f, 0.0);	/*  Letter X */
-	    glVertex3f(0.8f, .25f, 0.0);
-	    glVertex3f(1.0, 0.05f, 0.0);
-	    glVertex3f(0.0, 0.0, 0.0);
-	    glVertex3f(1.0, 0.0, 0.0);	/*  X axis */
-
-	    glColor3f(0.0, 1.0, 0.0);
-	    glVertex3f(0.0, 0.0, 0.0);
-	    glVertex3f(0.0, 1.0, 0.0);	/*  Y axis */
-
-	    glColor3f(0.0, 0.0, 1.0);
-	    glVertex3f(0.0, 0.0, 0.0);
-	    glVertex3f(0.0, 0.0, 1.0);	/*  Z axis */
-	    glEnd();
-		glEnable(GL_LIGHTING);
-		glEnable(GL_TEXTURE_2D);
-	    glColor3f(1.0, 1.0, 1.0);
-	    glPopMatrix();
-    glPopAttrib();
 }

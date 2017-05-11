@@ -12,7 +12,7 @@ Popup::Popup(int _xTopLeft, int _yTopLeft, int _width, std::string _name, std::s
 	panel_g = 0;
 	panel_b = 0;
 	panel_a = 0.8f;
-	button = new PopupButton(_xTopLeft, _yTopLeft, buttonWidth, buttonHeight, "Accept", &Popup::accept, "accept", GLUT_BITMAP_HELVETICA_12, this);	
+	button = new PopupButton(_xTopLeft, _yTopLeft, buttonWidth, buttonHeight, (char *) "Accept", &Popup::accept, (char *) "accept", GLUT_BITMAP_HELVETICA_12, this);	
 	FTBBox bbox = layout->BBox(content.c_str());	  
     min_x = bbox.Lower().Xf(); min_y = bbox.Lower().Yf(); min_z = bbox.Lower().Zf();
     max_x = bbox.Upper().Xf(); max_y = bbox.Upper().Yf(); max_z = bbox.Upper().Zf();

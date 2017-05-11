@@ -28,6 +28,7 @@ public:
 	bool getValidTile();
 	void setShipId(char _id);
 	char getShipId();
+	void movePoints(int x, int y);
 private:
 	GLMmodel * white_pin = nullptr;
 	GLMmodel * red_pin = nullptr;	

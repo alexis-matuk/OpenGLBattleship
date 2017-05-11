@@ -1,4 +1,3 @@
-
 #include "Button.hpp"
 
 Button::Button()
@@ -80,6 +79,45 @@ void Button::ButtonPassive(int x,int y)
 	}	
 }
 
+void Button::draw1()
+{
+	glBegin(GL_QUADS);
+		glVertex2i(xTopLeft, yTopLeft);
+		glVertex2i(xTopLeft, yTopLeft+height);
+		glVertex2i(xTopLeft+width, yTopLeft+height);
+		glVertex2i(xTopLeft+width, yTopLeft);
+	glEnd();
+}
+
+void Button::draw2()
+{
+	glBegin(GL_LINE_STRIP);
+		glVertex2i(xTopLeft+width,yTopLeft);
+		glVertex2i(xTopLeft,yTopLeft);
+		glVertex2i(xTopLeft,yTopLeft+height);
+	glEnd();
+}
+
+void Button::draw3()
+{
+	glBegin(GL_LINE_STRIP);
+		glVertex2i(xTopLeft, yTopLeft+height);
+		glVertex2i(xTopLeft+width, yTopLeft+height);
+		glVertex2i(xTopLeft+width, yTopLeft);
+	glEnd();
+}
+
+void Button::checkHighlight(int fontx, int fonty)
+{
+	if(highlighted)
+	{
+		glColor3f(0,0,0);
+		Font(font,label,fontx,fonty);
+		fontx--;
+		fonty--;
+	}
+}
+
 void Button::Draw()
 {
 	int fontx;
@@ -88,65 +126,26 @@ void Button::Draw()
 		glColor3f(0.2f,0.2f,1.0f);
 	else 
 		glColor3f(0.6f,0.6f,0.6f);
-
-	/*
-	 *	draw background for the button.
-	 */
-	glBegin(GL_QUADS);
-		glVertex2i(xTopLeft, yTopLeft);
-		glVertex2i(xTopLeft, yTopLeft+height);
-		glVertex2i(xTopLeft+width, yTopLeft+height);
-		glVertex2i(xTopLeft+width, yTopLeft);
-	glEnd();
-
-	/*
-	 *	Draw an outline around the button with width 3
-	 */
+	draw1();
 	glLineWidth(3);
-
-	/*
-	 *	The colours for the outline are reversed when the button. 
-	 */
 	if (state) 
 		glColor3f(0.4f,0.4f,0.4f);
 	else 
 		glColor3f(0.8f,0.8f,0.8f);
-
-	glBegin(GL_LINE_STRIP);
-		glVertex2i(xTopLeft+width,yTopLeft);
-		glVertex2i(xTopLeft,yTopLeft);
-		glVertex2i(xTopLeft,yTopLeft+height);
-	glEnd();
-
+	draw2();
 	if (state) 
 		glColor3f(0.8f,0.8f,0.8f);
 	else 
 		glColor3f(0.4f,0.4f,0.4f);
-
-	glBegin(GL_LINE_STRIP);
-		glVertex2i(xTopLeft, yTopLeft+height);
-		glVertex2i(xTopLeft+width, yTopLeft+height);
-		glVertex2i(xTopLeft+width, yTopLeft);
-	glEnd();
-
+	draw3();
 	glLineWidth(1);
-
 	fontx = xTopLeft + (width - glutBitmapLength(font,(const unsigned char*) label)) / 2 ;
 	fonty = yTopLeft + (height+10)/2;
-
 	if (state) {
 		fontx+=2;
 		fonty+=2;
 	}
-
-	if(highlighted)
-	{
-		glColor3f(0,0,0);
-		Font(font,label,fontx,fonty);
-		fontx--;
-		fonty--;
-	}
-
+	checkHighlight(fontx, fonty);
 	glColor3f(1,1,1);
 	Font(font,label,fontx,fonty);
 }

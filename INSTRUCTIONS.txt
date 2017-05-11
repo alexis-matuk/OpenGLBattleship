@@ -1,0 +1,15 @@
+sudo apt-get install autoconf
+sudo apt-get install libtool
+sudo apt-get install libtool-bin
+sudo apt-get install automake
+sudo apt-get install libjpeg-dev
+sudo apt-get install libpng12-dev
+sudo apt-get install libfreetype6-dev
+sudo apt-get install libdevil-dev
+cd glm
+./configure
+make
+make install
+cd glm/glm
+make
+checar que en ls ./libs exista libglm.a

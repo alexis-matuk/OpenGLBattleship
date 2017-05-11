@@ -7,86 +7,76 @@ Map::Map(bool _empty) : A("Objects/A.obj"),  B("Objects/B.obj"),  C("Objects/C.o
 		ship_3 = new Ship("Objects/Gunboat/Gunboat.obj", 0,0.25,0); 
 		ship_3_2 = new Ship("Objects/Prestes/Prestes.obj", 0,0.08,0); 
 		ship_4 = new Ship("Objects/Carrier/carrier.obj", 0,0.1,0);
-
 		ship_2->setLife(2);
 		ship_5->setLife(5);
 		ship_3->setLife(3);
 		ship_3_2->setLife(3);
 		ship_4->setLife(4);
-
-		std::vector<std::vector<float>> ship_2_box = ship_2->getBoundingBox();		
-		ship_2->setTopAnchor(glm::vec3((ship_2_box[2][0]+ship_2_box[3][0])/2, (ship_2_box[2][1]+ship_2_box[3][1])/2, (ship_2_box[2][2]+ship_2_box[3][2])/2));
-		ship_2->setLeftAnchor(glm::vec3((ship_2_box[2][0]+ship_2_box[7][0])/2, (ship_2_box[2][1]+ship_2_box[7][1])/2, (ship_2_box[2][2]+ship_2_box[7][2])/2));
-
-		std::vector<std::vector<float>> ship_3_box = ship_3->getBoundingBox();		
-		ship_3->setTopAnchor(glm::vec3((ship_3_box[2][0]+ship_3_box[3][0])/2, (ship_3_box[2][1]+ship_3_box[3][1])/2, (ship_3_box[2][2]+ship_3_box[3][2])/2));
-		ship_3->setLeftAnchor(glm::vec3((ship_3_box[2][0]+ship_3_box[7][0])/2, (ship_3_box[2][1]+ship_3_box[7][1])/2, (ship_3_box[2][2]+ship_3_box[7][2])/2));
-		
-		std::vector<std::vector<float>> ship_3_2_box = ship_3_2->getBoundingBox();		
-		ship_3_2->setTopAnchor(glm::vec3((ship_3_2_box[4][0]+ship_3_2_box[3][0])/2, (ship_3_2_box[4][1]+ship_3_2_box[3][1])/2, (ship_3_2_box[4][2]+ship_3_2_box[3][2])/2));
-		ship_3_2->setLeftAnchor(glm::vec3((ship_3_2_box[2][0]+ship_3_2_box[3][0])/2, (ship_3_2_box[2][1]+ship_3_2_box[3][1])/2, (ship_3_2_box[2][2]+ship_3_2_box[3][2])/2));
-
-		std::vector<std::vector<float>> ship_4_box = ship_4->getBoundingBox();		
-		ship_4->setTopAnchor(glm::vec3((ship_4_box[4][0]+ship_4_box[7][0])/2, (ship_4_box[4][1]+ship_4_box[7][1])/2, (ship_4_box[4][2]+ship_4_box[7][2])/2));
-		ship_4->setLeftAnchor(glm::vec3((ship_4_box[3][0]+ship_4_box[4][0])/2, (ship_4_box[3][1]+ship_4_box[4][1])/2, (ship_4_box[3][2]+ship_4_box[4][2])/2));
-
-		std::vector<std::vector<float>> ship_5_box = ship_5->getBoundingBox();		
-		ship_5->setTopAnchor(glm::vec3((ship_5_box[3][0]+ship_5_box[4][0])/2, (ship_5_box[3][1]+ship_5_box[4][1])/2, (ship_5_box[3][2]+ship_5_box[4][2])/2));
-		ship_5->setLeftAnchor(glm::vec3((ship_5_box[2][0]+ship_5_box[3][0])/2, (ship_5_box[2][1]+ship_5_box[3][1])/2, (ship_5_box[2][2]+ship_5_box[3][2])/2));
-
+		setBoundingBoxes();
 		for(int i = 0; i < X; i++)
 		{
 			std::vector<Tile*> row;			
 			for(int j = 0; j < Y; j++)
-			{				
 				row.push_back(new Tile());
-			}
 			grid.push_back(row);
 		}
-		
 		if(_empty)					
-		{
-			mapStartX = -2;
-			ship_2->setParams(0.37,0.37,0.37, 0,0,0.24, 90,0,0);
-			ship_3->setParams(0.57,0.57,0.57, 0,0,0.3, 90,0,0);
-			ship_3_2->setParams(0.57,0.57,0.57, 0,0,0.23, 90,90,0);	
-			ship_4->setParams(0.65,0.8,0.8, 0,0,0.2, 90,180,0);
-			ship_5->setParams(1,0.57,1.2, 0,0,0.15 ,90,90,0);	
-
-			ship_2->setName("2 - Bladesong");
-			ship_2->setShipId('A');
-			ship_2->setDrawing(false);
-
-			ship_3->setName("3 - Gunboat");
-			ship_3->setShipId('B');		
-			ship_3->setDrawing(false);	
-
-			ship_3_2->setName("3 - Prestes");
-			ship_3_2->setShipId('C');
-			ship_3_2->setDrawing(false);
-
-			ship_4->setName("4 - Carrier");
-			ship_4->setShipId('D');
-			ship_4->setDrawing(false);
-
-			ship_5->setName("5 - Submarine");
-			ship_5->setShipId('E');
-			ship_5->setDrawing(false);
-
-			ships.push_back(ship_2);
-			ships.push_back(ship_3);
-			ships.push_back(ship_3_2);
-			ships.push_back(ship_4);	
-			ships.push_back(ship_5);
-		}
+			setOpponentMap();
 		else
 			initShips();
-
 		initTiles();
 		initLetters();
 		initNumbers();
-
 		tileSideLength = grid[0][0]->getTileSideLength();			
+}
+
+void Map::setOpponentMap()
+{
+	mapStartX = -2;
+	ship_2->setParams(0.37,0.37,0.37, 0,0,0.24, 90,0,0);
+	ship_3->setParams(0.57,0.57,0.57, 0,0,0.3, 90,0,0);
+	ship_3_2->setParams(0.57,0.57,0.57, 0,0,0.23, 90,90,0);	
+	ship_4->setParams(0.65,0.8,0.8, 0,0,0.2, 90,180,0);
+	ship_5->setParams(1,0.57,1.2, 0,0,0.15 ,90,90,0);	
+	ship_2->setName("2 - Bladesong");
+	ship_2->setShipId('A');
+	ship_2->setDrawing(false);
+	ship_3->setName("3 - Gunboat");
+	ship_3->setShipId('B');		
+	ship_3->setDrawing(false);	
+	ship_3_2->setName("3 - Prestes");
+	ship_3_2->setShipId('C');
+	ship_3_2->setDrawing(false);
+	ship_4->setName("4 - Carrier");
+	ship_4->setShipId('D');
+	ship_4->setDrawing(false);
+	ship_5->setName("5 - Submarine");
+	ship_5->setShipId('E');
+	ship_5->setDrawing(false);
+	ships.push_back(ship_2);
+	ships.push_back(ship_3);
+	ships.push_back(ship_3_2);
+	ships.push_back(ship_4);	
+	ships.push_back(ship_5);
+}
+
+void Map::setBoundingBoxes()
+{
+	std::vector<std::vector<float>> ship_2_box = ship_2->getBoundingBox();		
+	ship_2->setTopAnchor(glm::vec3((ship_2_box[2][0]+ship_2_box[3][0])/2, (ship_2_box[2][1]+ship_2_box[3][1])/2, (ship_2_box[2][2]+ship_2_box[3][2])/2));
+	ship_2->setLeftAnchor(glm::vec3((ship_2_box[2][0]+ship_2_box[7][0])/2, (ship_2_box[2][1]+ship_2_box[7][1])/2, (ship_2_box[2][2]+ship_2_box[7][2])/2));
+	std::vector<std::vector<float>> ship_3_box = ship_3->getBoundingBox();		
+	ship_3->setTopAnchor(glm::vec3((ship_3_box[2][0]+ship_3_box[3][0])/2, (ship_3_box[2][1]+ship_3_box[3][1])/2, (ship_3_box[2][2]+ship_3_box[3][2])/2));
+	ship_3->setLeftAnchor(glm::vec3((ship_3_box[2][0]+ship_3_box[7][0])/2, (ship_3_box[2][1]+ship_3_box[7][1])/2, (ship_3_box[2][2]+ship_3_box[7][2])/2));
+	std::vector<std::vector<float>> ship_3_2_box = ship_3_2->getBoundingBox();		
+	ship_3_2->setTopAnchor(glm::vec3((ship_3_2_box[4][0]+ship_3_2_box[3][0])/2, (ship_3_2_box[4][1]+ship_3_2_box[3][1])/2, (ship_3_2_box[4][2]+ship_3_2_box[3][2])/2));
+	ship_3_2->setLeftAnchor(glm::vec3((ship_3_2_box[2][0]+ship_3_2_box[3][0])/2, (ship_3_2_box[2][1]+ship_3_2_box[3][1])/2, (ship_3_2_box[2][2]+ship_3_2_box[3][2])/2));
+	std::vector<std::vector<float>> ship_4_box = ship_4->getBoundingBox();		
+	ship_4->setTopAnchor(glm::vec3((ship_4_box[4][0]+ship_4_box[7][0])/2, (ship_4_box[4][1]+ship_4_box[7][1])/2, (ship_4_box[4][2]+ship_4_box[7][2])/2));
+	ship_4->setLeftAnchor(glm::vec3((ship_4_box[3][0]+ship_4_box[4][0])/2, (ship_4_box[3][1]+ship_4_box[4][1])/2, (ship_4_box[3][2]+ship_4_box[4][2])/2));
+	std::vector<std::vector<float>> ship_5_box = ship_5->getBoundingBox();		
+	ship_5->setTopAnchor(glm::vec3((ship_5_box[3][0]+ship_5_box[4][0])/2, (ship_5_box[3][1]+ship_5_box[4][1])/2, (ship_5_box[3][2]+ship_5_box[4][2])/2));
+	ship_5->setLeftAnchor(glm::vec3((ship_5_box[2][0]+ship_5_box[3][0])/2, (ship_5_box[2][1]+ship_5_box[3][1])/2, (ship_5_box[2][2]+ship_5_box[3][2])/2));
 }
 
 Map::~Map()
@@ -154,28 +144,21 @@ void Map::initNumbers()
 
 void Map::initShips()
 {
-
 	ship_2->setParams(0.37,0.37,0.37, 2 + 0.1,1,0.24, 90,0,0);
 	ship_3->setParams(0.57,0.57,0.57, 2.6 + 0.1,1,0.3, 90,0,0);
 	ship_3_2->setParams(0.57,0.57,0.57, 2 + 0.1,-1,0.23, 90,90,0);	
 	ship_4->setParams(0.65,0.8,0.8, 2.6 + 0.1,-1,0.2, 90,180,0);
 	ship_5->setParams(1,0.57,1.2, 3.3 + 0.1,0.25,0.15 ,90,90,0);	
-
 	ship_2->setName("2 - Bladesong");
 	ship_2->setShipId('A');
-
 	ship_3->setName("3 - Gunboat");
 	ship_3->setShipId('B');			
-
 	ship_3_2->setName("3 - Prestes");
 	ship_3_2->setShipId('C');
-
 	ship_4->setName("4 - Carrier");
 	ship_4->setShipId('D');
-
 	ship_5->setName("5 - Submarine");
 	ship_5->setShipId('E');
-
 	ships.push_back(ship_2);
 	ships.push_back(ship_3);
 	ships.push_back(ship_3_2);
@@ -191,9 +174,7 @@ void Map::drawShips()
 		if(s->getDrawing())
 			s->Draw(textureMode);
 		if(debug)
-		{
 			ships[i]->DrawBoundingBox();
-		}
 	}		
 }
 
@@ -286,7 +267,6 @@ Tile * Map::getClosestTile(Ship * _ship, Direction _dir)
 				dist = glm::distance(grid[i][j]->getLeftAnchor(), ship);
 			if(dist <= tileSideLength)
 			{								
-				//Tile and ship are within reasonable distance
 				if(dist <= closestDist && grid[i][j]->getCurrentState() == Tile::State::FREE)
 				{					
 					closestTile = grid[i][j];
@@ -306,7 +286,6 @@ void Map::clipAndUpdateShip(Ship * current_ship)
         Tile * closestTile = getClosestTile(current_ship, ship_dir);        
         if(closestTile != nullptr && !tilesUsed(closestTile, current_ship, ship_dir))
         {
-            std::cout << "Closest tile is: " << closestTile->getName() << std::endl;
             clipShipToTile(ship_dir, current_ship, closestTile);
         }
         else
@@ -357,8 +336,6 @@ void Map::updateShipPositions(Tile * _tile, Ship * _ship, Direction _dir)
 		_ship->setStartPos(start_pos);
 		_ship->setEndPos(end_pos);
 	}
-	std::cout << _ship->getName() << " start position: (" << _ship->getStartPos()[0] << ", " << _ship->getStartPos()[1] << ")" << std::endl;
-	std::cout << _ship->getName() << " end position: (" << _ship->getEndPos()[0] << ", " << _ship->getEndPos()[1] << ")" << std::endl;
 }
 
 bool Map::tilesUsed(Tile * _tile, Ship * _ship, Direction _dir)
@@ -532,18 +509,12 @@ char ** Map::exportMapToServer()
 {
 	char** exportMap = new char*[11];
 	for(int i = 0; i < 11; i++)
-	{
 		exportMap[i] = new char[11];
-	}
-
 	for(int i = 0; i < 11; i++)
 	{
 		for(int j = 0; j < 11; j++)
-		{
 			exportMap[i][j] = grid[j][i]->getShipId();
-		}
 	}
-		
 	return exportMap;
 }
 
@@ -568,13 +539,19 @@ void Map::centerMap()
 	for(int i = 0; i < X; i++)
 	{
 		for(int j = 0; j < Y; j++)
-		{
 			grid[i][j]->addTranslation(1, 0, 0);
-		}
 	}
 	for(int i = 0; i < ships.size(); i++)
-	{
 		ships[i]->addTranslation(1, 0, 0);
+}
+
+void Map::unCenterMap()
+{
+	mapStartX = -3;
+	for(int i = 0; i < X; i++)
+	{
+		for(int j = 0; j < Y; j++)
+			grid[i][j]->addTranslation(-1, 0, 0);
 	}
 }
 
@@ -583,19 +560,15 @@ void Map::reset()
 	for(int i = 0; i < ships.size(); i++)
 	{
 		if(ships[i]->isPlaced())
-		{
-			unclipShipFromGrid(ships[i]);
-			ships[i]->setParamsByMap(ships[i]->getInitialParams());
-		}		
-	}	
-	char ** _m = exportMapToServer();
+			unclipShipFromGrid(ships[i]);					
+		ships[i]->setParamsByMap(ships[i]->getInitialParams());	
+		ships[i]->setPlaced(false);
+		ships[i]->setDirection(Direction::TOP_BOTTOM);
+	}		
 	for(int i = 0; i < X; i++)
 	{
 		for(int j = 0; j < Y; j++)
-		{
-			std::cout << _m[i][j] << ", ";
-		}
-		std::cout << std::endl;
+			grid[i][j]->updateState(Tile::State::FREE);
 	}
 	aliveShips = 5;
 	float xRot = 0;
@@ -606,10 +579,19 @@ void Map::reset()
 	float yRot_opponent = 0;
 	float zRot_opponent = 0;
 	float camZ_opponent = 0;
-	if(client != nullptr)
+	currentShipSelected = nullptr;
+	readyToSend = false;
+	shooting = false;
+	hasOrder = false;
+    attacking = false;
+    defending = false;
+}
+
+void Map::setDrawShips(bool _draw)
+{
+	for(int i = 0; i < ships.size(); i++)
 	{
-		delete client;
-		client = nullptr;
+		ships[i]->setDrawing(false);	
 	}
 }
 

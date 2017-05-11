@@ -122,10 +122,7 @@ void Tile::initPoints()
     	for(float_y = 0.0f; float_y < 9.0f; float_y += 0.2f)		{
     	    points[ (int) (float_x*5) ][ (int) (float_y*5) ][0] = float_x - 4.4f;
     	    points[ (int) (float_x*5) ][ (int) (float_y*5) ][1] = float_y - 4.4f;
-    	    points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin(sqrt(float_x*float_x + float_y*float_y)));
-            // points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin(2*float_x)*cos(2*float_y))/0.5;            
-            // points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin( 10 * (float_x*float_x + float_y*float_y)/50))/0.5;
-    	    // points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin( ( (float_x*5*8)/360 ) * 3.14159 * 2 ));               
+    	    points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin(sqrt(float_x*float_x + float_y*float_y))); 
     	}
     }
 }
@@ -137,12 +134,25 @@ void Tile::makeRipple()
     	for(float_y = 0.0f; float_y < 9.0f; float_y += 0.2f)		{
     		points[ (int) (float_x*5) ][ (int) (float_y*5) ][0] = float_x - 4.4f;
     	    points[ (int) (float_x*5) ][ (int) (float_y*5) ][1] = float_y - 4.4f;
-    	    points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin( 10 * (float_x*float_x + float_y*float_y)/50))/0.5;
-            // points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin(2*float_x)*cos(2*float_y))/2;            
-            // points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin( 10 * (float_x*float_x + float_y*float_y)/50))/5;
-    	    // points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin( ( (float_x*5*8)/360 ) * 3.14159 * 2 ));               
+    	    points[ (int) (float_x*5) ][ (int) (float_y*5) ][2] = (float) (sin( 10 * (float_x*float_x + float_y*float_y)/50))/0.5;            
     	}
     }
+}
+
+void Tile::movePoints(int x, int y)
+{
+	float_x  = (float) (x)/44;
+    float_y  = (float) (y)/44;
+    float_xb = (float) (x+1)/44;
+    float_yb = (float) (y+1)/44;
+    glTexCoord2f( float_x, float_y);
+    glVertex3f( points[x][y][0], points[x][y][1], points[x][y][2] );
+    glTexCoord2f( float_x, float_yb );
+    glVertex3f( points[x][y+1][0], points[x][y+1][1], points[x][y+1][2] );
+    glTexCoord2f( float_xb, float_yb );
+    glVertex3f( points[x+1][y+1][0], points[x+1][y+1][1], points[x+1][y+1][2] );
+    glTexCoord2f( float_xb, float_y );
+    glVertex3f( points[x+1][y][0], points[x+1][y][1], points[x+1][y][2] );
 }
 
 void Tile::drawWater()
@@ -156,31 +166,14 @@ void Tile::drawWater()
 	    glBegin(GL_QUADS);
 	    for (x=0; x<44; x++) {
 	    	for (y=0; y<44; y++) {
-	    	    float_x  = (float) (x)/44;
-	    	    float_y  = (float) (y)/44;
-	    	    float_xb = (float) (x+1)/44;
-	    	    float_yb = (float) (y+1)/44;
-
-	    	    glTexCoord2f( float_x, float_y);
-	    	    glVertex3f( points[x][y][0], points[x][y][1], points[x][y][2] );
-	    			
-	    	    glTexCoord2f( float_x, float_yb );
-	    	    glVertex3f( points[x][y+1][0], points[x][y+1][1], points[x][y+1][2] );
-	    			
-	    	    glTexCoord2f( float_xb, float_yb );
-	    	    glVertex3f( points[x+1][y+1][0], points[x+1][y+1][1], points[x+1][y+1][2] );
-	    			
-	    	    glTexCoord2f( float_xb, float_y );
-	    	    glVertex3f( points[x+1][y][0], points[x+1][y][1], points[x+1][y][2] );
+	    	    movePoints(x, y);
 	    	}
 	    }
 	    glEnd();
-
 	    if (wiggle_count == 1) { // cycle the sine values
 		for (y = 0; y <45; y++) {
 		    points[44][y][2] = points[0][y][2];
 		}
-
 		for( x = 0; x < 44; x++ ) {
 		    for( y = 0; y < 45; y++) {
 	        points[x][y][2] = points[x+1][y][2];

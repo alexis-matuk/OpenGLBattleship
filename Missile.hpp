@@ -19,5 +19,5 @@ private:
 };
 #endif
 
-#include "Tile.hpp";
+#include "Tile.hpp"
 #include "aggregateFuncs.hpp"

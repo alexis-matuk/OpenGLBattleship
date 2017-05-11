@@ -31,5 +31,9 @@ public:
 	void setScale(int x, int y);
 	void setActive(bool _active);
 	bool getActive();
+	void draw1();
+	void draw2();
+	void draw3();
+	void checkHighlight(int fontx, int fonty);
 };
 #endif
