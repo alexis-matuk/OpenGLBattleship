@@ -1,6 +1,6 @@
 CC = g++
 CXX = g++
-LDFLAGS = -lpthread -lIL -ljpeg -lpng -lSOIL -lfreetype -lftgl -lm $(LIBGL)
+LDFLAGS = -lpthread -lIL -lglm -ljpeg -lpng -lSOIL -lfreetype -lftgl -lm $(LIBGL)
 CPPFLAGS = -std=c++0x -Wno-deprecated-declarations
 GLMA = glm/glm/.libs/libglm.a
 TARGET = battleship
@@ -10,7 +10,7 @@ OBJ=$(SRC:.cpp=.o)
 ifeq ($(shell uname -s), Darwin)
 	LIBGL = -framework OpenGL -framework GLUT -framework CoreFoundation
 else
-	LIBGL = -lGL -lglut
+	LIBGL = -lGL -lGLU -lglut
 endif
 
 $(TARGET): $(OBJ)
