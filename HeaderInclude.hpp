@@ -30,7 +30,6 @@ Gerardo Garcia Teruel - A01018057
 #include <utility>
 #include <algorithm>
 #include "SOIL.h"
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <FTGL/ftgl.h>
