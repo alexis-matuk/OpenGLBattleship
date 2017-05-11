@@ -13,7 +13,7 @@ bool rotatingXUp = false;
 bool rotatingXDown = false;
 bool rotatingYLeft = false;
 bool rotatingYRight = false;
-bool rotatingZLeft = false; 
+bool rotatingZLeft = false;
 bool rotatingZRight = false;
 bool zoomingIn = false;
 bool zoomingOut = false;
@@ -53,7 +53,7 @@ GLfloat mat_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
 GLfloat high_shininess[1] = { 100.0 };
 bool down = false;
 int ww, wh;
-int window; 
+int window;
 float lastx;
 float lasty;
 std::vector<std::vector<float>> points;
@@ -71,7 +71,7 @@ bool valid = false;
 UIHandler* UI = nullptr;
 SceneManager * Scene = nullptr;
 
-char const* fontFile = FONT_FILE; // Just a string with the path to the font file  
+char const* fontFile = FONT_FILE; // Just a string with the path to the font file
 
 Ship * menuShip = nullptr;
 
@@ -99,12 +99,13 @@ bool attacking = false;
 bool defending = false;
 bool hasOrder = false;
 
+char * globalHostname;
+
+
 void DrawModel(GLMmodel* model, GLuint _mode)
-{            
-    glPushAttrib(GL_ALL_ATTRIB_BITS);     
+{
         if (model)
-            glmDraw(model, _mode);
-    glPopAttrib();     
+            glmDraw(model, GLM_SMOOTH | GLM_2_SIDED | GLM_MATERIAL | GLM_TEXTURE);
 }
 
 
@@ -125,9 +126,9 @@ GLMmodel* loadModel(const char* filename)
 }
 
 // Load Bitmaps And Convert To Textures
-void LoadGLTextures() { 
- 
-    // Create Texture   
+void LoadGLTextures() {
+
+    // Create Texture
     glGenTextures(1, &texture[0]);
     glBindTexture(GL_TEXTURE_2D, texture[0]);   // 2d texture (x and y size)
 
@@ -141,7 +142,7 @@ void LoadGLTextures() {
 
 void enableParams()
 {
-    glEnable(GL_LIGHTING);    
+    glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
@@ -150,7 +151,7 @@ void enableParams()
 
 void disableParams()
 {
-    glDisable(GL_LIGHTING);    
+    glDisable(GL_LIGHTING);
     glDisable(GL_LIGHT0);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_NORMALIZE);
@@ -159,7 +160,7 @@ void disableParams()
 
 void drawRaycast()
 {
-    glDisable(GL_LIGHTING);    
+    glDisable(GL_LIGHTING);
     glDisable(GL_LIGHT0);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_NORMALIZE);
@@ -167,13 +168,13 @@ void drawRaycast()
 
     glLineWidth(1);
     glBegin(GL_LINES);
-    glColor3f(1.0, 0.5, 0.0);                
+    glColor3f(1.0, 0.5, 0.0);
     glVertex3f(nx,ny,nz);
     glVertex3f(fx,fy,fz);
-    glEnd();     
-     
+    glEnd();
+
     glPointSize(5);
-    glBegin(GL_POINTS);             
+    glBegin(GL_POINTS);
     glColor3f(0.0, 1.0, 0.0);
     glVertex3f(nx,ny,nz);
     glColor3f(1.0, 0.0, 0.0);
@@ -182,7 +183,7 @@ void drawRaycast()
     glPointSize(1);
     glLineWidth(1);
 
-    glEnable(GL_LIGHTING);    
+    glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
@@ -190,18 +191,18 @@ void drawRaycast()
 }
 
 void enableUIParams()
-{    
-    glEnable(GL_TEXTURE_2D);       
+{
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL); 
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 }
 
 void disableUIParams()
 {
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);    
+    glDisable(GL_LIGHTING);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
@@ -212,7 +213,7 @@ void setPanelViewPort()
     glLoadIdentity();
     gluOrtho2D(0, ww, 0, wh);
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();    
+    glLoadIdentity();
 }
 
 void setButtonViewPort()
@@ -227,35 +228,35 @@ void setButtonViewPort()
 void setWorldViewPort()
 {
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();        
+    glLoadIdentity();
     gluPerspective(45.0f,(GLfloat)ww/(GLfloat)wh,0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
 }
 
 void modifyCamera()
 {
-    if(rotatingXUp)    
-        xRot -= xSpeed * (currenttime - timebase);    
+    if(rotatingXUp)
+        xRot -= xSpeed * (currenttime - timebase);
     if(rotatingXDown)
-        xRot += xSpeed * (currenttime - timebase);            
+        xRot += xSpeed * (currenttime - timebase);
     if(rotatingYLeft)
         yRot -= ySpeed * (currenttime - timebase);
     if(rotatingYRight)
-        yRot += ySpeed * (currenttime - timebase);            
+        yRot += ySpeed * (currenttime - timebase);
     if(rotatingZLeft)
         zRot -= zSpeed * (currenttime - timebase);
     if(rotatingZRight)
-        zRot += zSpeed * (currenttime - timebase);            
+        zRot += zSpeed * (currenttime - timebase);
     if(zoomingIn)
     {
         if(camZ >= MIN_CAM_Z)
-            camZ -= camSpeed * (currenttime - timebase);            
+            camZ -= camSpeed * (currenttime - timebase);
     }
     if(zoomingOut)
     {
         if(camZ <= MAX_CAM_Z)
-            camZ += camSpeed * (currenttime - timebase);            
-    }    
+            camZ += camSpeed * (currenttime - timebase);
+    }
 }
 
 void modifyCameraInGame()
@@ -263,38 +264,38 @@ void modifyCameraInGame()
     if(rotatingXUp)
         xRot_opponent -= xSpeed * (currenttime - timebase);
     if(rotatingXDown)
-        xRot_opponent += xSpeed * (currenttime - timebase);            
+        xRot_opponent += xSpeed * (currenttime - timebase);
     if(rotatingYLeft)
         yRot_opponent -= ySpeed * (currenttime - timebase);
     if(rotatingYRight)
-        yRot_opponent += ySpeed * (currenttime - timebase);            
+        yRot_opponent += ySpeed * (currenttime - timebase);
     if(rotatingZLeft)
         zRot_opponent -= zSpeed * (currenttime - timebase);
     if(rotatingZRight)
-        zRot_opponent += zSpeed * (currenttime - timebase);            
+        zRot_opponent += zSpeed * (currenttime - timebase);
     if(zoomingIn)
     {
         if(camZ_opponent >= MIN_CAM_Z)
-            camZ_opponent -= camSpeed * (currenttime - timebase);            
+            camZ_opponent -= camSpeed * (currenttime - timebase);
     }
     if(zoomingOut)
     {
         if(camZ_opponent <= MAX_CAM_Z)
-            camZ_opponent += camSpeed * (currenttime - timebase);            
-    }    
+            camZ_opponent += camSpeed * (currenttime - timebase);
+    }
 }
 
 glm::vec3 screenToWorldPoint(float winX, float winY)
-{    
+{
     /*Obtenido de http://stackoverflow.com/questions/113352/opengl-projecting-mouse-click-onto-geometry*/
     GLdouble near[3];
-    GLdouble far[3];                    
-    winY = viewport[1] + (float)viewport[3] - (float)winY;            
+    GLdouble far[3];
+    winY = viewport[1] + (float)viewport[3] - (float)winY;
     gluUnProject( winX, winY, 0, modelview, projection, viewport, &near[0], &near[1], &near[2]);
     gluUnProject( winX, winY, 1, modelview, projection, viewport, &far[0], &far[1], &far[2]);
     if(near[2] == far[2])     // this means we have no solutions
      return glm::vec3(0,0,0);
-    GLfloat t = (near[2] - 0) / (near[2] - far[2]);      
+    GLfloat t = (near[2] - 0) / (near[2] - far[2]);
     GLfloat x = near[0] + (far[0] - near[0]) * t;
     GLfloat y = near[1] + (far[1] - near[1]) * t;
     return glm::vec3(x, y, 0);

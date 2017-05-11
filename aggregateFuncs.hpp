@@ -54,7 +54,7 @@ extern GLfloat mat_ambient[4];
 extern GLfloat mat_diffuse[4];
 extern GLfloat mat_specular[4];
 extern GLfloat high_shininess[1];
-extern int window; 
+extern int window;
 extern bool down;
 extern float lastx;
 extern float lasty;
@@ -77,8 +77,8 @@ extern GLuint viewMode;//Modo de visualización
 extern GLuint texture[1];
 extern bool debug;
 
-extern char const* fontFile; // Just a string with the path to the font file 
-extern Ship * menuShip;   
+extern char const* fontFile; // Just a string with the path to the font file
+extern Ship * menuShip;
 
 extern float menuShipRot;
 
@@ -99,13 +99,14 @@ extern GLMmodel * missileModel;
 extern Missile * missile;
 
 extern bool shooting;
-
 extern UIClient * client;
 
 extern bool waitingForServer;
 extern bool attacking;
 extern bool defending;
 extern bool hasOrder;
+
+extern char * globalHostname;
 
 void DrawModel(GLMmodel* model, GLuint _mode);
 void DrawModel(GLMmodel* model, float centerX, float centerY, float centerZ, float scaleX, float scaleY, float scaleZ, float x, float y, float z, float angle, float rotX, float rotY, float rotZ);

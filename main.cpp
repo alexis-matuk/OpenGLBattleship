@@ -26,11 +26,11 @@ void InitGL(int Width, int Height)	        // We call this right after our OpenG
 {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     float float_x, float_y;                     // loop counters.
-    LoadGLTextures();				// Load The Texture(s) 
+    LoadGLTextures();				// Load The Texture(s)
     glEnable(GL_TEXTURE_2D);			// Enable Texture Mapping
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);	// Clear The Background Color To Blue 
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);	// Clear The Background Color To Blue
     glClearDepth(1.0);				// Enables Clearing Of The Depth Buffer
     glDepthFunc(GL_LESS);			// The Type Of Depth Test To Do
     glEnable(GL_DEPTH_TEST);			// Enables Depth Testing
@@ -38,7 +38,7 @@ void InitGL(int Width, int Height)	        // We call this right after our OpenG
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();				// Reset The Projection Matrix
     gluPerspective(45.0f,(GLfloat)Width/(GLfloat)Height,0.2f,1000.0f);	// Calculate The Aspect Ratio Of The Window
-    glMatrixMode(GL_MODELVIEW);        
+    glMatrixMode(GL_MODELVIEW);
 }
 
 void setupAmbient()
@@ -50,8 +50,8 @@ void setupAmbient()
     glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);  
-    glEnable(GL_LIGHTING);    
+    glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
+    glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
@@ -68,7 +68,7 @@ void loadModels()
 }
 
 void initCallbacks()
-{    
+{
     Scene->addCallback("Menu", menuScene);
     Scene->addCallback("PickShips", pickingScene);
     Scene->addCallback("InGame", inGameScene);
@@ -90,14 +90,14 @@ void initButtons()
 void initPanels()
 {
 
-    UI->createPanel(0, 0, 600, "Title", "BATTLESHIP", 60, 255, 255, 255, FTGL::ALIGN_LEFT);     
+    UI->createPanel(0, 0, 600, "Title", "BATTLESHIP", 60, 255, 255, 255, FTGL::ALIGN_LEFT);
     UI->createPanel(0, 0, 600, "credits", "Alexis Matuk - A01021143\nDiego Vázquez - A01168095\nGerardo Teruel - A01018057", 40, 255, 255, 255, FTGL::ALIGN_LEFT);
     UI->createPanel(0, 0, 600, "findingGame", "Finding Game...", 40, 255, 255, 255, FTGL::ALIGN_LEFT);
-    UI->createPanel(0, 0, 600, "enemyShips", "Enemy Ships Destroyed", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
+    UI->createPanel(0, 0, 600, "enemyShips", "Enemy Ships Destroyed", 40, 255, 255, 255, FTGL::ALIGN_LEFT);
     UI->findPanelByName("enemyShips")->setExtras(0,0,50,50);
-    UI->createPanel(0, 0, 600, "friendlyShips", "Friendly Ships Destroyed", 40, 255, 255, 255, FTGL::ALIGN_LEFT);       
+    UI->createPanel(0, 0, 600, "friendlyShips", "Friendly Ships Destroyed", 40, 255, 255, 255, FTGL::ALIGN_LEFT);
     UI->findPanelByName("friendlyShips")->setExtras(0,0,50,50);
-    UI->createPanel(0, 0, 600, "result", "YOU WON!", 60, 255, 255, 0, FTGL::ALIGN_LEFT);  
+    UI->createPanel(0, 0, 600, "result", "YOU WON!", 60, 255, 255, 0, FTGL::ALIGN_LEFT);
 }
 
 void initPopups()
@@ -110,44 +110,54 @@ void initObjects()
 {
     menuShip = new Ship("Objects/Gunboat/Gunboat.obj", 0,0.25,0);
     menuShip->setParams(1,1,1, -0.1,0.9,0.24, 0,90,0);
-    map = new Map(false);  
-    opponentMap = new Map(true);   
+    map = new Map(false);
+    opponentMap = new Map(true);
 }
 
 /*Función principal*/
-int main(int argc, char **argv)
-{	
-    glutInit(&argc, argv);       
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);  
+int main(int argc, char *argv[])
+{
+  if(argc == 2)
+  {
+    globalHostname = argv[1];
+    printf("Connecting to %s\n", globalHostname);
+  }
+  else
+  {
+    globalHostname = (char *) "localhost";
+    printf("Connecting to %s\n", "localhost");
+  }
+    glutInit(&argc, argv);
+	   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
     glutInitWindowSize(1100, 768);
     glutInitWindowPosition(0, 0);
-    window = glutCreateWindow("Battleship");    
-    // glutFullScreen();       
+    window = glutCreateWindow("Battleship");
+    // glutFullScreen();
     glutReshapeFunc(&Reshape);
-    InitGL(1100, 768);    
+    InitGL(1100, 768);
     glLoadIdentity();
-    glClearColor(0.0, 0.0, 0.0, 1);     
+    glClearColor(0.0, 0.0, 0.0, 1);
     setupAmbient();
-    loadModels(); 
+    loadModels();
     Scene = new SceneManager();
-    initCallbacks();       
+    initCallbacks();
     UI = new UIHandler();
     initButtons();
-    initPanels();             
+    initPanels();
     initPopups();
-    initObjects();        
+    initObjects();
     menuScene();
-    glutMainLoop();    
-    return 0;        
+    glutMainLoop();
+    return 0;
 }
 
 void reshapeButtons()
 {
-    UI->setButtonPositionByName("acceptShips", ww-200, wh-50); 
-    UI->setButtonPositionByName("start", (int) (ww/2) - 100, (int)(wh/2));   
+    UI->setButtonPositionByName("acceptShips", ww-200, wh-50);
+    UI->setButtonPositionByName("start", (int) (ww/2) - 100, (int)(wh/2));
     UI->setButtonPositionByName("credits", (int) (ww/2) - 100, (int)3*wh/4);
-    UI->setButtonPositionByName("menu", (int) (ww/2) - 100, (int)(wh/2));   
-    UI->setButtonPositionByName("ending", (int) (ww/2) - 100, (int)(9*wh/10));   
+    UI->setButtonPositionByName("menu", (int) (ww/2) - 100, (int)(wh/2));
+    UI->setButtonPositionByName("ending", (int) (ww/2) - 100, (int)(9*wh/10));
 }
 
 void reshapePopups()
@@ -158,7 +168,7 @@ void reshapePopups()
 
 void reshapePanels()
 {
-    UI->findPanelByName("Title")->center(ww, wh, 6.2*(float)wh/7);    
+    UI->findPanelByName("Title")->center(ww, wh, 6.2*(float)wh/7);
     UI->findPanelByName("credits")->setWidth(ww);
     UI->findPanelByName("credits")->center(ww, wh, 3*(float)wh/4);
     UI->findPanelByName("findingGame")->setWidth(ww);
@@ -183,7 +193,7 @@ void Reshape(int w, int h)
     _left = -(double) w / (double) h;
     _right = -_left;
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();    
+    glLoadIdentity();
     // gluPerspective(fovy, (double) w / (double) h, _zNear, _zFar);
     gluPerspective(45.0f,(GLfloat)w/(GLfloat)h,0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
@@ -193,12 +203,12 @@ void Reshape(int w, int h)
     UI->setww(ww);
     UI->setwh(wh);
     if(client != nullptr)
-    {        
+    {
         client->setww(ww);
-        client->setwh(wh);        
+        client->setwh(wh);
     }
 }
 
 
-#include "Mousehandler.hpp"
+#include "MouseHandler.hpp"
 #include "DisplayFunctions.hpp"

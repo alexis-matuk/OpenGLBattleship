@@ -10,7 +10,7 @@
     #include <GL/glu.h>
 #endif	// Header File For The OpenGL32 Library
 
-#include "glm.h"
+#include "glm/glm/glm.h"
 #include <stdlib.h>
 #include <memory.h>
 #include <stdio.h>

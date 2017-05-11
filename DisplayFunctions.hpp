@@ -2,28 +2,28 @@
 	====== START DISPLAY FUNCTIONS ======
 */
 void Display()
-{				 				    
-	glLoadIdentity();	
-	gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0);	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	      
+{
+	glLoadIdentity();
+	gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
 		if (wireframe)
 		    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//Activar wireframe
 		else
-		    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);        
-		glRotatef(xRot,1,0,0);	
-		glRotatef(yRot,0,1,0);	
+		    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glRotatef(xRot,1,0,0);
+		glRotatef(yRot,0,1,0);
 		glRotatef(zRot,0,0,1);
-        updateMatrices();                                  
-        map->Draw();                 
-        if(debug)        
-            drawRaycast();              
+        updateMatrices();
+        map->Draw();
+        if(debug)
+            drawRaycast();
     glPopMatrix();
     disableUIParams();
     	setPanelViewPort();
-    		UI->drawActivePopups();  
-    	setButtonViewPort();                          
-            UI->drawButtonByName("acceptShips");            
+    		UI->drawActivePopups();
+    	setButtonViewPort();
+            UI->drawButtonByName("acceptShips");
         setWorldViewPort();
     enableUIParams();
     glFlush();
@@ -32,21 +32,21 @@ void Display()
 
 void MenuDisplay()
 {
-    glLoadIdentity();   
-    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
+    glLoadIdentity();
+    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
         glRotatef(menuShipRot, 0, 1, 0);
-        updateMatrices();                                         
-        menuShip->Draw(textureMode);               
+        updateMatrices();
+        menuShip->Draw(textureMode);
     glPopMatrix();
     disableUIParams();
         setPanelViewPort();
-            UI->drawPanelByName("Title", false);                    
-            UI->drawActivePopups();   
-        setButtonViewPort();                          
-            UI->drawButtonByName("start"); 
-            UI->drawButtonByName("credits");            
+            UI->drawPanelByName("Title", false);
+            UI->drawActivePopups();
+        setButtonViewPort();
+            UI->drawButtonByName("start");
+            UI->drawButtonByName("credits");
         setWorldViewPort();
     enableUIParams();
     glFlush();
@@ -55,71 +55,71 @@ void MenuDisplay()
 
 void creditsDisplay()
 {
-    glLoadIdentity();   
-    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
+    glLoadIdentity();
+    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    disableUIParams();               
-        setPanelViewPort();   
+    disableUIParams();
+        setPanelViewPort();
             UI->drawPanelByName("credits", true);
         setButtonViewPort();
             UI->drawButtonByName("menu");
-    enableUIParams();     
+    enableUIParams();
     glFlush();
     glutSwapBuffers();
 }
 
 void endingDisplay()
 {
-    glLoadIdentity();   
-    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
+    glLoadIdentity();
+    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glPushMatrix();        
-        updateMatrices();                                         
-        client->drawEnemyShips();           
-        client->drawFriendlyShips();           
+    glPushMatrix();
+        updateMatrices();
+        client->drawEnemyShips();
+        client->drawFriendlyShips();
     glPopMatrix();
 
-    disableUIParams();            
-        setPanelViewPort();   
+    disableUIParams();
+        setPanelViewPort();
             if(debug)
-                UI->drawDebugLines();      
+                UI->drawDebugLines();
             UI->drawPanelByName("enemyShips", false);
             UI->drawPanelByName("friendlyShips", false);
             UI->drawPanelByName("result", false);
         setButtonViewPort();
             UI->drawButtonByName("ending");
         setWorldViewPort();
-    enableUIParams(); 
+    enableUIParams();
     glFlush();
     glutSwapBuffers();
 }
 
 void inGameDisplay()
 {
-    glLoadIdentity();   
-    gluLookAt(0, 0, START_Z+camZ_opponent, 0, 0, camZ_opponent, 0, 1, 0); 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
+    glLoadIdentity();
+    gluLookAt(0, 0, START_Z+camZ_opponent, 0, 0, camZ_opponent, 0, 1, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
         if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//Activar wireframe
         else
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);        
-        glRotatef(xRot_opponent,1,0,0);  
-        glRotatef(yRot_opponent,0,1,0);  
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glRotatef(xRot_opponent,1,0,0);
+        glRotatef(yRot_opponent,0,1,0);
         glRotatef(zRot_opponent,0,0,1);
-        updateMatrices();                                  
-        opponentMap->Draw();         
+        updateMatrices();
+        opponentMap->Draw();
         if(missile != nullptr)
-        {            
+        {
             if(!missile->DrawMissile(textureMode))
-            {                
+            {
                 delete missile;
-                missile = nullptr;     
+                missile = nullptr;
                 shooting = false;
             }
         }
-        if(debug)        
-            drawRaycast();              
+        if(debug)
+            drawRaycast();
     glPopMatrix();
     glFlush();
     glutSwapBuffers();
@@ -127,43 +127,43 @@ void inGameDisplay()
 
 void findingGameDisplay()
 {
-    glLoadIdentity();   
-    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
+    glLoadIdentity();
+    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    disableUIParams();         
-        setPanelViewPort();   
+    disableUIParams();
+        setPanelViewPort();
             UI->drawPanelByName("findingGame", false);
-    enableUIParams(); 
+    enableUIParams();
     glFlush();
     glutSwapBuffers();
 }
 
 void myMapBeingHitDisplay()
-{                                   
-    glLoadIdentity();   
-    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0); 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
+{
+    glLoadIdentity();
+    gluLookAt(0, 0, START_Z+camZ, 0, 0, camZ, 0, 1, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
         if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//Activar wireframe
         else
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);        
-        glRotatef(xRot,1,0,0);  
-        glRotatef(yRot,0,1,0);  
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glRotatef(xRot,1,0,0);
+        glRotatef(yRot,0,1,0);
         glRotatef(zRot,0,0,1);
-        updateMatrices();                                  
-        map->Draw(); 
+        updateMatrices();
+        map->Draw();
         if(missile != nullptr)
-        {            
+        {
             if(!missile->DrawMissile(textureMode))
-            {                
+            {
                 delete missile;
-                missile = nullptr;     
+                missile = nullptr;
                 shooting = false;
             }
-        }                
-        if(debug)        
-            drawRaycast();              
+        }
+        if(debug)
+            drawRaycast();
     glPopMatrix();
     glFlush();
     glutSwapBuffers();
@@ -182,67 +182,67 @@ void inGameIdle()
 {
     frame++;
     currenttime = glutGet(GLUT_ELAPSED_TIME);
-    if (currenttime - timebase > 0.5) 
+    if (currenttime - timebase > 0.5)
     {
         modifyCameraInGame();
-        timebase = currenttime;    
-        frame = 0;        
-        glutPostRedisplay();        
-    }  
+        timebase = currenttime;
+        frame = 0;
+        glutPostRedisplay();
+    }
 }
 
 void idle()
 {
    frame++;
    currenttime = glutGet(GLUT_ELAPSED_TIME);
-   if (currenttime - timebase > 0.5) 
+   if (currenttime - timebase > 0.5)
    {
         modifyCamera();
-        timebase = currenttime;    
-        frame = 0;        
-        glutPostRedisplay();        
-   }  
+        timebase = currenttime;
+        frame = 0;
+        glutPostRedisplay();
+   }
 }
 
 void menuIdle()
-{    
+{
     frame++;
     currenttime = glutGet(GLUT_ELAPSED_TIME);
-    if (currenttime - timebase > 0.5) 
-    {        
+    if (currenttime - timebase > 0.5)
+    {
         menuShipRot += 0.1 * (currenttime - timebase);
-        timebase = currenttime;    
-        frame = 0;        
-        glutPostRedisplay();        
-    }  
+        timebase = currenttime;
+        frame = 0;
+        glutPostRedisplay();
+    }
 }
 
 void findingGameIdle()
-{    
+{
     frame++;
     currenttime = glutGet(GLUT_ELAPSED_TIME);
     if(sceneStartTime == -1)
-        sceneStartTime = currenttime;    
+        sceneStartTime = currenttime;
     if(!waitingForServer)
         Scene->changeScene("PickShips");
-    if (currenttime - timebase > 500) 
-    {        
+    if (currenttime - timebase > 500)
+    {
         if(animationCounter == 0)
             UI->findPanelByName("findingGame")->setContent("Finding Game");
         else if(animationCounter == 1)
             UI->findPanelByName("findingGame")->setContent("Finding Game.");
-        else if(animationCounter == 2)        
+        else if(animationCounter == 2)
             UI->findPanelByName("findingGame")->setContent("Finding Game..");
-        else if(animationCounter >= 3)     
+        else if(animationCounter >= 3)
         {
             UI->findPanelByName("findingGame")->setContent("Finding Game...");
             animationCounter = -1;
-        }               
+        }
         animationCounter++;
-        timebase = currenttime;    
-        frame = 0;        
-        glutPostRedisplay();        
-    }  
+        timebase = currenttime;
+        frame = 0;
+        glutPostRedisplay();
+    }
 }
 
 
@@ -262,7 +262,7 @@ void inGameScene()
     glutSpecialFunc(SpecialInput);
     glutSpecialUpFunc(SpecialInputUp);
 
-    glutMouseFunc(mouseInGame);    
+    glutMouseFunc(mouseInGame);
     glutPassiveMotionFunc(MousePassiveMotion);
 
     glutIdleFunc(inGameIdle);
@@ -270,15 +270,15 @@ void inGameScene()
 }
 
 void menuScene()
-{	    
+{
     UI->deactivateButtons();
     UI->findButtonByName("credits")->setActive(true);
-    UI->findButtonByName("start")->setActive(true);    
-    UI->findButtonByName("acceptShips")->setActive(true);    
+    UI->findButtonByName("start")->setActive(true);
+    UI->findButtonByName("acceptShips")->setActive(true);
 	glutKeyboardFunc(KeyboardMenu);
 
     glutMouseFunc(mouseButtonMenu);
-    glutMotionFunc(mouseMotionMenu); 
+    glutMotionFunc(mouseMotionMenu);
     glutPassiveMotionFunc(MousePassiveMotion);
 
     glutIdleFunc(menuIdle);
@@ -286,16 +286,16 @@ void menuScene()
 }
 
 void pickingScene()
-{	
+{
     UI->deactivateButtons();
-    UI->findButtonByName("acceptShips")->setActive(true);    
+    UI->findButtonByName("acceptShips")->setActive(true);
 	glutKeyboardFunc(&Keyboard);
     glutKeyboardUpFunc(&KeyboardUp);
     glutSpecialFunc(SpecialInput);
     glutSpecialUpFunc(SpecialInputUp);
 
     glutMouseFunc(mouseHandlerPickingScene);
-    glutMotionFunc(shipMotion); 
+    glutMotionFunc(shipMotion);
     glutPassiveMotionFunc(MousePassiveMotion);
 
     glutIdleFunc(idle);
@@ -309,7 +309,7 @@ void creditsScene()
     glutKeyboardFunc(KeyboardMenu);
 
     glutMouseFunc(mouseButtonMenu);
-    glutMotionFunc(mouseMotionMenu); 
+    glutMotionFunc(mouseMotionMenu);
     glutPassiveMotionFunc(MousePassiveMotion);
 
     glutDisplayFunc(creditsDisplay);
@@ -322,7 +322,7 @@ void endingScene()
     glutKeyboardFunc(KeyboardMenu);
 
     glutMouseFunc(mouseButtonMenu);
-    glutMotionFunc(mouseMotionMenu); 
+    glutMotionFunc(mouseMotionMenu);
     glutPassiveMotionFunc(MousePassiveMotion);
 
     glutDisplayFunc(endingDisplay);
@@ -334,7 +334,7 @@ void findingGameScene()
     glutKeyboardFunc(KeyboardMenu);
 
     glutMouseFunc(mouseButtonMenu);
-    glutMotionFunc(mouseMotionMenu); 
+    glutMotionFunc(mouseMotionMenu);
     glutPassiveMotionFunc(MousePassiveMotion);
 
     glutIdleFunc(findingGameIdle);
@@ -342,15 +342,15 @@ void findingGameScene()
 }
 
 void myMapBeingHitScene()
-{       
-    UI->deactivateButtons();    
+{
+    UI->deactivateButtons();
     glutKeyboardFunc(&Keyboard);
     glutKeyboardUpFunc(&KeyboardUp);
     glutSpecialFunc(SpecialInput);
     glutSpecialUpFunc(SpecialInputUp);
 
     glutMouseFunc(NULL);
-    glutMotionFunc(NULL); 
+    glutMotionFunc(NULL);
     glutPassiveMotionFunc(NULL);
 
     glutIdleFunc(idle);
@@ -367,12 +367,12 @@ void myMapBeingHitScene()
 */
 
 void toIngameFunc()
-{    
+{
     // Scene->changeScene("Menu");
-    if(!map->everyShipPlaced())
+    if(false)
     	UI->activatePopup("warning");
     else
-    {    
+    {
         map->setReadyToSend(true);
         map->centerMap();
         while(!hasOrder)
@@ -381,20 +381,20 @@ void toIngameFunc()
         }
         if(attacking)
             Scene->changeScene("InGame");
-        else            
+        else
             Scene->changeScene("BeingHit");
     }
 
 }
 
 void toGameFunc()
-{  
+{
     Scene->changeScene("PickShips");
 }
 
 void toCreditsFunc()
 {
-    Scene->changeScene("Credits");    
+    Scene->changeScene("Credits");
 }
 
 void toEndingFunc()
@@ -404,7 +404,7 @@ void toEndingFunc()
 
 void toMenuFunc()
 {
-    Scene->changeScene("Menu");  
+    Scene->changeScene("Menu");
 }
 
 void toMenuFromEndingFunc()
@@ -413,7 +413,7 @@ void toMenuFromEndingFunc()
     map->unCenterMap();
     std::cout << "RESET MY MAP" << std::endl;
     opponentMap->reset();
-    opponentMap->setDrawShips(false);   
+    opponentMap->setDrawShips(false);
     std::cout << "RESET OPPONENT MAP" << std::endl;
     if(client)
     {
@@ -430,7 +430,7 @@ void toFindGameFunc()
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
-    client = new UIClient(PORT, "localhost", &hints, map, opponentMap);  
+    client = new UIClient(PORT, globalHostname, &hints, map, opponentMap);
     if(!client->isValid())
     {
         UI->activatePopup("serverWarning");
@@ -451,7 +451,7 @@ void toFindGameFunc()
         }
 
         Scene->changeScene("FindGame");
-    }        
+    }
 }
 /*
 	====== END OF CALLBACK FUNCTIONS FOR UI ======
