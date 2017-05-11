@@ -32,6 +32,7 @@ Gerardo Garcia Teruel - A01018057
 #include "SOIL.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <ft2build.h>
 #include <FTGL/ftgl.h>
 #include <sys/socket.h>
 #include <sys/types.h>

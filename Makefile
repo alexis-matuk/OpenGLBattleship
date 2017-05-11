@@ -1,7 +1,7 @@
 CC = g++
 CXX = g++
 LDFLAGS = -lpthread -lIL -lglm -ljpeg -lpng -lSOIL -lfreetype -lftgl -lm $(LIBGL)
-CPPFLAGS = -std=c++0x -Wno-deprecated-declarations
+CPPFLAGS = -std=c++0x -Wno-deprecated-declarations -I/usr/include/freetype2
 GLMA = glm/glm/.libs/libglm.a
 TARGET = battleship
 SRC=$(wildcard *.cpp)
