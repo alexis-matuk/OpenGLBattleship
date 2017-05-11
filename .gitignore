@@ -2,3 +2,5 @@
 battleship
 *.out
 *.o
+
+.DS_Store
