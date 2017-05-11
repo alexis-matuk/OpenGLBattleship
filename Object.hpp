@@ -1,3 +1,9 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #ifndef Object_H
 #define Object_H
 #include "HeaderInclude.hpp"
@@ -48,7 +54,6 @@ public:
 	void addRotation(float x, float y, float z);
 	void addScale(float x, float y, float z);
 	GLMmodel * getModel();
-	void drawModel(GLuint _mode);	
 	void initBoundingBox();	
 	void DrawBoundingBox();
 	void updateBoundingBoxToTransforms();
@@ -70,6 +75,7 @@ public:
 	glm::vec3 getCentroid();
 	glm::vec3 getTopAnchor();
 	glm::vec3 getLeftAnchor();
+	void drawModel(GLuint _mode);
 	void resetParams();	
 	void front(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7);
 	void back(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7);

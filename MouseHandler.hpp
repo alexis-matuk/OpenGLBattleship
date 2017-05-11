@@ -1,6 +1,15 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #ifndef MOUSEHANDLER_H_
 #define MOUSEHANDLER_H_
 
+/*
+    Function for clipping and unclipping a clicked ship
+*/
 void shipLogic(Ship * hit, int x, int y)
 {
     valid = true;
@@ -17,6 +26,9 @@ void shipLogic(Ship * hit, int x, int y)
     UI->buttonPress(x, y);
 }
 
+/*
+    Spawn missile on top of clicked tile
+*/
 void clickedTileLogic(Tile * clickedTile)
 {
     if(clickedTile !=  nullptr)
@@ -33,9 +45,12 @@ void clickedTileLogic(Tile * clickedTile)
     }
 }
 
+/*
+    Mouse handler for when you are picking ship positions
+*/
 void mouseHandlerPickingScene(int button, int state, int x, int y)
 {
-    GLfloat winX, winY, winZ;
+    GLfloat winX, winY;
     GLdouble near[3];
     GLdouble far[3];
     std::vector<float> res;
@@ -61,6 +76,9 @@ void mouseHandlerPickingScene(int button, int state, int x, int y)
     glutPostRedisplay();
 }
 
+/*
+    Manage the ship movement when selection positions in grid
+*/
 void shipMotion(int x, int y)
 {
     Ship * currentShipSelected = map->getCurrentShipSelected();
@@ -73,16 +91,25 @@ void shipMotion(int x, int y)
     UI->passiveButton(x,y);
 }
 
+/*
+  Check for hover on top of buttons  
+*/
 void MousePassiveMotion(int x, int y)
 {
     UI->passiveButton(x,y);
 }
 
+/*
+  Check for hover and click on top of buttons  
+*/
 void mouseMotionMenu(int x, int y)
 {
     UI->passiveButton(x,y);
 }
 
+/*
+    Mouse function for menu scene
+*/
 void mouseButtonMenu(int button, int state, int x, int y)
 {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
@@ -95,11 +122,14 @@ void mouseButtonMenu(int button, int state, int x, int y)
     }
 }
 
+/*
+    Handle mouse events while attacking opponent
+*/
 void mouseInGame(int button, int state, int x, int y)
 {
     if(!shooting)
     {
-        GLfloat winX, winY, winZ;
+        GLfloat winX, winY;
         GLdouble near[3];
         GLdouble far[3];
         std::vector<float> res;

@@ -1,5 +1,14 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #include "OtherDestroyListener.hpp"
 
+/*
+  Server callback for when the opponent misses a shot
+*/
 void OtherDestroyListener::onMiss(int row, int col) const
 {
 	std::cout << "=== They missed my ship === " << std::endl;
@@ -17,6 +26,9 @@ void OtherDestroyListener::onMiss(int row, int col) const
 	shooting = false;  
 }
 
+/*
+  Server callback for when the opponent hits a ship
+*/
 void OtherDestroyListener::onHit(int row, int col, bool destroyed) const 
 {
 	std::cout << "=== They hit my ship ===" << std::endl;
@@ -37,6 +49,9 @@ void OtherDestroyListener::onHit(int row, int col, bool destroyed) const
 	}  
 }
 
+/*
+  Server callback for when the opponent destroys a ship
+*/
 void OtherDestroyListener::onDestroy(char shipId, int row1, int col1, int row2, int col2) {
 	std::cout << "==== They destroyed my ship ===" << std::endl;  
 	shooting = true;

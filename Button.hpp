@@ -1,7 +1,13 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #ifndef Button_H
 #define Button_H
-
 #include "HeaderInclude.hpp"
+
 typedef void (*ButtonCallback)();
 class Button{	
 protected:	

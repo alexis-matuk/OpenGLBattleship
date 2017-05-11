@@ -1,5 +1,14 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #include "Object.hpp"
 
+/*
+  Draw object taking into account translation, rotation, scale and center offset  
+*/
 void Object::Draw(GLuint _mode)
 {
 	glPushMatrix();
@@ -15,16 +24,25 @@ void Object::Draw(GLuint _mode)
 	glPopMatrix();
 }
 
+/*
+    Set object's name
+*/
 void Object::setName(std::string _name)
 {
 	name = _name;
 }
 
+/*
+  Get object's name  
+*/
 std::string Object::getName()
 {
 	return name;
 }
 
+/*
+    Initialize object's bounding box based on the model's vertices
+*/
 void Object::initBoundingBox()
 {
 	if (model->numvertices == 0)
@@ -56,6 +74,9 @@ void Object::initBoundingBox()
 	vertexArray.push_back({min_x, min_y, max_z});
 }
 /*
+  Pretty box used for programmer's peace of mind  
+*/
+/*
 	   6--------5
 	  /|	   /|
 	 / |	  / |
@@ -67,6 +88,9 @@ void Object::initBoundingBox()
 	2--------3
 */
 
+/*
+    Function to update reference points of object when a transformation is applied
+*/
 void Object::updateReferencePoints()
 {
 	centroid = glm::vec3((vertexArray[6][0]+vertexArray[0][0])/2, (vertexArray[6][1]+vertexArray[0][1])/2, (vertexArray[6][2]+vertexArray[0][2])/2);
@@ -74,6 +98,9 @@ void Object::updateReferencePoints()
 	topAnchor = glm::vec3((vertexArray[0][0]+vertexArray[1][0])/2, (vertexArray[0][1]+vertexArray[1][1])/2, (vertexArray[0][2]+vertexArray[1][2])/2);
 }
 
+/*
+  Function to update the bouding box vertices  
+*/
 void Object::updateVertexArray()
 {	   
 	for(int i = 0; i < vertexArray.size(); i++)
@@ -86,6 +113,11 @@ void Object::updateVertexArray()
 	}
 }
 
+/*
+  Function to update the bounding box to new transforms.
+  the transformation matrix is inverted, then the points are returned to their identity and 
+  	the new transformations are applied.  
+*/
 void Object::updateBoundingBoxToTransforms()
 {	
 	glm::vec4 inv;
@@ -103,6 +135,11 @@ void Object::updateBoundingBoxToTransforms()
 	updateReferencePoints();
 }
 
+/*
+    Given a near and far plane, check if the raycast of the mouse intersects with the object.
+    Theory behind this method can be found here:
+    http://www.opengl-tutorial.org/miscellaneous/clicking-on-objects/picking-with-custom-ray-obb-function/
+*/
 bool Object::checkIntersection(glm::vec3 near, glm::vec3 far, float & distance)
 {
 	glm::mat4 sc;
@@ -125,6 +162,9 @@ bool Object::checkIntersection(glm::vec3 near, glm::vec3 far, float & distance)
 	return TestRayOBBIntersection(origin, direction, min, max, glm::mat4(), distance);
 }
 
+/*
+  Check intersection with the X plane  
+*/
 bool Object::testX(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, float & tMin, float & tMax)
 {
 	glm::vec3 xaxis(ModelMatrix[0].x, ModelMatrix[0].y, ModelMatrix[0].z);
@@ -134,9 +174,9 @@ bool Object::testX(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_directi
 	if ( fabs(f) > 0.001f ){
 
 		float t1 = (e+aabb_min.x)/f;
-		float t2 = (e+aabb_max.x)/f; // Intersection with the "right" plane
+		float t2 = (e+aabb_max.x)/f;
 		if (t1>t2){
-			float w=t1;t1=t2;t2=w; // swap t1 and t2
+			float w=t1;t1=t2;t2=w;
 		}
 		if ( t2 < tMax )
 			tMax = t2;
@@ -151,6 +191,9 @@ bool Object::testX(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_directi
 	return true;
 }
 
+/*
+  Check intersection with the Y plane  
+*/
 bool Object::testY(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, float & tMin, float & tMax)
 {
 	glm::vec3 yaxis(ModelMatrix[1].x, ModelMatrix[1].y, ModelMatrix[1].z);
@@ -173,6 +216,9 @@ bool Object::testY(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_directi
 	return true;
 }
 
+/*
+  Check intersection with the Z plane  
+*/
 bool Object::testZ(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, float & tMin, float & tMax)
 {
 	glm::vec3 zaxis(ModelMatrix[2].x, ModelMatrix[2].y, ModelMatrix[2].z);
@@ -195,7 +241,9 @@ bool Object::testZ(glm::mat4 ModelMatrix, glm::vec3 delta, glm::vec3 ray_directi
 	return true;
 }
 
-
+/*
+  Check if there is a ray intersection with the three planes of the object 
+*/
 bool Object::TestRayOBBIntersection(glm::vec3 ray_origin, glm::vec3 ray_direction, glm::vec3 aabb_min, glm::vec3 aabb_max, glm::mat4 ModelMatrix, float& intersection_distance)
 {
 	// Intersection method from Real-Time Rendering and Essential Mathematics for Games
@@ -203,18 +251,23 @@ bool Object::TestRayOBBIntersection(glm::vec3 ray_origin, glm::vec3 ray_directio
 	float tMax = 100000.0f;
 	glm::vec3 OBBposition_worldspace(ModelMatrix[3].x, ModelMatrix[3].y, ModelMatrix[3].z);
 	glm::vec3 delta = OBBposition_worldspace - ray_origin;	
-
 	if(testX(ModelMatrix, delta, ray_direction, aabb_min, aabb_max, tMin, tMax) && testY(ModelMatrix, delta, ray_direction, aabb_min, aabb_max, tMin, tMax) && testZ(ModelMatrix, delta, ray_direction, aabb_min, aabb_max, tMin, tMax))
 		return true;	
 	intersection_distance = tMin;
 	return false;
 }
 
+/*
+   Get bounding box
+*/
 std::vector<std::vector<float>> Object::getBoundingBox()
 {
 	return vertexArray;
 }
 
+/*
+  Render front face of bounding box 
+*/
 void Object::front(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
 {
 	// front face =================
@@ -226,6 +279,9 @@ void Object::front(float * v0, float * v1, float * v2, float * v3, float * v4, f
     glVertex3fv(v0);
 }
 
+/*
+  Render right face of bounding box 
+*/
 void Object::right(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
 {
 	// right face =================
@@ -237,6 +293,9 @@ void Object::right(float * v0, float * v1, float * v2, float * v3, float * v4, f
     glVertex3fv(v0);
 }
 
+/*
+  Render top face of bounding box 
+*/
 void Object::top(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
 {
 	// top face ===================
@@ -248,6 +307,9 @@ void Object::top(float * v0, float * v1, float * v2, float * v3, float * v4, flo
     glVertex3fv(v0);
 }
 
+/*
+  Render left face of bounding box 
+*/
 void Object::left(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
 {
 	// left face ===================
@@ -259,6 +321,9 @@ void Object::left(float * v0, float * v1, float * v2, float * v3, float * v4, fl
     glVertex3fv(v6);
 }
 
+/*
+  Render back face of bounding box 
+*/
 void Object::back(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
 {
 	 // back face ===================
@@ -270,6 +335,9 @@ void Object::back(float * v0, float * v1, float * v2, float * v3, float * v4, fl
     glVertex3fv(v5);
 }
 
+/*
+  Render bottom face of bounding box 
+*/
 void Object::bottom(float * v0, float * v1, float * v2, float * v3, float * v4, float * v5, float * v6, float * v7)
 {
 	 // bottom face ===================
@@ -280,6 +348,10 @@ void Object::bottom(float * v0, float * v1, float * v2, float * v3, float * v4, 
     glVertex3fv(v4);
     glVertex3fv(v7);
 }
+
+/*
+  Draw entire bounding box
+*/
 void Object::DrawBoundingBox()
 {	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//Activar wireframe		
@@ -314,6 +386,17 @@ void Object::DrawBoundingBox()
     enableParams();
 }
 
+void Object::drawModel(GLuint _mode)
+{
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+    if (model)
+        glmDraw(model, _mode);
+    glPopAttrib();
+}
+
+/*
+  Default constructor for object
+*/
 Object::Object()
 {
 	scaleX = 1;
@@ -336,6 +419,9 @@ Object::~Object()
 	
 }
 
+/*
+  Constructor of object given a filename
+*/
 Object::Object(const char * filename):Object()
 {
 	model = loadModel(filename);
@@ -343,6 +429,9 @@ Object::Object(const char * filename):Object()
 	updateBoundingBoxToTransforms();
 }
 
+/*
+  Constructor of object given a filename and initial parameters
+*/
 Object::Object(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ, const char * filename) : scaleX(_scaleX), scaleY(_scaleY), scaleZ(_scaleZ), transX(_x), transY(_y), transZ(_z), rotX(_rotX), rotY(_rotY), rotZ(_rotZ)
 {
 	distance = 0;
@@ -351,6 +440,9 @@ Object::Object(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, 
 	updateBoundingBoxToTransforms();
 }
 
+/*
+  Constructor of object given a filename, initial parameters and center offset
+*/
 Object::Object(float _centerX, float _centerY, float _centerZ, float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ, const char * filename) : scaleX(_scaleX), scaleY(_scaleY), scaleZ(_scaleZ), transX(_x), transY(_y), transZ(_z), rotX(_rotX), rotY(_rotY), rotZ(_rotZ), centerX(_centerX), centerY(_centerY), centerZ(_centerZ)
 {
 	distance = 0;
@@ -359,25 +451,25 @@ Object::Object(float _centerX, float _centerY, float _centerZ, float _scaleX, fl
 	updateBoundingBoxToTransforms();
 }
 
-void Object::drawModel(GLuint _mode)
-{		
-    glPushAttrib(GL_ALL_ATTRIB_BITS);     
-        if (model)
-            glmDraw(model, _mode);
-    glPopAttrib();     	
-}
-
+/*
+  Set object distance
+*/
 void Object::setDistance(float _distance)
 {
 	distance = _distance;
 }
 
+/*
+  Get object distance
+*/
 float Object::getDistance()
 {
 	return distance;
 }
 
-
+/*
+  Set object parameters including offset
+*/
 void Object::setParams(float _centerX, float _centerY, float _centerZ, float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ)
 {
 	scaleX = _scaleX;
@@ -395,6 +487,10 @@ void Object::setParams(float _centerX, float _centerY, float _centerZ, float _sc
 	updateBoundingBoxToTransforms();
 }
 
+/*
+  Set object parameters and initialize their starting ones for further use.
+  The parameter map is used for resetting the object's values in runtime.
+*/
 void Object::setParams(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ)
 {	
 	if(initialParameterMap.size() <= 0)
@@ -424,6 +520,9 @@ void Object::setParams(float _scaleX, float _scaleY, float _scaleZ, float _x, fl
 	updateBoundingBoxToTransforms();
 }
 
+/*
+  Set translation
+*/
 void Object::setTranslation(float x, float y, float z)
 {
 	transX = x;
@@ -432,6 +531,9 @@ void Object::setTranslation(float x, float y, float z)
 	updateBoundingBoxToTransforms();
 }
 
+/*
+  Set scale
+*/
 void Object::setScale(float x, float y, float z)
 {
 	scaleX = x;
@@ -440,6 +542,9 @@ void Object::setScale(float x, float y, float z)
 	updateBoundingBoxToTransforms();
 }
 
+/*
+  Set rotation
+*/
 void Object::setRotation(float x, float y, float z)
 {	
 	rotX = x;
@@ -448,6 +553,9 @@ void Object::setRotation(float x, float y, float z)
 	updateBoundingBoxToTransforms();
 }
 
+/*
+  Add translation
+*/
 void Object::addTranslation(float x, float y, float z)
 {
 	transX += x;
@@ -455,6 +563,10 @@ void Object::addTranslation(float x, float y, float z)
 	transZ += z;
 	updateBoundingBoxToTransforms();
 }
+
+/*
+  Add rotation
+*/
 void Object::addRotation(float x, float y, float z)
 {
 	rotX += x;
@@ -462,6 +574,10 @@ void Object::addRotation(float x, float y, float z)
 	rotZ += z;
 	updateBoundingBoxToTransforms();
 }
+
+/*
+  Add scale
+*/
 void Object::addScale(float x, float y, float z)
 {
 	scaleX += x;
@@ -470,6 +586,9 @@ void Object::addScale(float x, float y, float z)
 	updateBoundingBoxToTransforms();
 }
 
+/*
+  Get object parameters as map
+*/
 std::map<std::string, float> Object::getParams()
 {
 	parameterMap["scaleX"] = scaleX;
@@ -487,11 +606,17 @@ std::map<std::string, float> Object::getParams()
 	return parameterMap;
 }
 
+/*
+  Get initial parameters as map for reset
+*/
 std::map<std::string, float> Object::getInitialParams()
 {
 	return initialParameterMap;
 }
 
+/*
+  Set an object's parameters given a map
+*/
 void Object::setParamsByMap(std::map<std::string, float> _newParams)
 {
 	scaleX = _newParams["scaleX"];
@@ -509,26 +634,41 @@ void Object::setParamsByMap(std::map<std::string, float> _newParams)
 	updateBoundingBoxToTransforms();
 }
 
+/*
+  Get centroid
+*/
 glm::vec3 Object::getCentroid()
 {
 	return centroid;
 }
 
+/*
+  Get top anchor
+*/
 glm::vec3 Object::getTopAnchor()
 {
 	return topAnchor;
 }
 
+/*
+  Get left anchor
+*/
 glm::vec3 Object::getLeftAnchor()
 {
 	return leftAnchor;
 }
 
+/*
+  Get model
+*/
 GLMmodel * Object::getModel()
 {
 	return model;
 }
 
+/*
+  Reset objects to its initial parameters
+*/
 void Object::resetParams()
 {
 	setParamsByMap(initialParameterMap);

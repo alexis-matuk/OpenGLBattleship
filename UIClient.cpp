@@ -1,5 +1,16 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #include "UIClient.hpp"
 
+/*
+  Create a client with its listeners
+  When a client is created, the connection to the server is made
+  If there is no server available, the client will not be created
+*/
 UIClient::UIClient(char const *port, char const *hostname, struct addrinfo *hints, Map * _myMap, Map * _opponentMap) : Client(port, hostname, hints, &eventListener, &myDestroyListener, &oDestroyListener) {
 	eventListener.setMap(_myMap);
 
@@ -12,15 +23,19 @@ UIClient::UIClient(char const *port, char const *hostname, struct addrinfo *hint
 	oDestroyListener.setTransitioner(&theirMapToMyMap);      
 }
 
+/*
+  Get event listener
+*/
 EventListener & UIClient::getEventListener(){
 	return eventListener;
 }
 
+/*
+  Initialize enemy ships posistions in ending scene
+*/
 void UIClient::initEnemyPositions()
 {    
 	float area = (float) 7*wh/8 - (float) wh/3;
-	float xarea = (float) ww/2;
-
 	glm::vec3 pos_1 = screenToWorldPoint(ww/4, 7*wh/8 - area/5);        
 	glm::vec3 pos_2 = screenToWorldPoint(ww/4, 7*wh/8 - 2*area/5);    
 	glm::vec3 pos_3 = screenToWorldPoint(ww/4, 7*wh/8 - 3*area/5);    
@@ -37,11 +52,12 @@ void UIClient::initEnemyPositions()
 	enemyPositions.push_back(glm::vec3(pos_1.x, pos_1.y, pos_1.z));
 }
 
+/*
+  Update enemy ships positions when resizing the window
+*/
 void UIClient::updateEnemyPositions()
 {
 	float area = (float) 7*wh/8 - (float) wh/3;
-	float xarea = (float) ww/2;
-
 	glm::vec3 pos_1 = screenToWorldPoint(ww/4, 7*wh/8 - area/5);        
 	glm::vec3 pos_2 = screenToWorldPoint(ww/4, 7*wh/8 - 2*area/5);    
 	glm::vec3 pos_3 = screenToWorldPoint(ww/4, 7*wh/8 - 3*area/5);    
@@ -58,11 +74,12 @@ void UIClient::updateEnemyPositions()
 	enemyPositions[4] = (glm::vec3(pos_1.x, pos_1.y, pos_1.z));
 }
 
+/*
+  Initialize friendly ships posistions in ending scene
+*/
 void UIClient::initFriendlyPositions()
 {    
 	float area = (float) 7*wh/8 - (float) wh/3;
-	float xarea = (float) ww/2;
-
 	glm::vec3 pos_1 = screenToWorldPoint(3*ww/4, 7*wh/8 - area/5);        
 	glm::vec3 pos_2 = screenToWorldPoint(3*ww/4, 7*wh/8 - 2*area/5);    
 	glm::vec3 pos_3 = screenToWorldPoint(3*ww/4, 7*wh/8 - 3*area/5);    
@@ -79,11 +96,12 @@ void UIClient::initFriendlyPositions()
 	friendlyPositions.push_back(glm::vec3(pos_1.x, pos_1.y, pos_1.z));
 }
 
+/*
+  Update friendly ships positions when resizing the window
+*/
 void UIClient::updateFriendlyPositions()
 {
 	float area = (float) 7*wh/8 - (float) wh/3;
-	float xarea = (float) ww/2;
-
 	glm::vec3 pos_1 = screenToWorldPoint(3*ww/4, 7*wh/8 - area/5);        
 	glm::vec3 pos_2 = screenToWorldPoint(3*ww/4, 7*wh/8 - 2*area/5);    
 	glm::vec3 pos_3 = screenToWorldPoint(3*ww/4, 7*wh/8 - 3*area/5);    
@@ -100,21 +118,27 @@ void UIClient::updateFriendlyPositions()
 	friendlyPositions[4] = (glm::vec3(pos_1.x, pos_1.y, pos_1.z));
 }
 
-void UIClient::setup()
-{
-
-}
-
+/*
+	Set window width for resizing calculations
+*/
 void UIClient::setww(int _ww)
 {    
 	ww = _ww;
 }
 
+/*
+	Set window height for resizing calculations
+*/
 void UIClient::setwh(int _wh)
 {
 	wh = _wh;
 }
 
+/*
+	Draw friendly ships in the initialized positions
+	Positions relate to window
+	Client keeps track of enemy ships he destroyed and friendly ships that were destroyed
+*/
 void UIClient::drawFriendlyShips()
 {
 	std::vector<Ship*> ships = oDestroyListener.getShipsDestroyed();
@@ -136,6 +160,9 @@ void UIClient::drawFriendlyShips()
 	setFriendly = true;
 }
 
+/*
+	Draw enemy ships in initialized positions
+*/
 void UIClient::drawEnemyShips()
 {      
 	std::vector<Ship*> ships = myDestroyListener.getShipsDestroyed();

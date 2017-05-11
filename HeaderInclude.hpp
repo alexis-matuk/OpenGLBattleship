@@ -1,3 +1,9 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #ifdef __APPLE__
     #include <GLUT/glut.h>
     #include <OpenGL/gl.h>
@@ -8,7 +14,7 @@
     #include <GL/glut.h>
     #include <GL/gl.h>
     #include <GL/glu.h>
-#endif	// Header File For The OpenGL32 Library
+#endif
 
 #include "glm/glm/glm.h"
 #include <stdlib.h>

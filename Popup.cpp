@@ -1,11 +1,24 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #include "Popup.hpp"
 
+/*
+  Callback for closing the popup
+*/
 void Popup::accept()
 { 	
 	showing = false;
 	button->setActive(false);
 }
 
+/*
+  Create a popup with a default red color and some transparency
+  Every popup has a button that calls back to accept on their instance.
+*/
 Popup::Popup(int _xTopLeft, int _yTopLeft, int _width, std::string _name, std::string _content, int _fontSize, int r, int g, int b, const FTGL::TextAlignment _alignment):Panel(_xTopLeft, _yTopLeft, _width, _name, _content, _fontSize, r, g, b, _alignment)
 {
 	panel_r = 255;
@@ -19,6 +32,9 @@ Popup::Popup(int _xTopLeft, int _yTopLeft, int _width, std::string _name, std::s
     setExtras(0,50,0,0);
 }
 
+/*
+  Draw the popup
+*/
 void Popup::Draw(bool background)
 {
 	if(showing)
@@ -29,32 +45,47 @@ void Popup::Draw(bool background)
 	}	
 }
 
+/*
+  Get the button assigned to the popup
+*/
 PopupButton * Popup::getButton()
 {
 	return button;
 }
 
+/*
+  Activate button in popup
+*/
 void Popup::activateButton()
 {
 	button->setActive(true);
 }
 
+/*
+  Get if the popup is showing
+*/
 bool Popup::getShowing()
 {
 	return showing;
 }
 
+/*
+  Set if the popup is showing
+*/
 void Popup::setShowing(bool _showing)
 {
 	showing = _showing;
 }
 
+/*
+  Center the popup
+*/
 void Popup::center(int _ww, int _wh, int _posRelativeToWh)
 {
 	setww(_ww);
     setwh(_wh);
     FTBBox bbox = layout->BBox(content.c_str());    
-    float off = (bbox.Upper().X() - bbox.Lower().X())/2;   
+    // float off = (bbox.Upper().X() - bbox.Lower().X())/2;   
     setPosition((float)ww/2 - (min_x+max_x)/2, _posRelativeToWh);
     button->setPosition(xTopLeft + (min_x+max_x)/2 - buttonWidth/2,(int)_wh - _posRelativeToWh + (max_y-min_y) );
 }

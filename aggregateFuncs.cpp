@@ -1,6 +1,11 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #include "aggregateFuncs.hpp"
 
-GLuint viewMode = GLM_SMOOTH | GLM_MATERIAL | GLM_TEXTURE | GLM_2_SIDED;
 GLuint textureMode = GLM_SMOOTH | GLM_MATERIAL | GLM_TEXTURE | GLM_2_SIDED;
 GLuint noTextureMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;
 GLuint texture[1];
@@ -51,12 +56,10 @@ GLfloat mat_ambient[4] = { 1, 1, 1, 1.0 };
 GLfloat mat_diffuse[4] = { 1, 1, 1, 1.0 };
 GLfloat mat_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
 GLfloat high_shininess[1] = { 100.0 };
-bool down = false;
 int ww, wh;
 int window;
 float lastx;
 float lasty;
-std::vector<std::vector<float>> points;
 GLint viewport[4];
 GLdouble modelview[16];
 GLdouble projection[16];
@@ -71,7 +74,7 @@ bool valid = false;
 UIHandler* UI = nullptr;
 SceneManager * Scene = nullptr;
 
-char const* fontFile = FONT_FILE; // Just a string with the path to the font file
+char const* fontFile = FONT_FILE;
 
 Ship * menuShip = nullptr;
 
@@ -80,9 +83,7 @@ float menuShipRot = 0;
 int animationCounter = 0;
 int sceneStartTime = -1;
 
-Object * object = nullptr;
-
-GLMmodel * shipModel = nullptr;
+GLMmodel * tileModel = nullptr;
 GLMmodel * whitePinModel = nullptr;
 GLMmodel * redPinModel = nullptr;
 GLMmodel * missileModel = nullptr;
@@ -102,44 +103,53 @@ bool hasOrder = false;
 char * globalHostname;
 
 
+/*
+    Function that draws a loaded model with a given mode (textureMode/noTextureMode)
+*/
 void DrawModel(GLMmodel* model, GLuint _mode)
 {
-        if (model)
-            glmDraw(model, GLM_SMOOTH | GLM_2_SIDED | GLM_MATERIAL | GLM_TEXTURE);
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    if (model)
+        glmDraw(model, _mode);
+    glPopAttrib();
 }
 
 
-/* Función para cagar un modelo */
+/* 
+    Function that loads a .obj model given a path
+*/
 GLMmodel* loadModel(const char* filename)
 {
 	GLMmodel* model = nullptr;
     if (!model) {		/* load up the model */
 	model = glmReadOBJ(filename);
 	if (!model) {
-	    std::cout << "\nUsage: objviewV2 <-s> <obj filename>\n" << std::endl;
-	    exit(0);
-	}
-	glmUnitize(model);
-	glmVertexNormals(model, 90.0, GL_TRUE);
-    }
-    return model;
+       std::cout << "\nUsage: objviewV2 <-s> <obj filename>\n" << std::endl;
+       exit(0);
+   }
+   glmUnitize(model);
+   glmVertexNormals(model, 90.0, GL_TRUE);
+}
+return model;
 }
 
-// Load Bitmaps And Convert To Textures
+/*
+    Load water texture for tiles
+*/
 void LoadGLTextures() {
 
-    // Create Texture
     glGenTextures(1, &texture[0]);
-    glBindTexture(GL_TEXTURE_2D, texture[0]);   // 2d texture (x and y size)
-
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); // scale linearly when image bigger than texture
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); // scale linearly when image smalled than texture
-
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     int width, height;
     unsigned char* image =SOIL_load_image("water.jpg", &width, &height, 0, SOIL_LOAD_RGB);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 };
 
+/*
+    Enable opengl environment parameters  
+*/
 void enableParams()
 {
     glEnable(GL_LIGHTING);
@@ -149,6 +159,9 @@ void enableParams()
     glEnable(GL_TEXTURE_2D);
 }
 
+/*
+    Disable opengl environment parameters
+*/
 void disableParams()
 {
     glDisable(GL_LIGHTING);
@@ -158,6 +171,9 @@ void disableParams()
     glDisable(GL_TEXTURE_2D);
 }
 
+/*
+    Draw raycast when clicking mouse
+*/
 void drawRaycast()
 {
     glDisable(GL_LIGHTING);
@@ -165,14 +181,12 @@ void drawRaycast()
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_NORMALIZE);
     glDisable(GL_TEXTURE_2D);
-
     glLineWidth(1);
     glBegin(GL_LINES);
     glColor3f(1.0, 0.5, 0.0);
     glVertex3f(nx,ny,nz);
     glVertex3f(fx,fy,fz);
     glEnd();
-
     glPointSize(5);
     glBegin(GL_POINTS);
     glColor3f(0.0, 1.0, 0.0);
@@ -182,7 +196,6 @@ void drawRaycast()
     glEnd();
     glPointSize(1);
     glLineWidth(1);
-
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
@@ -190,6 +203,9 @@ void drawRaycast()
     glEnable(GL_TEXTURE_2D);
 }
 
+/*
+    Enable opengl environment parameters
+*/
 void enableUIParams()
 {
     glEnable(GL_TEXTURE_2D);
@@ -198,6 +214,9 @@ void enableUIParams()
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 }
 
+/*
+    Disable opengl parameters necessary to render UI elements
+*/
 void disableUIParams()
 {
     glDisable(GL_TEXTURE_2D);
@@ -206,7 +225,9 @@ void disableUIParams()
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
-
+/*
+    Set viewport for rendering panels and popups
+*/
 void setPanelViewPort()
 {
     glMatrixMode(GL_PROJECTION);
@@ -216,6 +237,9 @@ void setPanelViewPort()
     glLoadIdentity();
 }
 
+/*
+    Set viewport for rendering buttons  
+*/
 void setButtonViewPort()
 {
     glMatrixMode(GL_PROJECTION);
@@ -225,6 +249,9 @@ void setButtonViewPort()
     glLoadIdentity();
 }
 
+/*
+    Set viewport for rendering world objects
+*/
 void setWorldViewPort()
 {
     glMatrixMode(GL_PROJECTION);
@@ -233,6 +260,9 @@ void setWorldViewPort()
     glMatrixMode(GL_MODELVIEW);
 }
 
+/*
+    Function that rotates the map when pressing certain keys  
+*/
 void modifyCamera()
 {
     if(rotatingXUp)
@@ -259,6 +289,9 @@ void modifyCamera()
     }
 }
 
+/*
+    Function that rotates the opponents map when pressing certain keys
+*/
 void modifyCameraInGame()
 {
     if(rotatingXUp)
@@ -285,6 +318,9 @@ void modifyCameraInGame()
     }
 }
 
+/*
+    Convert screen point to world point
+*/
 glm::vec3 screenToWorldPoint(float winX, float winY)
 {
     /*Obtenido de http://stackoverflow.com/questions/113352/opengl-projecting-mouse-click-onto-geometry*/
@@ -294,9 +330,9 @@ glm::vec3 screenToWorldPoint(float winX, float winY)
     gluUnProject( winX, winY, 0, modelview, projection, viewport, &near[0], &near[1], &near[2]);
     gluUnProject( winX, winY, 1, modelview, projection, viewport, &far[0], &far[1], &far[2]);
     if(near[2] == far[2])     // this means we have no solutions
-     return glm::vec3(0,0,0);
-    GLfloat t = (near[2] - 0) / (near[2] - far[2]);
-    GLfloat x = near[0] + (far[0] - near[0]) * t;
-    GLfloat y = near[1] + (far[1] - near[1]) * t;
-    return glm::vec3(x, y, 0);
+       return glm::vec3(0,0,0);
+   GLfloat t = (near[2] - 0) / (near[2] - far[2]);
+   GLfloat x = near[0] + (far[0] - near[0]) * t;
+   GLfloat y = near[1] + (far[1] - near[1]) * t;
+   return glm::vec3(x, y, 0);
 }

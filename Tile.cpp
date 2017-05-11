@@ -1,9 +1,19 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #include "Tile.hpp"
 
+/*
+  Initialize tile
+  Initialize points, bouding box and update to transorms
+*/
 Tile::Tile()
 {	
 	shipId = '0';
-	model = shipModel;
+	model = tileModel;
 	scaleX = 0.6;
 	scaleY = 0.6;
 	scaleZ = 0.6;
@@ -25,11 +35,18 @@ Tile::Tile()
 	tileSideLength = glm::distance(v1,v0);	
 }
 
+/*
+  Get length of side of the tile.
+  Used for ship clipping.
+*/
 float Tile::getTileSideLength()
 {
 	return tileSideLength;	
 }
 
+/*
+  Initialize tile given initial params
+*/
 Tile::Tile(float _scaleX, float _scaleY, float _scaleZ, float _x, float _y, float _z, float _rotX, float _rotY, float _rotZ):Object(_scaleX, _scaleY, _scaleZ, _x, _y, _z, _rotX, _rotY, _rotZ, "Objects/tile.obj")
 {	
 	initPoints();
@@ -42,22 +59,34 @@ Tile::~Tile()
 
 }
 
+/*
+  Update tile's state
+*/
 void Tile::updateState(State _newState)
 {
 	lastState = currentState;
 	currentState = _newState;
 }
 
+/*
+  Get current tile's state
+*/
 Tile::State Tile::getCurrentState()
 {
 	return currentState;
 }
 
+/*
+  Get previous tile's state
+*/
 Tile::State Tile::getLastState()
 {
 	return lastState;
 }
 
+/*
+  Check if tile is valid for shooting
+*/
 bool Tile::getValidTile()
 {
 	if(currentState == State::FREE || currentState == State::USED)
@@ -65,6 +94,9 @@ bool Tile::getValidTile()
 	return false;
 }
 
+/*
+  Hit the tile and update state if necessary
+*/
 bool Tile::hit()
 {
 	switch(currentState)
@@ -91,6 +123,10 @@ bool Tile::hit()
 	return false;
 }
 
+/*
+  Draw the tile with given transforms
+  Draw white pin or red pin depending on the state of the tile set beforehand
+*/
 void Tile::Draw(GLuint _mode)
 {	
 	glPushMatrix();		
@@ -115,6 +151,10 @@ void Tile::Draw(GLuint _mode)
 	glPopMatrix();
 }
 
+/*
+  Initialize points for the water animation
+  Points are initialized with a sinoidal function
+*/
 void Tile::initPoints()
 {
 	float float_x, float_y; 
@@ -127,6 +167,9 @@ void Tile::initPoints()
     }
 }
 
+/*
+  Change the sinoidal function to have more ripples, simulating that a missile hit the water
+*/
 void Tile::makeRipple()
 {
 	float float_x, float_y; 
@@ -139,6 +182,9 @@ void Tile::makeRipple()
     }
 }
 
+/*
+  Function that moves the points around the QUAD
+*/
 void Tile::movePoints(int x, int y)
 {
 	float_x  = (float) (x)/44;
@@ -155,12 +201,15 @@ void Tile::movePoints(int x, int y)
     glVertex3f( points[x+1][y][0], points[x+1][y][1], points[x+1][y][2] );
 }
 
+/*
+	Draw the water and animate the waves  
+*/
 void Tile::drawWater()
 {
 	glPushMatrix();							
 	    glScalef(0.042,0.041,0.08);
 	    glTranslatef(transX*24,transY*24.5,1.5);	    
-	    glBindTexture(GL_TEXTURE_2D, texture[0]);   // choose the texture to use.
+	    glBindTexture(GL_TEXTURE_2D, texture[0]);
 	    glPolygonMode(GL_BACK, GL_FILL);
 	    glPolygonMode(GL_FRONT, GL_LINE);
 	    glBegin(GL_QUADS);
@@ -170,7 +219,7 @@ void Tile::drawWater()
 	    	}
 	    }
 	    glEnd();
-	    if (wiggle_count == 1) { // cycle the sine values
+	    if (wiggle_count == 1) {
 		for (y = 0; y <45; y++) {
 		    points[44][y][2] = points[0][y][2];
 		}
@@ -185,23 +234,36 @@ void Tile::drawWater()
     glPopMatrix(); 
 }
 
+/*
+  Set position of tile in grid
+*/
 void Tile::setGridPos(int _gridX, int _gridY)
 {
 	gridX = _gridX;
 	gridY = _gridY;
 }
 
+/*
+  Get position of tile in grid
+*/
 std::vector<int> Tile::getGridPos()
 {
 	std::vector<int> res = {gridX, gridY};
 	return res;
 }
 
+/*
+  Set ship id.
+  This is used for communication with the server.
+*/
 void Tile::setShipId(char _id)
 {
 	shipId = _id;
 }
 
+/*
+  Get the ship id
+*/
 char Tile::getShipId()
 {
 	return shipId;

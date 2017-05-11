@@ -1,3 +1,4 @@
+git submodule update --init --recursive
 sudo apt-get install autoconf
 sudo apt-get install libtool-bin
 sudo apt-get install automake
@@ -5,17 +6,19 @@ cd glm
 ./autogen.sh
 cd glm
 make
-
+cd ../..
 
 sudo apt-get install libjpeg-dev
 sudo apt-get install libpng12-dev
 sudo apt-get install libfreetype6-dev
 sudo apt-get install libdevil-dev
-git submodule update --init --recursive
-cd glm
-./configure
+
+cd Simple-OpengGL-Image-Library
 make
 make install
-cd glm/glm
+sudo apt-get install libftgl-dev
+ln -s /usr/include/freetype2/ft2build.h /usr/include
+
 make
-checar que en ls ./libs exista libglm.a
+
+

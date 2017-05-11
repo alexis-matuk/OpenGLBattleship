@@ -1,5 +1,15 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #include "Panel.hpp"
 
+/*
+  Panel constructor
+  Create panel given a font, alignment and content
+*/
 Panel::Panel(int _xTopLeft, int _yTopLeft, int _width, std::string _name, std::string _content, int _fontSize, int _r, int _g, int _b, const FTGL::TextAlignment _alignment): xTopLeft(_xTopLeft), yTopLeft(_yTopLeft), width(_width), name(_name), content(_content), fontSize(_fontSize), r(_r), g(_g), b(_b), alignment(_alignment)
 {
 	layout = new FTSimpleLayout();
@@ -18,6 +28,9 @@ Panel::Panel(int _xTopLeft, int _yTopLeft, int _width, std::string _name, std::s
 	layout->SetAlignment(_alignment);
 }
 
+/*
+  Set color of panel's content
+*/
 void Panel::setColor(int _r, int _g, int _b)
 {
 	r = _r;
@@ -25,6 +38,9 @@ void Panel::setColor(int _r, int _g, int _b)
 	b = _b;
 }
 
+/*
+  Set layout's font size
+*/
 void Panel::setFontSize(int _size)
 {
 	fontSize = _size;
@@ -34,52 +50,82 @@ void Panel::setFontSize(int _size)
     }    
 }
 
+/*
+  Set text to be rendered in panel
+*/
 void Panel::setContent(std::string _content)
 {
 	content = _content;
 }
 
+/*
+  Set panel's alignment
+*/
 void Panel::setAlignment(const FTGL::TextAlignment _alignment)
 {
 	layout->SetAlignment(_alignment);
 }
 
+/*
+  Set panel's position
+*/
 void Panel::setPosition(int x, int y)
 {
 	xTopLeft = x;
 	yTopLeft = y;
 }
 
+/*
+  Get panel's unique name
+*/
 std::string Panel::getName()
 {
 	return name;
 }
 
+/*
+  Get panel's conent
+*/
 std::string Panel::getContent()
 {
 	return content;
 }
 
+/*
+  Get panel's layout
+*/
 FTSimpleLayout * Panel::getLayout()
 {
 	return layout;
 }
 
+/*
+  Get panel's font
+*/
 FTFont* Panel::getFont()
 {
 	return font;
 }
 
+/*
+  Set window width
+*/
 void Panel::setww(int _ww)
 {
 	ww = _ww;
 }
 
+/*
+  Set window height
+*/
 void Panel::setwh(int _wh)
 {
 	wh = _wh;
 }
 
+/*
+  Set panel's bounding box color
+*/
 void Panel::setPanelColor(int _r, int _g, int _b, float _a)
 {
 	panel_r = _r;
@@ -88,6 +134,9 @@ void Panel::setPanelColor(int _r, int _g, int _b, float _a)
 	panel_a = _a;
 }
 
+/*
+  Set extra pixels for the panel
+*/
 void Panel::setExtras(int _extraTop, int _extraBottom, int _extraLeft, int _extraRight)
 {
 	extraBottom = _extraBottom;
@@ -96,6 +145,9 @@ void Panel::setExtras(int _extraTop, int _extraBottom, int _extraLeft, int _extr
 	extraRight = _extraRight;
 }
 
+/*
+  Draw the panel's content with a rect given by the bounding box and the extras
+*/
 void Panel::Draw(bool withBackground)
 {
 	glPushAttrib(GL_ALL_ATTRIB_BITS);	
@@ -125,6 +177,9 @@ void Panel::Draw(bool withBackground)
 	glPopAttrib();
 }
 
+/*
+  Center panel in screen
+*/
 void Panel::center(int _ww, int _wh, int _posRelativeToWh)
 {
 	setww(_ww);
@@ -134,6 +189,9 @@ void Panel::center(int _ww, int _wh, int _posRelativeToWh)
     setPosition((float)ww/2 - off, _posRelativeToWh);
 }
 
+/*
+  Set panel in the center of the middle left of the screen
+*/
 void Panel::left(int _ww, int _wh, int _posRelativeToWh)
 {
 	setww(_ww);
@@ -144,6 +202,9 @@ void Panel::left(int _ww, int _wh, int _posRelativeToWh)
     setPosition(ww/4 - off , _posRelativeToWh);
 }
 
+/*
+  Set panel in the center of the middle right of the screen
+*/
 void Panel::right(int _ww, int _wh, int _posRelativeToWh)
 {
 	setww(_ww);
@@ -154,6 +215,9 @@ void Panel::right(int _ww, int _wh, int _posRelativeToWh)
     setPosition(3*ww/4 - off , _posRelativeToWh);
 }
 
+/*
+  Set width of layout
+*/
 void Panel::setWidth(int _width)
 {
 	width = _width;

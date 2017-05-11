@@ -1,3 +1,9 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #ifndef Map_H
 #define Map_H
 
@@ -91,11 +97,7 @@ public:
 	Ship * getShipFromId(char _id);
 	void addShipToList(Ship * _ship);
 	std::vector<Ship*> getShips();	
-	void setDrawShips(bool _draw);
-	static void ApplyColor(
-   	GLfloat ambr, GLfloat ambg, GLfloat ambb,
-   	GLfloat difr, GLfloat difg, GLfloat difb,
-   	GLfloat specr, GLfloat specg, GLfloat specb, GLfloat shine);   	
+	void setDrawShips(bool _draw);	
 };
 
 bool hitSortFunc (std::pair<Object, float> i,std::pair<Object, float> j);

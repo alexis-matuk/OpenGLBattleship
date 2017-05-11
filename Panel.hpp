@@ -1,3 +1,9 @@
+/*
+Alexis Matuk - A01021143
+Diego Vazquez - A01168095
+Gerardo Garcia Teruel - A01018057
+*/
+
 #ifndef Panel_H
 #define Panel_H
 
