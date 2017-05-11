@@ -9,7 +9,7 @@ Gerardo Garcia Teruel - A01018057
 GLuint textureMode = GLM_SMOOTH | GLM_MATERIAL | GLM_TEXTURE | GLM_2_SIDED;
 GLuint noTextureMode = GLM_SMOOTH | GLM_MATERIAL | GLM_2_SIDED;
 GLuint texture[1];
-bool debug = true;
+bool debug = false;
 
 int frame = 0;
 int currenttime = 0;
